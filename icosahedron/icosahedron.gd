@@ -1,10 +1,7 @@
+class_name Icosahedron
 extends Node3D
 
-
 @export var ROTATION_SPEED := 0.009
-
-#var basis = Basis()
-# Contains the following default values:
 
 @onready var main = get_node("/root/Main").transform.basis
 
@@ -21,35 +18,12 @@ func _process(_delta):
     var a = Quaternion(transform.basis)
     var t = a * Quaternion(main)
     if Input.is_action_pressed("ui_up"):
-        t = t * Quaternion(
-                -ROTATION_SPEED,  # x, # y, # z
-                0,
-                0,
-                1,  # w
-            )
-        # rotate_x(-ROTATION_SPEED)
+        t = t * Quaternion(-ROTATION_SPEED, 0, 0, 1, )
     if Input.is_action_pressed("ui_down"):
-        t = t * Quaternion(
-                ROTATION_SPEED,  # x, # y, # z
-                0,
-                0,
-                1,  # w
-            )
+        t = t * Quaternion(ROTATION_SPEED, 0, 0, 1, )
     if Input.is_action_pressed("ui_right"):
-        t = t * Quaternion(
-                0,
-                ROTATION_SPEED,  # x, # y, # z
-                0,
-                1,  # w
-            )
+        t = t * Quaternion(0, ROTATION_SPEED, 0, 1, )
     if Input.is_action_pressed("ui_left"):
-        t = t * Quaternion(
-                0,
-                -ROTATION_SPEED,  # x, # y, # z
-                0,
-                1,  # w
-            )
+        t = t * Quaternion(0, -ROTATION_SPEED, 0, 1, )
     transform.basis = Basis(t).orthonormalized()
     # rotation = rotation.linear_interpolate(new_rotation, delta * movement_time)
-#check if we can hide bject when it reaches certain scale
-

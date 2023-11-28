@@ -1,16 +1,15 @@
 [gd_scene load_steps=4 format=3 uid="uid://bwfxbwrjk0di4"]
 
-[ext_resource type="Script" path="res://MeshInstance3D.gd" id="1_tkw51"]
+[ext_resource type="Script" path="res://icosahedron/MeshIcosahedron.gd" id="1_tkw51"]
 [ext_resource type="PackedScene" uid="uid://cluv6hvdbewtu" path="res://icosahedron/icosahedron.gltf" id="2_jswv4"]
 [ext_resource type="Script" path="res://icosahedron/icosahedron.gd" id="3_ni7r4"]
 
 [node name="Icosahedron" type="Node3D"]
 
-[node name="Icosahedron" type="Node3D" parent="."]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Icosahedron"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+skeleton = NodePath("")
 script = ExtResource("1_tkw51")
 
-[node name="icosahedron" parent="Icosahedron/MeshInstance3D" instance=ExtResource("2_jswv4")]
+[node name="icosahedron" parent="MeshInstance3D" instance=ExtResource("2_jswv4")]
 rotation_edit_mode = 1
 script = ExtResource("3_ni7r4")
