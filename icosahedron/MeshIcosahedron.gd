@@ -7,16 +7,17 @@ extends MeshInstance3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    #main.signals.game_state_changed.connect(_change_scaling)
-    pass
+    main.signals.start_game.connect(_game_started)
+    main.signals.pause_game.connect(_game_paused)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     if scaling_enabled:
         scale_object_local(Vector3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR, ))
 
-#func _change_scaling(gs: G.GameState):
-    #if gs == G.GameState.GAME_ACTIVE:
-        #scaling_enabled = true
-    #else:
-        #scaling_enabled = false
+
+func _game_started():
+    scaling_enabled = true
+
+func _game_paused():
+    scaling_enabled = false

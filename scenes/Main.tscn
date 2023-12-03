@@ -117,4 +117,6 @@ script = ExtResource("6_3ppd5")
 
 [connection signal="spawn_figure" from="FigureSpawner" to="FigureSpawner" method="_on_spawn_figure"]
 [connection signal="game_state_changed" from="Signals" to="GameStateManager" method="_on_signals_game_state_changed"]
+[connection signal="pause_game" from="Signals" to="Octahedron/MeshInstance3D" method="_on_signals_pause_game"]
+[connection signal="start_game" from="Signals" to="Octahedron/MeshInstance3D" method="_on_signals_start_game"]
 [connection signal="start_game" from="Signals" to="FigureSpawner" method="_on_signals_start_game"]

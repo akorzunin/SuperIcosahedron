@@ -4,6 +4,10 @@ extends Node
 signal game_state_changed(game_state: G.GameState)
 signal spawn_figure(figure: Figure)
 signal start_game
+signal pause_game
+signal unpause_game
+signal end_game
+
 
 class Figure:
     var type: String = "new"

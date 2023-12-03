@@ -19,4 +19,6 @@ func _on_signals_game_state_changed(game_state: G.GameState) -> void:
     game_state_label.set_text(G.GameStateNames[game_state])
     if _game_state == G.GameState.GAME_MENU and game_state == G.GameState.GAME_ACTIVE:
         main.signals.start_game.emit()
-    pass  # Replace with function body.
+    elif _game_state == G.GameState.GAME_ACTIVE and game_state == G.GameState.GAME_PAUSED:
+        main.signals.pause_game.emit()
+    _game_state = game_state
