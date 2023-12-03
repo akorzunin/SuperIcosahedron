@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://da0i5mvi5peld"]
+[gd_scene load_steps=11 format=3 uid="uid://da0i5mvi5peld"]
 
 [ext_resource type="Script" path="res://scenes/Main.gd" id="1_pfxim"]
 [ext_resource type="Script" path="res://icosahedron/icosahedron.gd" id="2_334ip"]
 [ext_resource type="PackedScene" uid="uid://dwlgl8js0ir3" path="res://octaeder/octaeder.gltf" id="3_16rh7"]
 [ext_resource type="Script" path="res://scenes/FigureSpawner.gd" id="4_kdf15"]
 [ext_resource type="Script" path="res://scenes/Signals.gd" id="5_ano1o"]
+[ext_resource type="Script" path="res://scenes/GameStateManager.gd" id="6_3ppd5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yo2jy"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -110,3 +111,10 @@ script = ExtResource("4_kdf15")
 [node name="Signals" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("5_ano1o")
+
+[node name="GameStateManager" type="Node" parent="."]
+script = ExtResource("6_3ppd5")
+
+[connection signal="spawn_figure" from="FigureSpawner" to="FigureSpawner" method="_on_spawn_figure"]
+[connection signal="game_state_changed" from="Signals" to="GameStateManager" method="_on_signals_game_state_changed"]
+[connection signal="start_game" from="Signals" to="FigureSpawner" method="_on_signals_start_game"]
