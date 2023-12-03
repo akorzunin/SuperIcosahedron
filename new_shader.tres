@@ -1,0 +1,27 @@
+[gd_resource type="VisualShader" load_steps=2 format=3 uid="uid://b555t84rxkthb"]
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_wihro"]
+output_port_for_preview = 0
+input_name = "color"
+
+[resource]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
+
+
+
+
+void fragment() {
+// Input:3
+	vec4 n_out3p0 = COLOR;
+
+
+// Output:0
+	ALBEDO = vec3(n_out3p0.xyz);
+
+
+}
+"
+nodes/fragment/3/node = SubResource("VisualShaderNodeInput_wihro")
+nodes/fragment/3/position = Vector2(20, 200)
+nodes/fragment/connections = PackedInt32Array(3, 0, 0, 0)
