@@ -1,12 +1,9 @@
 class_name Signals
 extends Node
 
-signal game_state_changed(game_state: G.GameState)
+signal game_state_changed(game_state: GameStateManager.GameState)
+signal new_game_mode(game_mode: GameStateManager.GameMode)
 signal spawn_figure(figure: Figure)
-signal start_game
-signal pause_game
-signal unpause_game
-signal end_game
 
 
 class Figure:

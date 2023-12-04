@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://bwfxbwrjk0di4"]
+
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/MeshIcosahedron.gd" id="1_lo7km"]
+[ext_resource type="ArrayMesh" path="res://scenes/figures/icosahedron/icosahedron_Solid.res" id="2_ybagd"]
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/Icosahedron.gd" id="3_ni7r4"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_qnyg4"]
+radius = 0.994164
+
+[node name="Icosahedron" type="MeshInstance3D"]
+script = ExtResource("1_lo7km")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_ybagd")
+script = ExtResource("3_ni7r4")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("SphereShape3D_qnyg4")

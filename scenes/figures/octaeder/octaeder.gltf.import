@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cluv6hvdbewtu"
-path="res://.godot/imported/icosahedron.gltf-d32d32e4caea5f77dd42d397f0d03fce.scn"
+uid="uid://dwlgl8js0ir3"
+path="res://.godot/imported/octaeder.gltf-ec99d93b29542b7b733e5e2e9cfe97ce.scn"
 
 [deps]
 
-source_file="res://icosahedron/icosahedron.gltf"
-dest_files=["res://.godot/imported/icosahedron.gltf-d32d32e4caea5f77dd42d397f0d03fce.scn"]
+source_file="res://scenes/figures/octaeder/octaeder.gltf"
+dest_files=["res://.godot/imported/octaeder.gltf-ec99d93b29542b7b733e5e2e9cfe97ce.scn"]
 
 [params]
 

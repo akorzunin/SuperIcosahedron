@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dwlgl8js0ir3"
-path="res://.godot/imported/octaeder.gltf-f97b0c3048d51e9766d0d3b2a388fc36.scn"
+uid="uid://c4chbkd4r48mt"
+path="res://.godot/imported/outline.glb-0c991b448ffbe18b669b80a154d0f512.scn"
 
 [deps]
 
-source_file="res://octaeder/octaeder.gltf"
-dest_files=["res://.godot/imported/octaeder.gltf-f97b0c3048d51e9766d0d3b2a388fc36.scn"]
+source_file="res://scenes/figures/octaeder/outline.glb"
+dest_files=["res://.godot/imported/outline.glb-0c991b448ffbe18b669b80a154d0f512.scn"]
 
 [params]
 
