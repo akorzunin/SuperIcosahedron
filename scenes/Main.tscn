@@ -20,7 +20,7 @@ glow_enabled = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3udkk"]
 margin = 0.0
-size = Vector3(25, 25, 25)
+size = Vector3(11.1207, 9.28656, 3.86377)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_pfxim")
@@ -89,9 +89,11 @@ bbcode_enabled = true
 text = "[center]00:00:000[/center]
 "
 
-[node name="CollisionContainer" type="StaticBody3D" parent="."]
+[node name="CollisionContainer" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.36983)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CollisionContainer"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.324239, -0.582855, 4.82459)
 shape = SubResource("BoxShape3D_3udkk")
 
 [node name="FigureSpawner" type="Marker3D" parent="."]
