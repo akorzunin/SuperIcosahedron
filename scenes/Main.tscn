@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://da0i5mvi5peld"]
+[gd_scene load_steps=10 format=3 uid="uid://da0i5mvi5peld"]
 
 [ext_resource type="Script" path="res://scenes/Main.gd" id="1_pfxim"]
 [ext_resource type="Script" path="res://scenes/FigureSpawner.gd" id="4_kdf15"]
 [ext_resource type="Script" path="res://scenes/Signals.gd" id="5_ano1o"]
+[ext_resource type="Script" path="res://scenes/Timer.gd" id="5_yghvw"]
 [ext_resource type="Script" path="res://scenes/GameStateManager.gd" id="6_3ppd5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yo2jy"]
@@ -93,7 +94,7 @@ text = "[center]00:00:000[/center]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.36983)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CollisionContainer"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.324239, -0.582855, 4.82459)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.324239, -0.582855, 7.84043)
 shape = SubResource("BoxShape3D_3udkk")
 
 [node name="FigureSpawner" type="Marker3D" parent="."]
@@ -106,4 +107,10 @@ script = ExtResource("5_ano1o")
 [node name="GameStateManager" type="Node" parent="."]
 script = ExtResource("6_3ppd5")
 
+[node name="Timer" type="Timer" parent="."]
+unique_name_in_owner = true
+script = ExtResource("5_yghvw")
+spawn_speed = 10
+
 [connection signal="game_state_changed" from="Signals" to="GameStateManager" method="_on_signals_game_state_changed"]
+[connection signal="timeout" from="Timer" to="FigureSpawner" method="_on_timer_timeout"]

@@ -6,7 +6,10 @@ signal spawn_figure(figure: Figure)
 
 const Icosahedron = preload('res://scenes/figures/icosahedron/Icosahedron.tscn')
 class Figure:
-    var type: String = "new"
+    var type: String
+    func _init(_type: String = 'new'):
+        self.type = _type
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     signals.new_game_mode.connect(_on_signals_start_game)
@@ -25,4 +28,8 @@ func _on_spawn_figure(figure: Figure) -> void:
 
 func _on_signals_start_game(game_mode: GameStateManager.GameMode) -> void:
     if game_mode == GameStateManager.GameMode.START:
-        _on_spawn_figure(Figure.new())
+        _on_spawn_figure(Figure.new('new'))
+
+
+func _on_timer_timeout() -> void:
+    _on_spawn_figure(Figure.new('new'))
