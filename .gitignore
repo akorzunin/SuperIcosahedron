@@ -3,6 +3,8 @@
 .godot/
 temp
 *.tmp
+assets/*
+# !assets/skybox
 
 # Godot-specific ignores
 .import/
