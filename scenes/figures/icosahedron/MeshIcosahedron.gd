@@ -1,5 +1,5 @@
 class_name MeshIcosahedron
-extends MeshInstance3D
+extends Node3D
 
 @export_range(1.005, 1.02, 0.005) var SCALE_FACTOR := 1.01
 @export var scaling_enabled = true

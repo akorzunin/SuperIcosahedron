@@ -1,24 +1,25 @@
 [gd_scene load_steps=7 format=3 uid="uid://bwfxbwrjk0di4"]
 
 [ext_resource type="Script" path="res://scenes/figures/icosahedron/MeshIcosahedron.gd" id="1_lo7km"]
-[ext_resource type="Shader" uid="uid://b555t84rxkthb" path="res://scenes/figures/icosahedron/icosahedron_shader.tres" id="2_5ynix"]
-[ext_resource type="ArrayMesh" path="res://scenes/figures/icosahedron/icosahedron_Solid.res" id="2_ybagd"]
+[ext_resource type="Shader" path="res://scenes/figures/icosahedron/alfa_surf_shader.gdshader" id="2_rf75m"]
+[ext_resource type="ArrayMesh" uid="uid://bevisjfuogoos" path="res://scenes/figures/icosahedron/icosahedron_Solid.res" id="2_ybagd"]
 [ext_resource type="Script" path="res://scenes/figures/icosahedron/Icosahedron.gd" id="3_ni7r4"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_c87i4"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3j4cs"]
+resource_local_to_scene = true
 render_priority = 0
-shader = ExtResource("2_5ynix")
-shader_parameter/ColorParameter = Color(0.2, 0.764706, 0.831373, 0.0941176)
+shader = ExtResource("2_rf75m")
+shader_parameter/cutplane = Vector4(1.05, 1, 1.005, 0.22)
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_qnyg4"]
-radius = 0.994164
+[sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
+size = Vector3(1.66211, 1.56055, 1.42188)
 
 [node name="Icosahedron" type="MeshInstance3D"]
 script = ExtResource("1_lo7km")
 SCALE_FACTOR = 1.005
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-material_override = SubResource("ShaderMaterial_c87i4")
+material_override = SubResource("ShaderMaterial_3j4cs")
 mesh = ExtResource("2_ybagd")
 skeleton = NodePath("../../..")
 script = ExtResource("3_ni7r4")
@@ -26,4 +27,4 @@ script = ExtResource("3_ni7r4")
 [node name="Area3D" type="Area3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-shape = SubResource("SphereShape3D_qnyg4")
+shape = SubResource("BoxShape3D_nvmtx")
