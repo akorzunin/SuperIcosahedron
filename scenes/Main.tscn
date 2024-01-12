@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://da0i5mvi5peld"]
+[gd_scene load_steps=12 format=3 uid="uid://da0i5mvi5peld"]
 
 [ext_resource type="Script" path="res://scenes/Main.gd" id="1_pfxim"]
 [ext_resource type="Texture2D" uid="uid://b7akxqt4rsfj" path="res://assets/skybox/00008.png" id="2_o83y1"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scenes/Signals.gd" id="5_ano1o"]
 [ext_resource type="Script" path="res://scenes/Timer.gd" id="5_yghvw"]
 [ext_resource type="Script" path="res://scenes/GameStateManager.gd" id="6_3ppd5"]
+[ext_resource type="Script" path="res://scenes/GameControls.gd" id="7_io2sy"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ywd5m"]
 panorama = ExtResource("2_o83y1")
@@ -112,6 +113,10 @@ script = ExtResource("6_3ppd5")
 unique_name_in_owner = true
 script = ExtResource("5_yghvw")
 spawn_speed = 10
+
+[node name="GameControls" type="Node3D" parent="."]
+process_mode = 3
+script = ExtResource("7_io2sy")
 
 [connection signal="game_state_changed" from="Signals" to="GameStateManager" method="_on_signals_game_state_changed"]
 [connection signal="timeout" from="Timer" to="FigureSpawner" method="_on_timer_timeout"]

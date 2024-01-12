@@ -32,6 +32,8 @@ func _on_signals_game_state_changed(game_state: GameState) -> void:
         signals.new_game_mode.emit(GameMode.START)
     elif _game_state == GameState.GAME_ACTIVE and game_state == GameState.GAME_PAUSED:
         signals.new_game_mode.emit(GameMode.PAUSE)
+        get_tree().paused = true
     elif _game_state == GameState.GAME_PAUSED and game_state == GameState.GAME_ACTIVE:
         signals.new_game_mode.emit(GameMode.RESUME)
+        get_tree().paused = false
     _game_state = game_state
