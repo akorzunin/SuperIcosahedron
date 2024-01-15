@@ -3,7 +3,10 @@ render_mode cull_disabled;
 
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
-uniform vec4 cutplane = vec4(1.0, 1.0, 1., 0.0 );
+instance uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345 );
+//uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345 ); anjacent to front plane
+//uniform vec4 cutplane = vec4(-1.875, 0.725, 0., 1.578 ); cut front corner
+//uniform vec4 cutplane = vec4(1.0, 1.0, 1., 1.376 ); one corner
 
 varying vec3 world_vertex;
 varying vec3 ver;
@@ -25,7 +28,7 @@ void fragment() {
     float dist = vertexDistance - planeDistance;
     if (dist >= 0.0) discard;
 
-    ALBEDO = vec3(clamp(plane_normal.x, 0., 0.2), plane_normal.y, plane_normal.z );
+    ALBEDO = vec3(clamp(cutplane.x, 0., 0.2), cutplane.y, cutplane.z );
 }
 
 //void light() {

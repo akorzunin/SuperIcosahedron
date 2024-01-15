@@ -1,3 +1,4 @@
+@tool
 class_name CutPlane
 extends MeshInstance3D
 
@@ -8,6 +9,10 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+    if Engine.is_editor_hint():
+        if Input.is_action_just_pressed('ui_accept'):
+            print_debug(Plane(transform * Vector3(0.0, 1.0, 0.0, ), position.length()))
+        return
     pass
 
 func get_cut_plane() -> Plane:

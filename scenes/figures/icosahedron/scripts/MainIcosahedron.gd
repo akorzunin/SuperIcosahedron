@@ -12,7 +12,7 @@ func _ready() -> void:
     area.area_entered.connect(func (n: Area3D): n.get_parent().queue_free())
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
     if scaling_enabled:
         scale_object_local(Vector3(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR, ))
 

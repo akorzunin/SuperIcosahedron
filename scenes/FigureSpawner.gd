@@ -4,7 +4,7 @@ signal spawn_figure(figure: Figure)
 @onready var main: Main = $"/root/Main"
 @onready var signals: Signals = $"/root/Main/Signals"
 
-const Icosahedron = preload('res://scenes/figures/icosahedron/Icosahedron.tscn')
+const IcosahedronScene = preload('res://scenes/figures/icosahedron/Icosahedron.tscn')
 class Figure:
     var type: String
     func _init(_type: String = 'new'):
@@ -22,7 +22,7 @@ func _process(delta: float) -> void:
 
 func _on_spawn_figure(figure: Figure) -> void:
     if figure.type == "new":
-        var new_figure := Icosahedron.instantiate()
+        var new_figure := IcosahedronScene.instantiate()
         main.add_child(new_figure)
 
 

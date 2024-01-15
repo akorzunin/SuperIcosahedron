@@ -1,30 +1,46 @@
-[gd_scene load_steps=7 format=3 uid="uid://bwfxbwrjk0di4"]
+[gd_scene load_steps=11 format=3 uid="uid://bwfxbwrjk0di4"]
 
-[ext_resource type="Script" path="res://scenes/figures/icosahedron/MeshIcosahedron.gd" id="1_lo7km"]
-[ext_resource type="Shader" path="res://scenes/figures/icosahedron/alfa_surf_shader.gdshader" id="2_rf75m"]
-[ext_resource type="ArrayMesh" uid="uid://bevisjfuogoos" path="res://scenes/figures/icosahedron/icosahedron_Solid.res" id="2_ybagd"]
-[ext_resource type="Script" path="res://scenes/figures/icosahedron/Icosahedron.gd" id="3_ni7r4"]
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/scripts/MeshIcosahedron.gd" id="1_lo7km"]
+[ext_resource type="Shader" path="res://scenes/figures/icosahedron/shaders/color_shader_material_v1.gdshader" id="2_kguap"]
+[ext_resource type="ArrayMesh" uid="uid://bevisjfuogoos" path="res://scenes/figures/icosahedron/assets/icosahedron_Solid.res" id="2_ybagd"]
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/scripts/MainIcosahedron.gd" id="3_ni7r4"]
+[ext_resource type="Shader" path="res://scenes/figures/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="4_ou3ek"]
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/scripts/CutPlane.gd" id="5_jhyok"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3j4cs"]
-resource_local_to_scene = true
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
 render_priority = 0
-shader = ExtResource("2_rf75m")
-shader_parameter/cutplane = Vector4(1.05, 1, 1.005, 0.22)
+shader = ExtResource("2_kguap")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_8mu0u"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l01bp"]
+render_priority = 0
+shader = ExtResource("4_ou3ek")
+shader_parameter/pulse_enabled = false
+shader_parameter/colorflow_enbled = false
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
 size = Vector3(1.66211, 1.56055, 1.42188)
 
 [node name="Icosahedron" type="MeshInstance3D"]
-script = ExtResource("1_lo7km")
-SCALE_FACTOR = 1.005
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-material_override = SubResource("ShaderMaterial_3j4cs")
-mesh = ExtResource("2_ybagd")
-skeleton = NodePath("../../..")
 script = ExtResource("3_ni7r4")
 
+[node name="CutPlane" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.608703, -0.58135, -0.539919, -0.168167, 0.570515, -0.803886, 0.775371, 0.580125, 0.24951, -0.84658, 0.0414882, 0.470782)
+rotation_edit_mode = 2
+visible = false
+material_override = SubResource("ShaderMaterial_rdyh1")
+mesh = SubResource("PlaneMesh_8mu0u")
+script = ExtResource("5_jhyok")
+
+[node name="MeshIcosahedron" type="MeshInstance3D" parent="."]
+transform = Transform3D(nan, nan, nan, nan, nan, nan, nan, nan, nan, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_l01bp")
+mesh = ExtResource("2_ybagd")
+script = ExtResource("1_lo7km")
+
 [node name="Area3D" type="Area3D" parent="."]
+visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("BoxShape3D_nvmtx")
