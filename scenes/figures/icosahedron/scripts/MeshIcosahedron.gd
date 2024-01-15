@@ -1,5 +1,5 @@
 @tool
-class_name Icosahedron
+class_name MeshIcosahedron
 extends MeshInstance3D
 
 @export var ROTATION_SPEED := 0.009

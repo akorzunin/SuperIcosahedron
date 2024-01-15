@@ -1,4 +1,4 @@
-class_name MeshIcosahedron
+class_name MainIcosahedron
 extends Node3D
 
 @export_range(1.005, 1.02, 0.005) var SCALE_FACTOR := 1.01
