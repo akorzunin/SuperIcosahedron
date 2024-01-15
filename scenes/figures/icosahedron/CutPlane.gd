@@ -1,5 +1,6 @@
 extends MeshInstance3D
-class_name MeshInstance3D_
+class_name CutPlane
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     pass # Replace with function body.
@@ -9,10 +10,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
     pass
 
-static func get_x() -> float:
-    return randf_range(0.5, 1.0)
-
-func get_plane_normal() -> Plane:
-    #Plane(transform)
-    #return basis.get_rotation_quaternion()
+func get_cut_plane() -> Plane:
+    # Multiply rotation matrix by defaul Plane position
+    # which can be represented as (0, 1, 0) vector
+    # 4th component is simply distance from global origin to plane origin
     return Plane(transform * Vector3(0.0, 1.0, 0.0, ), position.length())

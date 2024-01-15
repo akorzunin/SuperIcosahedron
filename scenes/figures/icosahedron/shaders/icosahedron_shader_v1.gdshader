@@ -3,8 +3,7 @@ render_mode cull_disabled;
 
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
-uniform float pepe: hint_range(0.0, 1.0, 0.1) = 0.5;
-uniform vec4 plane_normal = vec4(1.0, 1.0, 1., 0.0 );
+uniform vec4 cutplane = vec4(1.0, 1.0, 1., 0.0 );
 
 varying vec3 world_vertex;
 varying vec3 ver;
@@ -18,8 +17,6 @@ void vertex() {
 
 void fragment() {
 	// Called for every pixel the material is visible on.
-    //ALBEDO = vec3(1.0, pepe, pepe);
-    vec4 cutplane = plane_normal;
     vec3 planeNormal = cutplane.xyz;
     float planeDistance = cutplane.w;
 
