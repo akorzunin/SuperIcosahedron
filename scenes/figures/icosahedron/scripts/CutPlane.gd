@@ -1,4 +1,3 @@
-@tool
 class_name CutPlane
 extends MeshInstance3D
 

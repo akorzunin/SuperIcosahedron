@@ -12,7 +12,7 @@ var allow_control := true
 # Called when the node enters the scene tree for the first time.
 func _ready():
     if randi_range(0, 1):
-        material_override.set_shader_parameter("cutplane", Vector4(-1.875, 0.725, 0., 1.578))
+        set_instance_shader_parameter("cutplane", Vector4(-1.875, 0.725, 0., 1.578))
     pass
     #signals.new_game_mode.connect(_game_mode_changed)
 
