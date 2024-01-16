@@ -1,0 +1,22 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: |
+    help:
+
+      task format-shaders - run shaders formatting
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+  format-shaders:
+    - |
+      {{if eq OS "windows"}} 
+        powershell -c '$files=(git ls-files --exclude-standard); foreach ($file in $files) { if ((get-item $file).Extension -in ".gdshader", ".glsl", ".glslv", ".glslf") { clang-format -i -style=file $file } }' 
+      {{else}} 
+        git ls-files --exclude-standard | grep -E '\.(gdshader|glsl|glslv|glslf)$' | xargs clang-format -i -style=file 
+      {{end}}
