@@ -7,4 +7,3 @@ render_priority = 3
 shader = ExtResource("1_h4fvb")
 shader_parameter/pulse_enabled = false
 shader_parameter/colorflow_enbled = false
-shader_parameter/cutplane = Vector4(-1.435, -0.115, 1, 0)
