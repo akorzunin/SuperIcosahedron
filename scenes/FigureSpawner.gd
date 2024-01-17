@@ -17,13 +17,34 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+    var aaa = get_tree().get_nodes_in_group("figures")
+    if not aaa:
+        return
+    var a = Quaternion(transform.basis)
+    var t = Quaternion(transform.basis)
+    #var t = a * Quaternion(_main.transform.basis)
+    if Input.is_action_pressed("ui_up"):
+        t = t * Quaternion(-G.ROTATION_SPEED, 0, 0, 1, )
+    if Input.is_action_pressed("ui_down"):
+        t = t * Quaternion(G.ROTATION_SPEED, 0, 0, 1, )
+    if Input.is_action_pressed("ui_right"):
+        t = t * Quaternion(0, G.ROTATION_SPEED, 0, 1, )
+    if Input.is_action_pressed("ui_left"):
+        t = t * Quaternion(0, -G.ROTATION_SPEED, 0, 1, )
+    var tb = Basis(t).orthonormalized()
+    aaa[0].transform.basis = tb
+    #if aaa and len(aaa) >= 5:
+
     pass
 
 
 func _on_spawn_figure(figure: Figure) -> void:
     if figure.type == "new":
         var new_figure := IcosahedronScene.instantiate()
-        main.add_child(new_figure)
+        var id = str(randf())
+        new_figure.name = "MainIcosahedron" + id
+        new_figure.set_meta("id", id)
+        add_child(new_figure)
 
 
 func _on_signals_start_game(game_mode: GameStateManager.GameMode) -> void:

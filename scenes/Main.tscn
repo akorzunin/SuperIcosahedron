@@ -40,7 +40,7 @@ shadow_enabled = true
 environment = SubResource("Environment_8ubl6")
 
 [node name="Camera3D" type="Camera3D" parent="Environment"]
-transform = Transform3D(-0.0417536, 0.416774, -0.908051, -0.0027725, 0.908792, 0.417241, 0.999124, 0.0199389, -0.0367898, -12.6987, 6.09183, 0.473044)
+transform = Transform3D(-0.0417536, 0.416774, -0.908051, -0.0027725, 0.908792, 0.417241, 0.999124, 0.0199389, -0.0367898, -8.59016, 3.08259, 0.473044)
 rotation_edit_mode = 1
 h_offset = -1.34
 

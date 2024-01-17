@@ -10,6 +10,7 @@ extends Node3D
 func _ready() -> void:
     signals.new_game_mode.connect(_game_mode_changed)
     area.area_entered.connect(func (n: Area3D): n.get_parent().queue_free())
+    add_to_group("figures", true)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
