@@ -15,7 +15,6 @@ void vertex() {
     // Called for every vertex the material is visible on.
     // world_vertex = (INV_PROJECTION_MATRIX * vec4(VERTEX, 1.0)).xyz;
     ver = VERTEX;
-    VERTEX = VERTEX;
 }
 
 void fragment() {
@@ -30,6 +29,7 @@ void fragment() {
         discard;
 
     ALBEDO = vec3(clamp(cutplane.x, 0., 0.2), cutplane.y, cutplane.z);
+    ALPHA = 0.5;
 }
 
 // void light() {
