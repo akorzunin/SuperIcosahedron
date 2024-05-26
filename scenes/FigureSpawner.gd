@@ -1,8 +1,10 @@
 extends Marker3D
+class_name FigureSpawner
 
 signal spawn_figure(figure: Figure)
-@onready var main: Main = $"/root/Main"
+@export var figureRoot: FigureRoot
 @onready var signals: Signals = $"/root/Main/Signals"
+@onready var icosahedron_node: IcosahedronNode = $"/root/Main/Icosahedron"
 
 const IcosahedronScene = preload('res://scenes/figures/icosahedron/Icosahedron.tscn')
 class Figure:
@@ -22,8 +24,12 @@ func _process(delta: float) -> void:
 
 func _on_spawn_figure(figure: Figure) -> void:
     if figure.type == "new":
+
+       #Node3D()
+        #var new_figure = IcosahedronNode.new()
         var new_figure := IcosahedronScene.instantiate()
-        main.add_child(new_figure)
+        print_debug(typeof(new_figure))
+        figureRoot.add_child(new_figure)
 
 
 func _on_signals_start_game(game_mode: GameStateManager.GameMode) -> void:

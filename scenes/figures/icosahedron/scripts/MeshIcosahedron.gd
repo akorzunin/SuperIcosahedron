@@ -20,22 +20,22 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(_delta):
-
-    if allow_control:
-        var bb = transform.basis
-        var a = Quaternion(transform.basis)
-        var t = a
-        #var t = a * Quaternion(_main.transform.basis)
-        if Input.is_action_pressed("ui_up"):
-            t = t * Quaternion(-ROTATION_SPEED, 0, 0, 1, )
-        if Input.is_action_pressed("ui_down"):
-            t = t * Quaternion(ROTATION_SPEED, 0, 0, 1, )
-        if Input.is_action_pressed("ui_right"):
-            t = t * Quaternion(0, ROTATION_SPEED, 0, 1, )
-        if Input.is_action_pressed("ui_left"):
-            t = t * Quaternion(0, -ROTATION_SPEED, 0, 1, )
-        transform.basis = Basis(t).orthonormalized()
-        # rotation = rotation.linear_interpolate(new_rotation, delta * movement_time)
+    pass
+    #if allow_control:
+        #var bb = transform.basis
+        #var a = transform.basis.get_rotation_quaternion()
+        #var t = a
+        ##var t = a * Quaternion(_main.transform.basis)
+        #if Input.is_action_pressed("ui_up"):
+            #t = t * Quaternion(-ROTATION_SPEED, 0, 0, 1, )
+        #if Input.is_action_pressed("ui_down"):
+            #t = t * Quaternion(ROTATION_SPEED, 0, 0, 1, )
+        #if Input.is_action_pressed("ui_right"):
+            #t = t * Quaternion(0, ROTATION_SPEED, 0, 1, )
+        #if Input.is_action_pressed("ui_left"):
+            #t = t * Quaternion(0, -ROTATION_SPEED, 0, 1, )
+        #transform.basis = Basis(t).orthonormalized()
+        ## rotation = rotation.linear_interpolate(new_rotation, delta * movement_time)
 
 func _game_mode_changed(game_mode: GameStateManager.GameMode) -> void:
     if game_mode == GameStateManager.GameMode.PAUSE:

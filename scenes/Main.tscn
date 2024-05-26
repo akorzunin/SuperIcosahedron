@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://da0i5mvi5peld"]
+[gd_scene load_steps=19 format=3 uid="uid://da0i5mvi5peld"]
 
 [ext_resource type="Script" path="res://scenes/Main.gd" id="1_pfxim"]
 [ext_resource type="Texture2D" uid="uid://b7akxqt4rsfj" path="res://assets/skybox/00008.png" id="2_o83y1"]
@@ -7,6 +7,12 @@
 [ext_resource type="Script" path="res://scenes/Timer.gd" id="5_yghvw"]
 [ext_resource type="Script" path="res://scenes/GameStateManager.gd" id="6_3ppd5"]
 [ext_resource type="Script" path="res://scenes/GameControls.gd" id="7_io2sy"]
+[ext_resource type="Script" path="res://scenes/NodeController.gd" id="8_o5ksy"]
+[ext_resource type="Script" path="res://scenes/Icosahedron.gd" id="9_4502j"]
+[ext_resource type="ArrayMesh" uid="uid://bevisjfuogoos" path="res://scenes/figures/icosahedron/assets/icosahedron_Solid.res" id="10_8veyn"]
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/scripts/MeshIcosahedron.gd" id="11_b6i8p"]
+[ext_resource type="Script" path="res://scenes/FigureRoot.gd" id="12_2nny5"]
+[ext_resource type="Script" path="res://scenes/FigureControls.gd" id="13_ik1nb"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ywd5m"]
 panorama = ExtResource("2_o83y1")
@@ -25,6 +31,8 @@ glow_enabled = true
 margin = 0.0
 size = Vector3(11.1207, 9.28656, 3.86377)
 
+[sub_resource type="BoxMesh" id="BoxMesh_wui1c"]
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_pfxim")
 metadata/_edit_vertical_guides_ = [-264.0, -144.0]
@@ -40,7 +48,7 @@ shadow_enabled = true
 environment = SubResource("Environment_8ubl6")
 
 [node name="Camera3D" type="Camera3D" parent="Environment"]
-transform = Transform3D(-0.0417536, 0.416774, -0.908051, -0.0027725, 0.908792, 0.417241, 0.999124, 0.0199389, -0.0367898, -12.6987, 6.09183, 0.473044)
+transform = Transform3D(-0.0417536, 0.416774, -0.908051, -0.0027725, 0.908792, 0.417241, 0.999124, 0.0199389, -0.0367898, -2.05203, 1.04266, 0.473044)
 rotation_edit_mode = 1
 h_offset = -1.34
 
@@ -99,8 +107,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.36983)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.324239, -0.582855, 7.84043)
 shape = SubResource("BoxShape3D_3udkk")
 
-[node name="FigureSpawner" type="Marker3D" parent="."]
+[node name="FigureSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
 script = ExtResource("4_kdf15")
+figureRoot = NodePath("../FigureRoot")
 
 [node name="Signals" type="Node" parent="."]
 unique_name_in_owner = true
@@ -112,11 +121,32 @@ script = ExtResource("6_3ppd5")
 [node name="Timer" type="Timer" parent="."]
 unique_name_in_owner = true
 script = ExtResource("5_yghvw")
-spawn_speed = 10
+spawn_speed = 1
 
 [node name="GameControls" type="Node3D" parent="."]
 process_mode = 3
 script = ExtResource("7_io2sy")
+
+[node name="NodeController" type="Node3D" parent="."]
+script = ExtResource("8_o5ksy")
+
+[node name="IcosahedronNode" type="Node3D" parent="."]
+visible = false
+script = ExtResource("9_4502j")
+
+[node name="MeshIcosahedron" type="MeshInstance3D" parent="IcosahedronNode"]
+mesh = ExtResource("10_8veyn")
+script = ExtResource("11_b6i8p")
+
+[node name="FigureRoot" type="Node3D" parent="."]
+script = ExtResource("12_2nny5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="FigureRoot"]
+mesh = SubResource("BoxMesh_wui1c")
+
+[node name="FigureControls" type="Node" parent="." node_paths=PackedStringArray("figureRoot")]
+script = ExtResource("13_ik1nb")
+figureRoot = NodePath("../FigureRoot")
 
 [connection signal="game_state_changed" from="Signals" to="GameStateManager" method="_on_signals_game_state_changed"]
 [connection signal="timeout" from="Timer" to="FigureSpawner" method="_on_timer_timeout"]

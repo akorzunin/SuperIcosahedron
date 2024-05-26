@@ -1,6 +1,6 @@
 extends Timer
 
-enum SpawnSpeeds {SPEED_1 = 1, SPEED_2 = 3, SPEED_3 = 20}
+enum SpawnSpeeds {SPEED_0 = -1, SPEED_1 = 1, SPEED_2 = 3, SPEED_3 = 20}
 @export var spawn_speed: SpawnSpeeds
 
 @onready var signals: Signals = $"/root/Main/Signals"
@@ -18,11 +18,10 @@ func _on_signals_new_game_mode(game_mode: GameStateManager.GameMode):
         GameStateManager.GameMode.START,
         GameStateManager.GameMode.RESUME,
     ]:
-        start(1 % spawn_speed)
+        if 0:
+            start(1 % spawn_speed)
     elif game_mode in [
         GameStateManager.GameMode.PAUSE,
         GameStateManager.GameMode.END,
     ]:
         stop()
-
-

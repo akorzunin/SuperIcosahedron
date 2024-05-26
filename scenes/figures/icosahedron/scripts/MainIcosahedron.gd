@@ -2,7 +2,7 @@ class_name MainIcosahedron
 extends Node3D
 
 @export_range(1.005, 1.02, 0.005) var SCALE_FACTOR := 1.01
-@export var scaling_enabled = true
+@export var scaling_enabled = false
 @onready var signals: Signals = $"/root/Main/Signals"
 @onready var area: Area3D = $"/root/Main/CollisionContainer"
 
@@ -18,5 +18,3 @@ func _physics_process(delta: float) -> void:
 
 func _game_mode_changed(game_mode: GameStateManager.GameMode) -> void:
     scaling_enabled = false if game_mode == GameStateManager.GameMode.PAUSE else true
-
-
