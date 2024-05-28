@@ -4,7 +4,7 @@ class_name FigureSpawner
 signal spawn_figure(figure: Figure)
 @export var figureRoot: FigureRoot
 @onready var signals: Signals = $"/root/Main/Signals"
-@onready var icosahedron_node: IcosahedronNode = $"/root/Main/Icosahedron"
+#@onready var icosahedron_node: IcosahedronNode = $"/root/Main/Icosahedron"
 
 const IcosahedronScene = preload('res://scenes/figures/icosahedron/Icosahedron.tscn')
 class Figure:

@@ -22,7 +22,7 @@ shader_parameter/colorflow_enbled = false
 [sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
 size = Vector3(1.66211, 1.56055, 1.42188)
 
-[node name="Icosahedron" type="MeshInstance3D"]
+[node name="Icosahedron" type="MeshInstance3D" groups=["figures"]]
 script = ExtResource("3_ni7r4")
 
 [node name="CutPlane" type="MeshInstance3D" parent="."]

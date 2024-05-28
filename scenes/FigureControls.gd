@@ -11,9 +11,10 @@ func _ready() -> void:
     pass # Replace with function body.
 
 func get_controlled_node() -> Node3D:
-    var a = figureRoot.get_node("Icosahedron/MeshIcosahedron")
-    return a
-    #return null
+    var a = get_tree().get_nodes_in_group("figures")
+    if len(a) > 0:
+        return a[0].get_node("MeshIcosahedron")
+    return null
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -22,13 +23,13 @@ func _process(delta: float) -> void:
     var rotation: Quaternion
     if 1:
         if Input.is_action_pressed("ui_up"):
-            rotation = Quaternion(-ROTATION_SPEED, 0, 0, 1, )
+            rotation = rotation * Quaternion(-ROTATION_SPEED, 0, 0, 1, )
         if Input.is_action_pressed("ui_down"):
-            rotation = Quaternion(ROTATION_SPEED, 0, 0, 1, )
+            rotation = rotation * Quaternion(ROTATION_SPEED, 0, 0, 1, )
         if Input.is_action_pressed("ui_right"):
-            rotation = Quaternion(0, ROTATION_SPEED, 0, 1, )
+            rotation = rotation * Quaternion(0, ROTATION_SPEED, 0, 1, )
         if Input.is_action_pressed("ui_left"):
-            rotation = Quaternion(0, -ROTATION_SPEED, 0, 1, )
+            rotation = rotation * Quaternion(0, -ROTATION_SPEED, 0, 1, )
     if controlledNode and rotation:
         var t = rotation * controlledNode.quaternion
         controlledNode.transform.basis = Basis(t).orthonormalized()

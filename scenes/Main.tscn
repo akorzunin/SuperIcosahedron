@@ -7,7 +7,6 @@
 [ext_resource type="Script" path="res://scenes/Timer.gd" id="5_yghvw"]
 [ext_resource type="Script" path="res://scenes/GameStateManager.gd" id="6_3ppd5"]
 [ext_resource type="Script" path="res://scenes/GameControls.gd" id="7_io2sy"]
-[ext_resource type="Script" path="res://scenes/NodeController.gd" id="8_o5ksy"]
 [ext_resource type="Script" path="res://scenes/Icosahedron.gd" id="9_4502j"]
 [ext_resource type="ArrayMesh" uid="uid://bevisjfuogoos" path="res://scenes/figures/icosahedron/assets/icosahedron_Solid.res" id="10_8veyn"]
 [ext_resource type="Script" path="res://scenes/figures/icosahedron/scripts/MeshIcosahedron.gd" id="11_b6i8p"]
@@ -30,6 +29,39 @@ glow_enabled = true
 [sub_resource type="BoxShape3D" id="BoxShape3D_3udkk"]
 margin = 0.0
 size = Vector3(11.1207, 9.28656, 3.86377)
+
+[sub_resource type="GDScript" id="GDScript_owdv2"]
+script/source = "extends Node3D
+
+
+@export var allow_control := true
+@export var ROTATION_SPEED := 0.009
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+    pass # Replace with function body.
+
+@onready var controlledNode: Node3D
+#@onready var controlledNode: Node3D = $\"/root/Main/Icosahedron\"
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+    pass
+
+func _physics_process(delta: float) -> void:
+    if not controlledNode:
+        return
+    if allow_control:
+        var _rotation
+        if Input.is_action_pressed(\"ui_up\"):
+            _rotation = Quaternion(-ROTATION_SPEED, 0, 0, 1, )
+        if Input.is_action_pressed(\"ui_down\"):
+            _rotation = Quaternion(ROTATION_SPEED, 0, 0, 1, )
+        if Input.is_action_pressed(\"ui_right\"):
+            _rotation = Quaternion(0, ROTATION_SPEED, 0, 1, )
+        if Input.is_action_pressed(\"ui_left\"):
+            _rotation = Quaternion(0, -ROTATION_SPEED, 0, 1, )
+    controlledNode.hide()
+"
 
 [sub_resource type="BoxMesh" id="BoxMesh_wui1c"]
 
@@ -126,7 +158,7 @@ process_mode = 3
 script = ExtResource("7_io2sy")
 
 [node name="NodeController" type="Node3D" parent="."]
-script = ExtResource("8_o5ksy")
+script = SubResource("GDScript_owdv2")
 
 [node name="IcosahedronNode" type="Node3D" parent="."]
 visible = false
