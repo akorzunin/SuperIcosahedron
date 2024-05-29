@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://btk1khkv6cd6f"]
+
+[node name="MainLoop" type="Node3D"]
