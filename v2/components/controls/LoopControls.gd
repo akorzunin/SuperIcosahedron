@@ -1,5 +1,5 @@
 extends Node
-class_name FigureControls
+class_name LoopControls
 
 @export var figureRoot: FigureRoot
 @export var controlledNode: Node3D
@@ -11,7 +11,7 @@ func _ready() -> void:
     pass # Replace with function body.
 
 func get_controlled_node() -> Node3D:
-    var a = get_tree().get_nodes_in_group("figures")
+    var a = figureRoot.get_node("Anchor").get_children()
     if len(a) > 0:
         return a[0].get_node("MeshIcosahedron")
     return null

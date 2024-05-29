@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://c53ti0nammwn6"]
+
+[ext_resource type="ArrayMesh" uid="uid://bevisjfuogoos" path="res://scenes/figures/icosahedron/assets/icosahedron_Solid.res" id="1_duj87"]
+[ext_resource type="Script" path="res://v2/components/ControllerNode.gd" id="1_h34ci"]
+[ext_resource type="Script" path="res://scenes/figures/icosahedron/scripts/MeshIcosahedron.gd" id="2_8qksa"]
+
+[node name="Hex" type="Node3D"]
+
+[node name="ControllerNode" type="Node3D" parent="."]
+script = ExtResource("1_h34ci")
+
+[node name="MeshIcosahedron" type="MeshInstance3D" parent="ControllerNode"]
+mesh = ExtResource("1_duj87")
+skeleton = NodePath("../..")
+script = ExtResource("2_8qksa")
