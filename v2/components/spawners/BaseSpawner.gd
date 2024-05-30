@@ -32,9 +32,9 @@ func _on_spawn_figure(figure: Figure) -> void:
         figureRoot.add_child(new_figure)
 
 
-func _on_signals_start_game(game_mode: GameStateManager.GameMode) -> void:
-    if game_mode == GameStateManager.GameMode.START:
-        _on_spawn_figure(Figure.new('new'))
+#func _on_signals_start_game(game_mode: GameStateManager.GameMode) -> void:
+    #if game_mode == GameStateManager.GameMode.START:
+        #_on_spawn_figure(Figure.new('new'))
 
 
 func _on_timer_timeout() -> void:

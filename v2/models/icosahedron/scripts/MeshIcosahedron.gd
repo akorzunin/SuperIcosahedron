@@ -1,16 +1,18 @@
-class_name MeshIcosahedron_
+class_name MeshIcosahedron
 extends MeshInstance3D
 
-@export var ROTATION_SPEED := 0.009
+@onready var settings = %Settings
 
 @onready var cutplane: CutPlane = $'../CutPlane'
-@onready var _main: Main = $"/root/Main"
-@onready var signals: Signals = $"/root/Main/Signals"
+#@onready var _main: Main = $"/root/Main"
+#@onready var signals: Signals = $"/root/Main/Signals"
 
+var ROTATION_SPEED
 var allow_control := true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+    ROTATION_SPEED = settings.ROTATION_SPEED
     if randi_range(0, 1):
         set_instance_shader_parameter("cutplane", Vector4(-1.875, 0.725, 0., 1.578))
     pass

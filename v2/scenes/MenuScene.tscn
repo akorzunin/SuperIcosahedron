@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=2 format=3 uid="uid://cb5c5tcycst1v"]
+
+[ext_resource type="Script" path="res://v2/scenes/init/MenuScene.gd" id="1_thlqc"]
 
 [node name="MenuScene" type="Node3D"]
+script = ExtResource("1_thlqc")

@@ -1,4 +1,6 @@
 extends Node
+class_name LoopGui
+
 @onready var game_state_label: Label = $GameStatePanel/VBoxContainer/HFlowContainer/GameStateLabel
 
 # Called when the node enters the scene tree for the first time.

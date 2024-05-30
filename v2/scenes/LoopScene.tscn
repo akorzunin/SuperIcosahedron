@@ -1,12 +1,14 @@
-[gd_scene load_steps=12 format=3 uid="uid://brpqxl3eljkml"]
+[gd_scene load_steps=14 format=3 uid="uid://btk1khkv6cd6f"]
 
+[ext_resource type="Script" path="res://v2/scenes/init/LoopScene.gd" id="1_rcev2"]
 [ext_resource type="Shader" path="res://v2/shaders/LoopSceneSky.gdshader" id="1_xr744"]
 [ext_resource type="Script" path="res://v2/components/controls/LoopControls.gd" id="2_ddung"]
 [ext_resource type="Script" path="res://v2/components/spawners/FigureRoot.gd" id="3_qa50p"]
 [ext_resource type="Script" path="res://v2/components/spawners/Anchor.gd" id="4_vihkp"]
 [ext_resource type="Script" path="res://v2/components/spawners/LoopSpawner.gd" id="5_r6722"]
-[ext_resource type="Script" path="res://v2/scenes/Debug.gd" id="6_og4ii"]
+[ext_resource type="Script" path="res://v2/components/Debug.gd" id="6_og4ii"]
 [ext_resource type="Script" path="res://v2/components/gui/LoopGui.gd" id="7_q37nr"]
+[ext_resource type="Script" path="res://v2/components/Settings.gd" id="9_ami33"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -21,6 +23,7 @@ sky = SubResource("Sky_v8mvj")
 [sub_resource type="BoxMesh" id="BoxMesh_is403"]
 
 [node name="MainLoop" type="Node3D"]
+script = ExtResource("1_rcev2")
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -41,15 +44,14 @@ figureRoot = NodePath("../FigureRoot")
 [node name="FigureRoot" type="Node3D" parent="."]
 script = ExtResource("3_qa50p")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="FigureRoot"]
+[node name="SpawnPoint" type="MeshInstance3D" parent="FigureRoot"]
 mesh = SubResource("BoxMesh_is403")
 
 [node name="Anchor" type="Node" parent="FigureRoot"]
 script = ExtResource("4_vihkp")
 
-[node name="LoopSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
+[node name="LoopSpawner" type="Marker3D" parent="."]
 script = ExtResource("5_r6722")
-figureRoot = NodePath("../FigureRoot")
 
 [node name="Node" type="Node" parent="." node_paths=PackedStringArray("spawner")]
 script = ExtResource("6_og4ii")
@@ -103,3 +105,7 @@ size_flags_vertical = 4
 bbcode_enabled = true
 text = "[center]00:00:000[/center]
 "
+
+[node name="Settings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_ami33")

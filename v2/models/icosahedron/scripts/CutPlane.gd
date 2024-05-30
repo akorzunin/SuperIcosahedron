@@ -1,12 +1,8 @@
+class_name CutPlane
 extends MeshInstance3D
-class_name CutPlane_
-
-@onready var settings = %Settings
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    if not settings.DEBUG_VISUAL:
-        self.hide()
     pass # Replace with function body.
 
 
