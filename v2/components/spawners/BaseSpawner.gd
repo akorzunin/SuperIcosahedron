@@ -6,7 +6,7 @@ signal spawn_figure(figure: Figure)
 @onready var signals: Signals = $"/root/Main/Signals"
 #@onready var icosahedron_node: IcosahedronNode = $"/root/Main/Icosahedron"
 
-const IcosahedronScene = preload('res://scenes/figures/icosahedron/Icosahedron.tscn')
+const IcosahedronScene = preload('res://v2/models/icosahedron/Icosahedron.tscn')
 class Figure:
     var type: String
     func _init(_type: String = 'new'):
@@ -14,7 +14,8 @@ class Figure:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    signals.new_game_mode.connect(_on_signals_start_game)
+    #signals.new_game_mode.connect(_on_signals_start_game)
+    pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

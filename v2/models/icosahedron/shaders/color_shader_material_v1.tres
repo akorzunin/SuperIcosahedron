@@ -1,9 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cktufn5b02rnh"]
-
-[ext_resource type="Shader" path="res://scenes/figures/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="1_y2ttb"]
-
-[resource]
-render_priority = 3
-shader = ExtResource("1_y2ttb")
-shader_parameter/pulse_enabled = false
-shader_parameter/colorflow_enbled = false

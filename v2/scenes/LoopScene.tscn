@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://btk1khkv6cd6f"]
+[gd_scene load_steps=14 format=3 uid="uid://brpqxl3eljkml"]
 
 [ext_resource type="Script" path="res://v2/scenes/init/LoopScene.gd" id="1_rcev2"]
 [ext_resource type="Shader" path="res://v2/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -50,8 +50,9 @@ mesh = SubResource("BoxMesh_is403")
 [node name="Anchor" type="Node" parent="FigureRoot"]
 script = ExtResource("4_vihkp")
 
-[node name="LoopSpawner" type="Marker3D" parent="."]
+[node name="LoopSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
 script = ExtResource("5_r6722")
+figureRoot = NodePath("../FigureRoot")
 
 [node name="Node" type="Node" parent="." node_paths=PackedStringArray("spawner")]
 script = ExtResource("6_og4ii")
