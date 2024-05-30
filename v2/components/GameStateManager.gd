@@ -12,6 +12,7 @@ const GameStateNames = {
     GameState.GAME_END: "END",
 }
 
+# TODO sync game state w/ data from signal game_state_changed
 @export var _game_state := GameState.GAME_MENU
 
 #@onready var signals: Signals = $"/root/Main/Signals"

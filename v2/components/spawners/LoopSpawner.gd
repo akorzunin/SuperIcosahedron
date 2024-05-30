@@ -31,3 +31,5 @@ func _on_spawn_figure(figure: Figure) -> void:
         new_figure.get_node('CutPlane').hide()
         # TODO add methods to figure root to safely add and get figures
         figureRoot.get_node("Anchor").add_child(new_figure)
+# TODO spawn on timer signals
+# TODO spawn on game state signal

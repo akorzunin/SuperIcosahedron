@@ -11,7 +11,7 @@ func _ready() -> void:
     #signals.new_game_mode.connect(_on_signals_new_game_mode)
     pass
 
-
+# TODO cleanup, add signal listener for game state
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
