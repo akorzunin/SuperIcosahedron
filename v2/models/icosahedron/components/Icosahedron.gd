@@ -4,9 +4,9 @@ class_name Icosahedron
 @export var scaling_enabled = false
 @export var scale_factor: float
 
-func init(_scale_factor: float, _scaling_enabled: bool) -> Icosahedron:
-    scale_factor = _scale_factor
-    scaling_enabled = _scaling_enabled
+func init(settings) -> Icosahedron:
+    scale_factor = settings.SCALE_FACTOR
+    scaling_enabled = settings.SCALING_ENABLED
     return self
 
 # Called when the node enters the scene tree for the first time.

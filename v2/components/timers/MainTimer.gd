@@ -2,29 +2,23 @@ extends Timer
 class_name MainTimer
 
 
-enum SpawnSpeeds {SPEED_0 = -1, SPEED_1 = 1, SPEED_2 = 3, SPEED_3 = 20}
-@export var spawn_speed: SpawnSpeeds
+@onready var game_state_manager: GameStateManager = %GameStateManager
+@onready var settings = %Settings
 
-@onready var signals: Signals = $"/root/Main/Signals"
-# Called when the node enters the scene tree for the first time.
+@export var spawn_speed: Settings.SpawnSpeeds
+
 func _ready() -> void:
-    #signals.new_game_mode.connect(_on_signals_new_game_mode)
+    spawn_speed = settings.spawn_speed
+    game_state_manager.game_state_changed.connect(_on_game_state_changed)
     pass
 
-# TODO cleanup, add signal listener for game state
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
 
-#func _on_signals_new_game_mode(game_mode: GameStateManager.GameMode):
-    #if game_mode in [
-        #GameStateManager.GameMode.START,
-        #GameStateManager.GameMode.RESUME,
-    #]:
-        #if 0:
-            #start(1 % spawn_speed)
-    #elif game_mode in [
-        #GameStateManager.GameMode.PAUSE,
-        #GameStateManager.GameMode.END,
-    #]:
-        #stop()
+func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
+    var gm = GameStateManager.GameMode
+    if new_state in [gm.START, gm.RESUME]:
+        start(1 % spawn_speed)
+    if new_state in [gm.PAUSE, gm.END]:
+        stop()

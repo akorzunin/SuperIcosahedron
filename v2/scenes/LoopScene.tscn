@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://brpqxl3eljkml"]
+[gd_scene load_steps=14 format=3 uid="uid://brpqxl3eljkml"]
 
 [ext_resource type="Script" path="res://v2/scenes/init/LoopScene.gd" id="1_rcev2"]
 [ext_resource type="Shader" path="res://v2/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" path="res://v2/components/spawners/FigureRoot.gd" id="3_qa50p"]
 [ext_resource type="Script" path="res://v2/components/spawners/Anchor.gd" id="4_vihkp"]
 [ext_resource type="Script" path="res://v2/components/spawners/LoopSpawner.gd" id="5_r6722"]
-[ext_resource type="Script" path="res://v2/components/Debug.gd" id="6_og4ii"]
 [ext_resource type="Script" path="res://v2/components/gui/LoopGui.gd" id="7_q37nr"]
 [ext_resource type="Script" path="res://v2/components/Settings.gd" id="9_ami33"]
 [ext_resource type="Script" path="res://v2/components/GameStateManager.gd" id="10_v8l0a"]
@@ -55,10 +54,6 @@ script = ExtResource("4_vihkp")
 [node name="LoopSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
 script = ExtResource("5_r6722")
 figureRoot = NodePath("../FigureRoot")
-
-[node name="Node" type="Node" parent="." node_paths=PackedStringArray("spawner")]
-script = ExtResource("6_og4ii")
-spawner = NodePath("../LoopSpawner")
 
 [node name="Gui" type="CanvasLayer" parent="."]
 script = ExtResource("7_q37nr")
