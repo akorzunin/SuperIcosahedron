@@ -32,5 +32,5 @@ func get_elapsed_time() -> String:
 
 func format_time(time: int) -> String:
     var ms := time % 1000
-    var sec := time / 1000
-    return "%03d:%03d" % [sec, ms]
+    var sec := float(time) / 1000
+    return "%d:%03d" % [sec, ms]

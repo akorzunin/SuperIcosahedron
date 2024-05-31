@@ -17,8 +17,8 @@ func _process(delta: float) -> void:
     pass
 
 func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
-    var gm = GameStateManager.GameMode
-    if new_state in [gm.START, gm.RESUME]:
+    var gs = GameStateManager.GameState
+    if new_state in [gs.GAME_ACTIVE, ]:
         start(1 % spawn_speed)
-    if new_state in [gm.PAUSE, gm.END]:
+    if new_state in [gs.GAME_END, ]:
         stop()

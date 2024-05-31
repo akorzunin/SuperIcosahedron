@@ -1,12 +1,16 @@
-extends Node
+extends Area3D
 class_name Despawner
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    area_shape_entered.connect(_on_shape_entered)
     pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
+
+func _on_shape_entered(area_rid: RID, area: Area3D, area_shape_index: int, local_shape_index: int):
+    area.get_parent().queue_free()

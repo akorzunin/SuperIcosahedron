@@ -3,12 +3,14 @@ class_name LoopSpawner
 
 @onready var settings: Settings = %Settings
 @onready var game_state_manager: GameStateManager = %GameStateManager
+@onready var loop_timer: LoopTimer = %LoopTimer
 
 @export var figureRoot: FigureRoot
 const IcosahedronScene = preload ('res://v2/models/icosahedron/Icosahedron.tscn')
 # Called when the node enters the scene tree for the first time.
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
+    loop_timer.timeout.connect(_on_loop_timer)
     pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -34,6 +36,7 @@ func spawn_figure(figure: Figure) -> void:
             new_figure = IcosahedronScene.instantiate() \
                 .init(
                     settings,
+                    randi_range(0, 1),
                 )
         FigureType.OCTAHEDRON:
             #new_figure = OctahedronScene.instantiate() \
@@ -43,4 +46,6 @@ func spawn_figure(figure: Figure) -> void:
             pass
 
     figureRoot.add_figure(new_figure)
-# TODO spawn on timer signals
+
+func _on_loop_timer():
+    spawn_figure(Figure.new(FigureType.ICOSAHEDRON))

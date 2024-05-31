@@ -4,6 +4,7 @@
 temp
 *.tmp
 assets/*
+build
 # !assets/skybox
 
 # Godot-specific ignores
