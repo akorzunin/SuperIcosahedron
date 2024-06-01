@@ -6,12 +6,12 @@ class_name LoopSpawner
 @onready var loop_timer: LoopTimer = %LoopTimer
 
 @export var figureRoot: FigureRoot
-const IcosahedronScene = preload ('res://v2/models/icosahedron/Icosahedron.tscn')
+const IcosahedronScene = preload('res://v2/models/icosahedron/Icosahedron.tscn')
 # Called when the node enters the scene tree for the first time.
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
     loop_timer.timeout.connect(_on_loop_timer)
-    pass # Replace with function body.
+    pass  # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -29,6 +29,8 @@ class Figure:
 
 enum FigureType {ICOSAHEDRON, OCTAHEDRON}
 
+
+
 func spawn_figure(figure: Figure) -> void:
     var new_figure
     match figure.type:
@@ -36,9 +38,9 @@ func spawn_figure(figure: Figure) -> void:
             new_figure = IcosahedronScene.instantiate() \
                 .init(
                     settings,
-                    #{ type = randi_range(0, 1) },
-                    { type = 1 },
-                    { quat = Quaternion(0, 0.707, 0, 0.707) }
+                    #{ type = 0 },
+                    {type = randi_range(0, 5)},
+                    {quat = Quaternion(0, 0.707, 0, 0.707)}
                 )
         FigureType.OCTAHEDRON:
             #new_figure = OctahedronScene.instantiate() \

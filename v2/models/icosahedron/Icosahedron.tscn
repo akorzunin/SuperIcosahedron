@@ -1,12 +1,15 @@
-[gd_scene load_steps=10 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=11 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://v2/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
 [ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="1_nonro"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
+[ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/cut_plane_shader.gdshader" id="2_u8yhs"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
+render_priority = 0
+shader = ExtResource("2_u8yhs")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_8mu0u"]
 
@@ -23,8 +26,7 @@ size = Vector3(1.66211, 1.56055, 1.42188)
 script = ExtResource("1_w7qn7")
 
 [node name="CutPlane" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.608703, -0.58135, -0.539919, -0.168167, 0.570515, -0.803886, 0.775371, 0.580125, 0.24951, -0.84658, 0.0414882, 0.470782)
-rotation_edit_mode = 2
+transform = Transform3D(-0.761007, -0.570635, -0.308616, -0.107281, 0.579858, -0.807623, 0.639811, -0.581498, -0.502495, -0.843964, 0.0584427, -0.468957)
 visible = false
 material_override = SubResource("ShaderMaterial_rdyh1")
 mesh = SubResource("PlaneMesh_8mu0u")

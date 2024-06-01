@@ -4,10 +4,22 @@ render_mode cull_disabled;
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
 instance uniform bool cutplate_visible = true;
+
+// to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
+//top left
+//uniform vec4 cutplane = vec4(0, .334, -.128, 0.284);
+// TODO normalize cutpalne vaectors
+////top right
+//uniform vec4 cutplane = vec4(0, .334, .128, 0.284);
+////bot mid
+//uniform vec4 cutplane = vec4(-.334, -.128, 0., 0.284);
+//top mid
+//uniform vec4 cutplane = vec4(-.334, .128, 0., 0.284);
+//top left
+//uniform vec4 cutplane = vec4(-1., 1., -1., 1.375);
+//top right
+//uniform vec4 cutplane = vec4(-1., 1., 1., 1.375);
 instance uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345);
-// uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345 ); anjacent to front
-// plane uniform vec4 cutplane = vec4(-1.875, 0.725, 0., 1.578 ); cut front
-// corner uniform vec4 cutplane = vec4(1.0, 1.0, 1., 1.376 ); one corner
 
 varying vec3 world_vertex;
 varying vec3 ver;
