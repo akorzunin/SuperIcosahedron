@@ -5,14 +5,17 @@ class_name Icosahedron
 @export var scaling_enabled = false
 @export var scale_factor: float
 @export var shader_type: int
+@export var inital_transfrm: Quaternion
 @onready var cut_plane: CutPlane = $CutPlane
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 
-func init(settings: Settings, _shader_type: int = 0) -> Icosahedron:
+func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
     scale_factor = settings.SCALE_FACTOR
     scaling_enabled = settings.SCALING_ENABLED
     DEBUG_VISUAL = settings.DEBUG_VISUAL
-    shader_type = _shader_type
+    shader_type = shader_args.get("type")
+    inital_transfrm = transform_args.get("quat", Quaternion())
+
     return self
 
 # Called when the node enters the scene tree for the first time.
@@ -22,6 +25,13 @@ func _ready() -> void:
     match shader_type:
         1:
             mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(-1.875, 0.725, 0., 1.578))
+        0:
+            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(-0.988, 0.977, 1., 1.345))
+        _:
+            mesh_icosahedron.set_instance_shader_parameter("cutplate_visible", false)
+    if inital_transfrm:
+        transform.basis = Basis(inital_transfrm).orthonormalized()
+
     pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

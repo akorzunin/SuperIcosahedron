@@ -1,6 +1,7 @@
 extends Timer
 class_name LoopTimer
 
+@onready var settings: Settings = %Settings
 @onready var game_state_manager: GameStateManager = %GameStateManager
 var time_start: int
 # Called when the node enters the scene tree for the first time.
@@ -15,7 +16,7 @@ func _process(delta: float) -> void:
 func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState) -> void:
     var gs = GameStateManager.GameState
     if new_state == gs.GAME_ACTIVE:
-        start()
+        start(10. / settings.spawn_speed)
         time_start = Time.get_ticks_msec()
     if new_state in [gs.GAME_END, gs.GAME_MENU]:
         stop()

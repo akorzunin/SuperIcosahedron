@@ -36,7 +36,9 @@ func spawn_figure(figure: Figure) -> void:
             new_figure = IcosahedronScene.instantiate() \
                 .init(
                     settings,
-                    randi_range(0, 1),
+                    #{ type = randi_range(0, 1) },
+                    { type = 1 },
+                    { quat = Quaternion(0, 0.707, 0, 0.707) }
                 )
         FigureType.OCTAHEDRON:
             #new_figure = OctahedronScene.instantiate() \

@@ -23,9 +23,9 @@ func _process(delta: float) -> void:
     var rotation: Quaternion
     if 1:
         if Input.is_action_pressed("ui_up"):
-            rotation = rotation * Quaternion(-ROTATION_SPEED, 0, 0, 1, )
+            rotation = rotation * Quaternion(0, 0, -ROTATION_SPEED, 1, )
         if Input.is_action_pressed("ui_down"):
-            rotation = rotation * Quaternion(ROTATION_SPEED, 0, 0, 1, )
+            rotation = rotation * Quaternion(0, 0, ROTATION_SPEED, 1, )
         if Input.is_action_pressed("ui_right"):
             rotation = rotation * Quaternion(0, ROTATION_SPEED, 0, 1, )
         if Input.is_action_pressed("ui_left"):

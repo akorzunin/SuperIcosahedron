@@ -3,6 +3,7 @@ render_mode cull_disabled;
 
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
+instance uniform bool cutplate_visible = true;
 instance uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345);
 // uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345 ); anjacent to front
 // plane uniform vec4 cutplane = vec4(-1.875, 0.725, 0., 1.578 ); cut front
@@ -18,18 +19,22 @@ void vertex() {
 }
 
 void fragment() {
-    // Called for every pixel the material is visible on.
-    vec3 planeNormal = cutplane.xyz;
-    float planeDistance = cutplane.w;
+    if (cutplate_visible) {
+        // Called for every pixel the material is visible on.
+        vec3 planeNormal = cutplane.xyz;
+        float planeDistance = cutplane.w;
 
-    // float vertexDistance = dot(planeNormal, world_vertex);
-    float vertexDistance = dot(planeNormal, ver);
-    float dist = vertexDistance - planeDistance;
-    if (dist >= 0.0)
-        discard;
-
-    ALBEDO = vec3(clamp(cutplane.x, 0., 0.2), cutplane.y, cutplane.z);
-    ALPHA = 0.5;
+        // float vertexDistance = dot(planeNormal, world_vertex);
+        float vertexDistance = dot(planeNormal, ver);
+        float dist = vertexDistance - planeDistance;
+        if (dist >= 0.0)
+            discard;
+        ALBEDO = vec3(clamp(cutplane.x, 0., 0.2), cutplane.y, cutplane.z);
+    }
+    if (!cutplate_visible) {
+        ALBEDO = vec3(1.,0.,0.);
+    }
+    //ALPHA = 0.99;
 }
 
 // void light() {
