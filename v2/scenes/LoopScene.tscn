@@ -15,12 +15,12 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
 
-[sub_resource type="Sky" id="Sky_v8mvj"]
+[sub_resource type="Sky" id="Sky_puicm"]
 sky_material = SubResource("ShaderMaterial_kgifq")
 
 [sub_resource type="Environment" id="Environment_27kur"]
 background_mode = 2
-sky = SubResource("Sky_v8mvj")
+sky = SubResource("Sky_puicm")
 
 [sub_resource type="BoxMesh" id="BoxMesh_is403"]
 

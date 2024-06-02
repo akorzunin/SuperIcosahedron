@@ -1,6 +1,43 @@
-[gd_scene load_steps=2 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=8 format=3 uid="uid://cb5c5tcycst1v"]
 
-[ext_resource type="Script" path="res://v2/scenes/init/MenuScene.gd" id="1_thlqc"]
+[ext_resource type="Script" path="res://v2/components/spawners/MenuSpawner.gd" id="1_83tbr"]
+[ext_resource type="Shader" path="res://v2/shaders/MenuSceneSky.gdshader" id="2_72pw2"]
+[ext_resource type="Script" path="res://v2/components/Settings.gd" id="3_wp0wc"]
+[ext_resource type="Script" path="res://v2/components/controls/MenuControls.gd" id="4_rh2oc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
+shader = ExtResource("2_72pw2")
+
+[sub_resource type="Sky" id="Sky_v8mvj"]
+sky_material = SubResource("ShaderMaterial_4go8s")
+
+[sub_resource type="Environment" id="Environment_dki5q"]
+background_mode = 2
+sky = SubResource("Sky_v8mvj")
 
 [node name="MenuScene" type="Node3D"]
-script = ExtResource("1_thlqc")
+script = ExtResource("1_83tbr")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.547242, 0.799069, 0.472056, 0.37236, 0.155482, 0.644891, 0.176892)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_dki5q")
+
+[node name="Camera3D" type="Camera3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.966957, 0.25494, 0, -0.25494, 0.966957, 0, 0.626921, 1.89439)
+
+[node name="MenuSpawner" type="Marker3D" parent="."]
+script = ExtResource("1_83tbr")
+
+[node name="Anchor" type="Marker3D" parent="MenuSpawner"]
+unique_name_in_owner = true
+
+[node name="Settings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_wp0wc")
+
+[node name="MenuControls" type="Node" parent="."]
+script = ExtResource("4_rh2oc")
