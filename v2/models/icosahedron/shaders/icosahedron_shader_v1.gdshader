@@ -44,7 +44,7 @@ void fragment() {
         ALBEDO = vec3(clamp(cutplane.x, 0., 0.2), cutplane.y, cutplane.z);
     }
     if (!cutplate_visible) {
-        ALBEDO = vec3(1.,0.,0.);
+        ALBEDO = vec3(0.,1.,0.);
     }
     //ALPHA = 0.99;
 }

@@ -10,8 +10,7 @@ func _ready():
     var new_figure = IcosahedronScene.instantiate() \
                 .init(
                     settings,
-                    #{ type = 0 },
-                    {type = 1},
+                    { type = 0 },
                     {quat = Quaternion(0, 0.707, 0, 0.707)}
                 )
     if (anchor.get_child_count() <= 0):

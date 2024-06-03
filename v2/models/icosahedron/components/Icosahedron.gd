@@ -13,29 +13,38 @@ func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionar
     scale_factor = settings.SCALE_FACTOR
     scaling_enabled = settings.SCALING_ENABLED
     DEBUG_VISUAL = settings.DEBUG_VISUAL
-    shader_type = shader_args.get("type")
+    shader_type = shader_args.get("type", 0)
     inital_transfrm = transform_args.get("quat", Quaternion())
 
     return self
+
+func set_cutplane(v: Vector4):
+    mesh_icosahedron.set_instance_shader_parameter("cutplane", v)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     if not DEBUG_VISUAL:
         cut_plane.hide()
+    # magical number that represent distance between cutplane and origin
+    var dst: float = 0.78
     match shader_type:
-        5: # top top left
-            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(0, 0.334, -0.128, 0.284))
-        4: # top top right
-            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(0, 0.334, 0.128, 0.284))
-        3: # bot mid
-            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(-.334, -.128, 0., 0.284))
-        2: # top mid
-            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(-.334, .128, 0., 0.284))
-        1: # top left
-            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(-1., 1., -1., 1.345))
-        0: # top right
-            mesh_icosahedron.set_instance_shader_parameter("cutplane", Vector4(-1., 1., 1., 1.345))
-        _:
+        8: # top left
+            set_cutplane(Vector4(0.0, 0.934, -0.358, dst))
+        7: # top right
+            set_cutplane(Vector4(0.0, 0.934, 0.358, dst))
+        6: # bot left TODO (wrong face)
+            set_cutplane(Vector4(0, -0.934, -0.358, dst))
+        5: # bot right TODO (wrong face)
+            set_cutplane(Vector4(0, -0.934, -0.358, dst))
+        4: # bot mid
+            set_cutplane(Vector4(-0.934, -0.358, 0., dst))
+        3: # mid mid
+            set_cutplane(Vector4(-0.934, 0.358, 0., dst))
+        2: # mid left
+            set_cutplane(Vector4(-0.577, 0.577, -0.577, dst))
+        1: # mid right
+            set_cutplane(Vector4(-0.577, 0.577, 0.577, dst))
+        0: # default (no cutplane)
             mesh_icosahedron.set_instance_shader_parameter("cutplate_visible", false)
     if inital_transfrm:
         transform.basis = Basis(inital_transfrm).orthonormalized()
