@@ -6,22 +6,9 @@ uniform bool colorflow_enbled = false;
 instance uniform bool cutplate_visible = true;
 
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
-//top left
-//uniform vec4 cutplane = vec4(0, .334, -.128, 0.284);
-// TODO normalize cutpalne vaectors
-////top right
-//uniform vec4 cutplane = vec4(0, .334, .128, 0.284);
-////bot mid
-//uniform vec4 cutplane = vec4(-.334, -.128, 0., 0.284);
-//top mid
-//uniform vec4 cutplane = vec4(-.334, .128, 0., 0.284);
-//top left
-//uniform vec4 cutplane = vec4(-1., 1., -1., 1.375);
-//top right
-//uniform vec4 cutplane = vec4(-1., 1., 1., 1.375);
-instance uniform vec4 cutplane = vec4(-0.988, 0.977, 1., 1.345);
+instance uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.75);
+instance uniform vec3 color = vec3(.0, 1., .0);
 
-varying vec3 world_vertex;
 varying vec3 ver;
 
 void vertex() {
@@ -41,12 +28,8 @@ void fragment() {
         float dist = vertexDistance - planeDistance;
         if (dist >= 0.0)
             discard;
-        ALBEDO = vec3(clamp(cutplane.x, 0., 0.2), cutplane.y, cutplane.z);
     }
-    if (!cutplate_visible) {
-        ALBEDO = vec3(0.,1.,0.);
-    }
-    //ALPHA = 0.99;
+    ALBEDO = color.rgb;
 }
 
 // void light() {

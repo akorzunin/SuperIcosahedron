@@ -21,6 +21,9 @@ func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionar
 func set_cutplane(v: Vector4):
     mesh_icosahedron.set_instance_shader_parameter("cutplane", v)
 
+func set_color(arr: Array):
+    mesh_icosahedron.set_instance_shader_parameter("color", Vector3(arr[0], arr[1], arr[2]))
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     if not DEBUG_VISUAL:
@@ -30,22 +33,31 @@ func _ready() -> void:
     match shader_type:
         8: # top left
             set_cutplane(Vector4(0.0, 0.934, -0.358, dst))
+            set_color(G.tw.blue._700)
         7: # top right
             set_cutplane(Vector4(0.0, 0.934, 0.358, dst))
-        6: # bot left TODO (wrong face)
-            set_cutplane(Vector4(0, -0.934, -0.358, dst))
-        5: # bot right TODO (wrong face)
-            set_cutplane(Vector4(0, -0.934, -0.358, dst))
+            set_color(G.tw.blue._700)
+        6: # bot left
+            set_cutplane(Vector4(-0.577, -0.577, -0.577, dst))
+            set_color(G.tw.blue._700)
+        5: # bot right
+            set_cutplane(Vector4(-0.577, -0.577, 0.577, dst))
+            set_color(G.tw.blue._700)
         4: # bot mid
             set_cutplane(Vector4(-0.934, -0.358, 0., dst))
+            set_color(G.tw.blue._700)
         3: # mid mid
             set_cutplane(Vector4(-0.934, 0.358, 0., dst))
+            set_color(G.tw.blue._700)
         2: # mid left
             set_cutplane(Vector4(-0.577, 0.577, -0.577, dst))
+            set_color(G.tw.blue._700)
         1: # mid right
             set_cutplane(Vector4(-0.577, 0.577, 0.577, dst))
+            set_color(G.tw.blue._700)
         0: # default (no cutplane)
             mesh_icosahedron.set_instance_shader_parameter("cutplate_visible", false)
+            set_color(G.tw.blue._700)
     if inital_transfrm:
         transform.basis = Basis(inital_transfrm).orthonormalized()
 
