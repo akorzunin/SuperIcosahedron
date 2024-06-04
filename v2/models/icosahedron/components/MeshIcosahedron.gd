@@ -6,8 +6,9 @@ class_name MeshIcosahedron
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    # wierd trick to not get errors when scaling and rotating
-    transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
+    if Utils.main_scene(self) in ['MainScene', 'LoopScene', 'MenuScene']:
+        # wierd trick to not get errors when scaling and rotating mesh when its mounted in runtime
+        transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
     pass # Replace with function body.
 
 

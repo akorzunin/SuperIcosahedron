@@ -39,7 +39,7 @@ func spawn_figure(figure: Figure) -> void:
                 .init(
                     settings,
                     {type = randi_range(1, 8)},
-                    {quat = Quaternion(0, 0.707, 0, 0.707)}
+                    {quat = G.D.init_pos},
                 )
         FigureType.OCTAHEDRON:
             #new_figure = OctahedronScene.instantiate() \
