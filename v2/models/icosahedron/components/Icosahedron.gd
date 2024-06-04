@@ -9,7 +9,7 @@ class_name Icosahedron
 @onready var cut_plane: CutPlane = $CutPlane
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 
-func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary={}) -> Icosahedron:
+func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
     scale_factor = settings.SCALE_FACTOR
     scaling_enabled = settings.SCALING_ENABLED
     DEBUG_VISUAL = settings.DEBUG_VISUAL
@@ -24,52 +24,58 @@ func set_cutplane(v: Vector4):
 func set_color(arr: Array):
     mesh_icosahedron.set_instance_shader_parameter("color", Vector3(arr[0], arr[1], arr[2]))
 
-const FigureVariants = {
-    8: {name = "top_left"},
-    7: {name = "top_right"},
-    6: {name = "bot_left"},
-    5: {name = "bot_right"},
-    4: {name = "bot_mid"},
-    3: {name = "mid_mid"},
-    2: {name = "mid_left"},
-    1: {name = "mid_right"},
-    0: {name = "default"},
+# magical number that represent distance between cutplane and origin
+const dst := 0.794
+const figure_variants = {
+    8: {
+        name = "top_left",
+        cutplane = Vector4(0.0, 0.934, -0.358, dst),
+    },
+    7: {
+        name = "top_right",
+        cutplane = Vector4(0.0, 0.934, 0.358, dst),
+    },
+    6: {
+        name = "bot_left",
+        cutplane = Vector4( -0.577, -0.577, -0.577, dst),
+    },
+    5: {
+        name = "bot_right",
+        cutplane = Vector4( -0.577, -0.577, 0.577, dst),
+    },
+    4: {
+        name = "bot_mid",
+        cutplane = Vector4( -0.934, -0.358, 0., dst),
+    },
+    3: {
+        name = "mid_mid",
+        cutplane = Vector4( -0.934, 0.358, 0., dst),
+    },
+    2: {
+        name = "mid_left",
+        cutplane = Vector4( -0.577, 0.577, -0.577, dst),
+    },
+    1: {
+        name = "mid_right",
+        cutplane = Vector4( -0.577, 0.577, 0.577, dst),
+    },
+    0: {
+        name = "default",
+    },
 }
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     if not DEBUG_VISUAL:
         cut_plane.hide()
-    # magical number that represent distance between cutplane and origin
-    var dst: float = 0.78
-    match shader_type:
-        8: # top left
-            set_cutplane(Vector4(0.0, 0.934, -0.358, dst))
-            set_color(G.theme.base_color)
-        7: # top right
-            set_cutplane(Vector4(0.0, 0.934, 0.358, dst))
-            set_color(G.theme.base_color)
-        6: # bot left
-            set_cutplane(Vector4( - 0.577, -0.577, -0.577, dst))
-            set_color(G.theme.base_color)
-        5: # bot right
-            set_cutplane(Vector4( - 0.577, -0.577, 0.577, dst))
-            set_color(G.theme.base_color)
-        4: # bot mid
-            set_cutplane(Vector4( - 0.934, -0.358, 0., dst))
-            set_color(G.theme.base_color)
-        3: # mid mid
-            set_cutplane(Vector4( - 0.934, 0.358, 0., dst))
-            set_color(G.theme.base_color)
-        2: # mid left
-            set_cutplane(Vector4( - 0.577, 0.577, -0.577, dst))
-            set_color(G.theme.base_color)
-        1: # mid right
-            set_cutplane(Vector4( - 0.577, 0.577, 0.577, dst))
-            set_color(G.theme.base_color)
-        0: # default (no cutplane)
-            mesh_icosahedron.set_instance_shader_parameter("cutplate_visible", false)
-            set_color(G.theme.base_color)
+
+    var variant = figure_variants[shader_type]
+    if variant.get("cutplane"):
+        set_cutplane(variant.cutplane)
+    else:
+        mesh_icosahedron.set_instance_shader_parameter("cutplate_visible", false)
+    set_color(G.theme.figure_variants.get(variant.name, G.theme.base_color))
+
     if inital_transfrm:
         transform.basis = Basis(inital_transfrm).orthonormalized()
 

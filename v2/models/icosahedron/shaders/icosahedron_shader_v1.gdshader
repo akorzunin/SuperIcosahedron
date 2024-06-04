@@ -6,7 +6,7 @@ uniform bool colorflow_enbled = false;
 instance uniform bool cutplate_visible = true;
 
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
-instance uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.75);
+instance uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
 instance uniform vec3 color = vec3(.0, 1., .0);
 
 varying vec3 ver;
