@@ -1,13 +1,14 @@
 extends Node
 class_name LoopControls
 
+@onready var settings = %Settings
+
 @export var figureRoot: FigureRoot
 @export var controlledNode: Node3D
-@export var allow_control := true
-@export var ROTATION_SPEED := 0.009
-@export var base_rotation := Quaternion()
+@export var ROTATION_SPEED: float
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    ROTATION_SPEED = settings.ROTATION_SPEED
     pass # Replace with function body.
 
 func get_controlled_node() -> Node3D:
@@ -21,15 +22,14 @@ func _process(delta: float) -> void:
     if not controlledNode:
         controlledNode = get_controlled_node()
     var rotation: Quaternion
-    if 1:
-        if Input.is_action_pressed("ui_up"):
-            rotation = rotation * Quaternion(0, 0, -ROTATION_SPEED, 1, )
-        if Input.is_action_pressed("ui_down"):
-            rotation = rotation * Quaternion(0, 0, ROTATION_SPEED, 1, )
-        if Input.is_action_pressed("ui_right"):
-            rotation = rotation * Quaternion(0, ROTATION_SPEED, 0, 1, )
-        if Input.is_action_pressed("ui_left"):
-            rotation = rotation * Quaternion(0, -ROTATION_SPEED, 0, 1, )
+    if Input.is_action_pressed("ui_up"):
+        rotation = rotation * Quaternion(0, 0, -ROTATION_SPEED, 1, ).normalized()
+    if Input.is_action_pressed("ui_down"):
+        rotation = rotation * Quaternion(0, 0, ROTATION_SPEED, 1, ).normalized()
+    if Input.is_action_pressed("ui_right"):
+        rotation = rotation * Quaternion(0, ROTATION_SPEED, 0, 1, ).normalized()
+    if Input.is_action_pressed("ui_left"):
+        rotation = rotation * Quaternion(0, -ROTATION_SPEED, 0, 1, ).normalized()
     if controlledNode and rotation:
         var t = rotation * controlledNode.quaternion
         controlledNode.transform.basis = Basis(t).orthonormalized()
