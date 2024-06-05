@@ -1,8 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=12 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://v2/components/spawners/MenuSpawner.gd" id="1_83tbr"]
 [ext_resource type="Shader" path="res://v2/shaders/MenuSceneSky.gdshader" id="2_72pw2"]
+[ext_resource type="Script" path="res://v2/components/gui/MenuViewport.gd" id="3_0xn2m"]
 [ext_resource type="Script" path="res://v2/components/Settings.gd" id="3_wp0wc"]
+[ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://v2/fonts/plastic-bag/Plastic Bag.otf" id="4_qkncm"]
 [ext_resource type="Script" path="res://v2/components/controls/MenuControls.gd" id="4_rh2oc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
@@ -14,6 +16,13 @@ sky_material = SubResource("ShaderMaterial_4go8s")
 [sub_resource type="Environment" id="Environment_dki5q"]
 background_mode = 2
 sky = SubResource("Sky_v8mvj")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_hbncj"]
+viewport_path = NodePath("MenuSpawner/Anchor/Sprite3D/SubViewport")
+
+[sub_resource type="LabelSettings" id="LabelSettings_8t7eg"]
+font = ExtResource("4_qkncm")
+font_size = 200
 
 [node name="MenuScene" type="Node3D"]
 script = ExtResource("1_83tbr")
@@ -34,6 +43,20 @@ script = ExtResource("1_83tbr")
 
 [node name="Anchor" type="Marker3D" parent="MenuSpawner"]
 unique_name_in_owner = true
+
+[node name="Sprite3D" type="Sprite3D" parent="MenuSpawner/Anchor"]
+transform = Transform3D(0.115, 0, 0, 0, 0.115, 0, 0, 0, 0.115, 0, 0, 0)
+texture = SubResource("ViewportTexture_hbncj")
+
+[node name="SubViewport" type="SubViewport" parent="MenuSpawner/Anchor/Sprite3D"]
+render_target_update_mode = 4
+script = ExtResource("3_0xn2m")
+
+[node name="Label" type="Label" parent="MenuSpawner/Anchor/Sprite3D/SubViewport"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Test (:{}\")"
+label_settings = SubResource("LabelSettings_8t7eg")
 
 [node name="Settings" type="Node" parent="."]
 unique_name_in_owner = true
