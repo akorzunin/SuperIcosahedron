@@ -2,8 +2,10 @@ extends Node3D
 class_name MenuSpawner
 
 @onready var settings: Settings = %Settings
-const IcosahedronScene = preload ('res://v2/models/icosahedron/Icosahedron.tscn')
 @onready var anchor: Marker3D = %Anchor
+
+const IcosahedronScene = preload ('res://v2/models/icosahedron/Icosahedron.tscn')
+const MenuItemScene = preload('res://v2/models/menu_item/MenuItem.tscn')
 
 func menu_action():
     print_debug("aboba")
@@ -86,14 +88,27 @@ const menu_items = {
                 },
             }
         },
-        3: {
+        5: {
             name = "achivemets",
         },
-        4: {
+        6: {
             name = "credits",
         },
     }
 }
+
+func add_menu_items(node: Node3D, layer : Dictionary):
+    var items = layer.get("items")
+    if not items:
+        return
+#for loop over first level items
+    for key in items.keys():
+        var new_item = MenuItemScene.instantiate() \
+            .init({
+                pos = key,
+                label = items[key].name,
+            })
+        node.add_child(new_item)
 # Called when the node enters the scene tree for the first time.
 func _ready():
     # only one node allowed at startup
@@ -107,6 +122,7 @@ func _ready():
                 )
     #new_figure.hide()
     anchor.add_child(new_figure)
+    add_menu_items(anchor, menu_items)
     pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

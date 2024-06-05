@@ -24,16 +24,21 @@ func get_controlled_node() -> Node3D:
         return figureRoot.get_node("Anchor")
     return null
 
+## Get selected menu intem and execute action that item meant to do
+func call_menu_action():
+    print_debug("pepe")
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     if not controlledNode:
         controlledNode = get_controlled_node()
         target.prev_pos = controlledNode.quaternion
-    var rotation: Quaternion
+    if Input.is_action_just_pressed("ui_accept"):
+        call_menu_action()
     if Input.is_action_just_pressed("ui_down"):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = controlledNode.quaternion * Quaternion(-0.345, 0, 0, 0.939, ).normalized(),
+            quat = controlledNode.quaternion * Quaternion(-0.342, 0, 0, 0.939, ).normalized(),
             progress = 0.,
         }
     if Input.is_action_just_pressed("ui_up") or Input.is_action_just_pressed('ui_cancel'):
@@ -45,13 +50,13 @@ func _process(delta: float) -> void:
     if Input.is_action_just_pressed("ui_right"):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = controlledNode.quaternion * Quaternion(0, -0.506, -0.302, 0.808, ).normalized(),
+            quat = controlledNode.quaternion * Quaternion(0, -0.504, -0.301, 0.808, ).normalized(),
             progress = 0.,
         }
     if Input.is_action_just_pressed("ui_left"):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = controlledNode.quaternion * Quaternion(0, 0.506, 0.302, 0.808, ).normalized(),
+            quat = controlledNode.quaternion * Quaternion(0, 0.504, 0.301, 0.808, ).normalized(),
             progress = 0.,
         }
     if controlledNode and target.get("progress", 1) < 1:
