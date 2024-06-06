@@ -14,6 +14,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
+shader_parameter/bg_color = Vector3(0.729, 0.902, 0.992)
 
 [sub_resource type="Sky" id="Sky_puicm"]
 sky_material = SubResource("ShaderMaterial_kgifq")

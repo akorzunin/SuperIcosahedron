@@ -22,6 +22,8 @@ func _process(delta: float) -> void:
     if not controlledNode:
         controlledNode = get_controlled_node()
     var rotation: Quaternion
+    if Input.is_action_just_pressed("ui_cancel"):
+        get_tree().root.get_child(1).change_scene('MenuScene')
     if Input.is_action_pressed("ui_up"):
         rotation = rotation * Quaternion(0, 0, -ROTATION_SPEED, 1, ).normalized()
     if Input.is_action_pressed("ui_down"):

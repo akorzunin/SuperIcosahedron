@@ -3,6 +3,7 @@ class_name MenuSpawner
 
 @onready var settings: Settings = %Settings
 @onready var anchor: Marker3D = %Anchor
+@onready var menu_scene: MenuSpawner = $'.'
 
 const IcosahedronScene = preload ('res://v2/models/icosahedron/Icosahedron.tscn')
 const MenuItemScene = preload('res://v2/models/menu_item/MenuItem.tscn')
@@ -20,7 +21,7 @@ func add_menu_items(node: Node3D, layer : Dictionary):
         var new_item = MenuItemScene.instantiate() \
             .init({
                 pos = key,
-                label = items[key].name,
+                val = items[key]
             })
         node.add_child(new_item)
 # Called when the node enters the scene tree for the first time.

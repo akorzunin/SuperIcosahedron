@@ -1,5 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=11 format=3 uid="uid://cb5c5tcycst1v"]
 
+[ext_resource type="Script" path="res://v2/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://v2/components/spawners/MenuSpawner.gd" id="1_83tbr"]
 [ext_resource type="Shader" path="res://v2/shaders/MenuSceneSky.gdshader" id="2_72pw2"]
 [ext_resource type="Script" path="res://v2/components/Settings.gd" id="3_wp0wc"]
@@ -8,6 +9,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
 shader = ExtResource("2_72pw2")
+shader_parameter/bg_color = Vector3(0.729, 0.902, 0.992)
 
 [sub_resource type="Sky" id="Sky_v8mvj"]
 sky_material = SubResource("ShaderMaterial_4go8s")
@@ -19,7 +21,7 @@ sky = SubResource("Sky_v8mvj")
 [sub_resource type="BoxShape3D" id="BoxShape3D_51eil"]
 
 [node name="MenuScene" type="Node3D"]
-script = ExtResource("1_83tbr")
+script = ExtResource("1_75ovp")
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -45,9 +47,10 @@ script = ExtResource("3_wp0wc")
 [node name="MenuControls" type="Node" parent="."]
 script = ExtResource("4_rh2oc")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="MenuSelector" type="Area3D" parent="."]
+unique_name_in_owner = true
 script = ExtResource("5_idm6q")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MenuSelector"]
 transform = Transform3D(1, 0, 0, 0, 0.9282, 0.372081, 0, -0.372081, 0.9282, 0, 0.788826, 1.42193)
 shape = SubResource("BoxShape3D_51eil")

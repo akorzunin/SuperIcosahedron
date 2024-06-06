@@ -3,13 +3,17 @@ class_name MenuItem
 
 @onready var label: Label = $Sprite3D/SubViewport/Label
 
-var pos
-var label_text
+var pos: int
+var label_text: String
+var action: String
+var items: Dictionary
 
 
 func init(props: Dictionary):
     pos = props.get("pos", 0)
-    label_text = props.get("label", "placeholder")
+    items = props.val
+    label_text = items.get("name", "placeholder")
+    action = items.get("action", "placeholder_action")
 
     return self
 # Called when the node enters the scene tree for the first time.
