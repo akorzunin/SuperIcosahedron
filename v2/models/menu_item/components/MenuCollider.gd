@@ -1,5 +1,5 @@
 extends Area3D
-class_name MenuSelector
+class_name MenuCollider
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

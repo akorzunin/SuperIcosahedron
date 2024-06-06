@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://dw00md0g08l33"]
+[gd_scene load_steps=8 format=3 uid="uid://dw00md0g08l33"]
 
 [ext_resource type="Script" path="res://v2/models/menu_item/components/MenuViewport.gd" id="1_63vfa"]
 [ext_resource type="Script" path="res://v2/models/menu_item/components/MenuItem.gd" id="1_kwmcp"]
 [ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://v2/fonts/plastic-bag/Plastic Bag.otf" id="2_s00nv"]
+[ext_resource type="Script" path="res://v2/models/menu_item/components/MenuCollider.gd" id="4_m8rgh"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_46tj2"]
 viewport_path = NodePath("Sprite3D/SubViewport")
@@ -36,9 +37,10 @@ offset_bottom = 23.0
 text = "placeholder"
 label_settings = SubResource("LabelSettings_0l6u2")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="MenuCollider" type="Area3D" parent="."]
 transform = Transform3D(0.05, 0, 0, 0, 0.0467685, 0.0176836, 0, -0.0176836, 0.0467685, 0, 0.313447, 0.771686)
+script = ExtResource("4_m8rgh")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MenuCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.192596, 1.89614, 5.60737)
 shape = SubResource("BoxShape3D_s4lbh")
