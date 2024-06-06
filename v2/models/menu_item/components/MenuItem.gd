@@ -16,7 +16,7 @@ func init(props: Dictionary):
 func _ready() -> void:
     self.add_to_group("menu_item")
     label.text = label_text
-    var t = Quaternion(0, 0.504, 0.301, 0.808, ).normalized()
+    var t = Quats.menu_quat_left()
     match pos:
         1:
             pass
@@ -29,7 +29,7 @@ func _ready() -> void:
         5:
             transform.basis = Basis(t * t * t * t)
         6:
-            transform.basis = Basis(Quaternion(0.342, 0, 0, 0.939, ).normalized())
+            transform.basis = Basis(Quats.menu_quat_down().inverse())
     pass # Replace with function body.
 
 

@@ -7,9 +7,12 @@ class_name MenuControls
 
 @export var controlledNode: Node3D
 @export var MENU_ROTATION_SPEED: float
+
+var menu_quat_left: Quaternion = Quaternion(0, 0.504, 0.301, 0.808, ).normalized()
+var menu_quat_down = Quaternion(-0.342, 0, 0, 0.939, ).normalized()
 var target = {
     progress = 0,
-    quat = Quaternion(0, 0, 0, 1, ).normalized(),
+    quat = Quaternion(),
 }
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -38,25 +41,25 @@ func _process(delta: float) -> void:
     if Input.is_action_just_pressed("ui_down"):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = controlledNode.quaternion * Quaternion(-0.342, 0, 0, 0.939, ).normalized(),
+            quat = controlledNode.quaternion * menu_quat_down,
             progress = 0.,
         }
     if Input.is_action_just_pressed("ui_up") or Input.is_action_just_pressed('ui_cancel'):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = Quaternion(0, 0, 0, 1, ).normalized(),
+            quat = Quaternion(),
             progress = 0.,
         }
     if Input.is_action_just_pressed("ui_right"):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = controlledNode.quaternion * Quaternion(0, -0.504, -0.301, 0.808, ).normalized(),
+            quat = controlledNode.quaternion * Quats.menu_quat_left().inverse(),
             progress = 0.,
         }
     if Input.is_action_just_pressed("ui_left"):
         target = {
             prev_pos = controlledNode.quaternion,
-            quat = controlledNode.quaternion * Quaternion(0, 0.504, 0.301, 0.808, ).normalized(),
+            quat = controlledNode.quaternion * Quats.menu_quat_left(),
             progress = 0.,
         }
     if controlledNode and target.get("progress", 1) < 1:
