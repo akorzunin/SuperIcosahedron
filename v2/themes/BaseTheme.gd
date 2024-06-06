@@ -2,6 +2,8 @@ extends RefCounted
 
 const T = {
     base_color = G.tw.blue._800,
+    bg_color_menu = G.tw.sky._200,
+    bg_color_loop = G.tw.sky._400,
     figure_variants = {
         top_left = G.tw.blue._700,
         top_right = G.tw.green._700,
