@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=12 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://v2/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
 [ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="1_nonro"]
@@ -6,6 +6,7 @@
 [ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/cut_plane_shader.gdshader" id="2_u8yhs"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
+[ext_resource type="Script" path="res://v2/models/icosahedron/components/Collider.gd" id="7_6oydw"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
 render_priority = 0
@@ -39,7 +40,8 @@ mesh = ExtResource("1_kd7xu")
 skeleton = NodePath("")
 script = ExtResource("5_q8b2e")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="Collider" type="Area3D" parent="."]
+script = ExtResource("7_6oydw")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
 shape = SubResource("BoxShape3D_nvmtx")

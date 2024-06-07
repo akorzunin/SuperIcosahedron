@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://brpqxl3eljkml"]
+[gd_scene load_steps=18 format=3 uid="uid://brpqxl3eljkml"]
 
 [ext_resource type="Script" path="res://v2/scenes/init/LoopScene.gd" id="1_rcev2"]
 [ext_resource type="Shader" path="res://v2/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://v2/components/timers/LoopTimer.gd" id="10_5cngg"]
 [ext_resource type="Script" path="res://v2/components/GameStateManager.gd" id="10_v8l0a"]
 [ext_resource type="Script" path="res://v2/components/spawners/Despawner.gd" id="11_wkoqb"]
+[ext_resource type="Script" path="res://v2/components/EndRay.gd" id="12_486y3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -29,8 +30,6 @@ sky = SubResource("Sky_puicm")
 
 [node name="LoopScene" type="Node3D"]
 script = ExtResource("1_rcev2")
-DEBUG_VISUAL = false
-START_PAUSED = false
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -112,7 +111,7 @@ text = "[center]00:00:000[/center]
 [node name="Settings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("9_ami33")
-SCALING_ENABLED = true
+DEBUG_VISUAL = true
 spawn_speed = 5
 
 [node name="GameStateManager" type="Node" parent="."]
@@ -129,3 +128,13 @@ script = ExtResource("11_wkoqb")
 [node name="DespawnerShape" type="CollisionShape3D" parent="Despawner"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.562, 0, 0)
 shape = SubResource("BoxShape3D_cw5a6")
+
+[node name="EndDetector" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.47704, 4.41715)
+
+[node name="EndRay" type="RayCast3D" parent="EndDetector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.764529, -1.48596)
+target_position = Vector3(0, -1, -1)
+collide_with_areas = true
+debug_shape_thickness = 5
+script = ExtResource("12_486y3")

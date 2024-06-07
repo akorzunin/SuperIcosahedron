@@ -8,6 +8,7 @@ class_name Icosahedron
 @export var inital_transfrm: Quaternion
 @onready var cut_plane: CutPlane = $CutPlane
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
+var cutplane_vector := Vector3(1,1,1).normalized()
 
 func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
     scale_factor = settings.SCALE_FACTOR
@@ -20,6 +21,7 @@ func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionar
 
 func set_cutplane(v: Vector4):
     mesh_icosahedron.set_instance_shader_parameter("cutplane", v)
+    cutplane_vector = Vector3(v.x, v.y, v.z).normalized()
 
 func set_color(arr: Array):
     mesh_icosahedron.set_instance_shader_parameter("color", Vector3(arr[0], arr[1], arr[2]))
