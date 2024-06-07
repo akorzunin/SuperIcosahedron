@@ -3,15 +3,11 @@ extends Node3D
 const LOOP_SCENE = preload('res://v2/scenes/LoopScene.tscn')
 const MENU_SCENE = preload('res://v2/scenes/MenuScene.tscn')
 
-var current_scene = MENU_SCENE.instantiate().init()
-var ls
+var current_scene
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-    #current_scene = MENU_SCENE.instantiate().init()
     change_scene('MenuScene')
-
-
     pass # Replace with function body.
 
 

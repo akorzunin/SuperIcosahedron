@@ -38,8 +38,7 @@ func menu_action():
     if Utils.main_scene(self) == 'MenuScene':
         get_tree().quit()
         return
-
-    get_tree().root.get_child(1).change_scene('LoopScene')
+    Utils.set_scene(self, 'LoopScene')
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
