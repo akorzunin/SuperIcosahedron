@@ -40,9 +40,10 @@ transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.
 environment = SubResource("Environment_27kur")
 
 [node name="Camera3D" type="Camera3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 0.907777, 0.419452, 0, -0.419452, 0.907777, 0, 3.20258, 5.5764)
+transform = Transform3D(1, 0, 0, 0, 0.907777, 0.419452, 0, -0.419452, 0.907777, 0, 5.94938, 11.9444)
 
 [node name="LoopControls" type="Node" parent="." node_paths=PackedStringArray("figureRoot")]
+process_mode = 3
 script = ExtResource("2_ddung")
 figureRoot = NodePath("../FigureRoot")
 
@@ -53,6 +54,7 @@ script = ExtResource("3_qa50p")
 mesh = SubResource("BoxMesh_is403")
 
 [node name="Anchor" type="Node" parent="FigureRoot"]
+unique_name_in_owner = true
 script = ExtResource("4_vihkp")
 
 [node name="LoopSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
@@ -112,6 +114,7 @@ text = "[center]00:00:000[/center]
 unique_name_in_owner = true
 script = ExtResource("9_ami33")
 DEBUG_VISUAL = true
+SCALING_ENABLED = true
 spawn_speed = 5
 
 [node name="GameStateManager" type="Node" parent="."]
@@ -126,15 +129,15 @@ script = ExtResource("10_5cngg")
 script = ExtResource("11_wkoqb")
 
 [node name="DespawnerShape" type="CollisionShape3D" parent="Despawner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.562, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5666, 0, 0)
 shape = SubResource("BoxShape3D_cw5a6")
 
 [node name="EndDetector" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.47704, 4.41715)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.38583, 10.9777)
 
 [node name="EndRay" type="RayCast3D" parent="EndDetector"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.764529, -1.48596)
-target_position = Vector3(0, -1, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.432071, 0.596067)
+target_position = Vector3(0, -2.90911, -5.01322)
 collide_with_areas = true
 debug_shape_thickness = 5
 script = ExtResource("12_486y3")

@@ -16,7 +16,8 @@ func _process(delta):
     pass
 
 func change_scene(scene_name: String):
-    current_scene.deinit()
+    if current_scene:
+        current_scene.deinit()
     match scene_name:
         'MenuScene':
             current_scene = MENU_SCENE.instantiate().init()
