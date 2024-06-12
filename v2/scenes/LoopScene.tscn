@@ -137,7 +137,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.38583, 10.9777)
 
 [node name="EndRay" type="RayCast3D" parent="EndDetector"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.432071, 0.596067)
-target_position = Vector3(0, -2.90911, -5.01322)
+target_position = Vector3(0, -5.8179, -11.5738)
 collide_with_areas = true
 debug_shape_thickness = 5
 script = ExtResource("12_486y3")
