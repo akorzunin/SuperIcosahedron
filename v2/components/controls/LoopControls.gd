@@ -12,6 +12,8 @@ func _ready() -> void:
     pass # Replace with function body.
 
 func angle_good():
+    if not controlledNode:
+        return
     controlledNode.angle_good = true
     controlledNode = get_controlled_node()
 

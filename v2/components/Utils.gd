@@ -16,3 +16,22 @@ static func main_scene(_self) -> String:
 static func set_scene(_self: Node, scene_name: String):
     _self.get_tree().root.get_child(1).change_scene(scene_name)
     pass
+
+static func set_shader_param(node: Node3D, name: String, value: Variant):
+    node.get_active_material(0).set_shader_parameter(name, value)
+
+enum RenderMethods {GL_COMPATIBILITY, MOBILE, FORWARD_PLUS}
+
+static func get_render_method() -> RenderMethods:
+    return RenderMethods.get(ProjectSettings.get_setting("rendering/renderer/rendering_method").to_upper())
+
+enum Platform { WEB, MOBILE, PC}
+
+static func get_platform() -> Platform:
+    if [ OS.has_feature("mobile"), OS.has_feature("web_android"), OS.has_feature("web_ios"), ].any(func(x): return x):
+        return Platform.MOBILE
+    if [ OS.has_feature("web"), ].any(func(x): return x):
+        return Platform.WEB
+    if [ OS.has_feature("windows"), OS.has_feature("linux")].any(func(x): return x):
+        return Platform.PC
+    return Platform.WEB

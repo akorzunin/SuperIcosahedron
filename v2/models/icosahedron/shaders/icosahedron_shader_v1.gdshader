@@ -1,13 +1,17 @@
 shader_type spatial;
 render_mode cull_disabled;
 
+#include "res://v2/shaders/shader_utils.gdshaderinc"
+#include "cutplane.gdshaderinc"
+
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
-instance uniform bool cutplate_visible = true;
+uniform bool cutplate_visible = true;
+uniform bool use_web_colors = false;
 
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
-instance uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
-instance uniform vec3 color = vec3(.0, 1., .0);
+uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
+uniform vec3 color = vec3(.0, 1., .0);
 
 varying vec3 ver;
 
@@ -19,17 +23,15 @@ void vertex() {
 
 void fragment() {
     if (cutplate_visible) {
-        // Called for every pixel the material is visible on.
-        vec3 planeNormal = cutplane.xyz;
-        float planeDistance = cutplane.w;
-
-        // float vertexDistance = dot(planeNormal, world_vertex);
-        float vertexDistance = dot(planeNormal, ver);
-        float dist = vertexDistance - planeDistance;
-        if (dist >= 0.0)
+        if (!render_cutplane(cutplane, ver)){
             discard;
+        }
     }
-    ALBEDO = color.rgb;
+    if (use_web_colors) {
+        ALBEDO = linear_to_srgb(color.rgb);
+    } else {
+        ALBEDO = color.rgb;
+    }
 }
 
 // void light() {

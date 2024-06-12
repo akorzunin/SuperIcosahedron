@@ -19,6 +19,10 @@ render_priority = 0
 shader = ExtResource("1_nonro")
 shader_parameter/pulse_enabled = false
 shader_parameter/colorflow_enbled = false
+shader_parameter/cutplate_visible = true
+shader_parameter/use_web_colors = false
+shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/color = Vector3(0, 1, 0)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
 size = Vector3(1.66211, 1.56055, 1.42188)

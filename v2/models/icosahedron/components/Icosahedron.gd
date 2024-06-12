@@ -1,6 +1,8 @@
 extends Node3D
 class_name Icosahedron
 
+const ICOSAHEDRON_SHADER_V_1 = preload('res://v2/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
+
 @export var DEBUG_VISUAL: bool
 @export var scaling_enabled = false
 @export var scale_factor: float
@@ -9,7 +11,6 @@ class_name Icosahedron
 @onready var cut_plane: CutPlane = $CutPlane
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 var cutplane_vector := Vector3(1,1,1).normalized()
-
 func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
     scale_factor = settings.SCALE_FACTOR
     scaling_enabled = settings.SCALING_ENABLED
@@ -20,7 +21,7 @@ func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionar
     return self
 
 func set_cutplane(v: Vector4):
-    mesh_icosahedron.set_instance_shader_parameter("cutplane", v)
+    Utils.set_shader_param(mesh_icosahedron, "cutplane", v)
     cutplane_vector = Vector3(v.x, v.y, v.z).normalized()
     if DEBUG_VISUAL:
         var a = RayCast3D.new()
@@ -28,7 +29,7 @@ func set_cutplane(v: Vector4):
         mesh_icosahedron.add_child(a)
 
 func set_color(arr: Array):
-    mesh_icosahedron.set_instance_shader_parameter("color", Vector3(arr[0], arr[1], arr[2]))
+    Utils.set_shader_param(mesh_icosahedron, "color", Vector3(arr[0], arr[1], arr[2]))
 
 const dst := IcosahedronVarints.dst
 
@@ -38,10 +39,15 @@ func _ready() -> void:
         cut_plane.hide()
 
     var variant = IcosahedronVarints.figure_variants[shader_type]
+    var sm = ShaderMaterial.new()
+    sm.shader = ICOSAHEDRON_SHADER_V_1
+    mesh_icosahedron.material_override = sm
     if variant.get("cutplane"):
         set_cutplane(variant.cutplane)
     else:
-        mesh_icosahedron.set_instance_shader_parameter("cutplate_visible", false)
+        Utils.set_shader_param(mesh_icosahedron, "cutplate_visible", false)
+    if Utils.get_render_method() == Utils.RenderMethods.GL_COMPATIBILITY:
+        Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true)
     set_color(G.theme.figure_variants.get(variant.name, G.theme.base_color))
 
     if inital_transfrm:
