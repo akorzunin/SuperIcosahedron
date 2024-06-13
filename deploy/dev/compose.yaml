@@ -1,0 +1,12 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: sepericosahedron-dev
+    restart: unless-stopped
+    ports:
+      - "8282:8282"
+    volumes:
+      - ./caddy_data:/data:rw
+      - ./caddy_config:/config:rw
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./build:/srv/build:ro

@@ -1,0 +1,12 @@
+:8282 {
+	handle_path /download/* {
+		root * /srv/build
+		file_server browse
+	}
+	root * /srv/build/web
+	file_server
+	header {
+		Cross-Origin-Opener-Policy same-origin
+		Cross-Origin-Embedder-Policy require-corp
+	}
+}

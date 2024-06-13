@@ -1,0 +1,23 @@
+- name: Deploy dev
+  hosts: all
+  become: false
+
+  tasks:
+    - name: Copy files to service directory
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: ~/Documents/supericosahedron-dev/
+        mode: "0755"
+        backup: false
+        remote_src: false
+      loop:
+        - Caddyfile
+        - compose.yaml
+        - ./../../build
+
+    - name: Deploy file server
+      ansible.builtin.command:
+        cmd: docker compose up -d --force-recreate
+        chdir: ~/Documents/supericosahedron-dev
+      register: out
+      changed_when: out.rc != 0

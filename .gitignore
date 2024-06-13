@@ -5,6 +5,7 @@ temp
 *.tmp
 assets/*
 build
+android
 # !assets/skybox
 
 # Godot-specific ignores
