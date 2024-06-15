@@ -1,8 +1,8 @@
 shader_type spatial;
 render_mode cull_disabled;
 
-#include "res://v2/shaders/shader_utils.gdshaderinc"
 #include "cutplane.gdshaderinc"
+#include "res://v2/shaders/shader_utils.gdshaderinc"
 
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
@@ -23,7 +23,7 @@ void vertex() {
 
 void fragment() {
     if (cutplate_visible) {
-        if (!render_cutplane(cutplane, ver)){
+        if (!render_cutplane(cutplane, ver)) {
             discard;
         }
     }

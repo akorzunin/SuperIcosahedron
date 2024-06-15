@@ -1,6 +1,6 @@
 # https://taskfile.dev
 
-version: '3'
+version: "3"
 
 vars:
   GREETING: |
@@ -20,3 +20,59 @@ tasks:
       {{else}}
         git ls-files --exclude-standard | grep -E '\.(gdshader|glsl|glslv|glslf)$' | xargs clang-format -i -style=file
       {{end}}
+  check:
+    deps:
+      - format-shaders
+    cmds:
+      - pre-commit run --all-files
+  dev-build-web:
+    platforms: [linux]
+    deps:
+      - check
+    cmds:
+      - rm -f ./build/web/* || true
+      - godot --headless --export-debug "Web" ./build/web/index.html
+  dev-build-windows:
+    platforms: [linux]
+    deps:
+      - check
+    cmds:
+      - rm -f ./build/pc/*.exe || true
+      - >-
+        godot --headless --export-debug "Windows Desktop"
+        ./build/pc/SuperHexagon-$(./scripts/get_version.sh --short).exe
+  dev-build-linux:
+    platforms: [linux]
+    deps:
+      - check
+    cmds:
+      - rm -f ./build/linux/*.x86_64 || true
+      - >-
+        godot --headless --export-debug "Linux/X11"
+        ./build/linux/SuperHexagon-$(./scripts/get_version.sh --short).x86_64
+  dev-build-android:
+    platforms: [linux]
+    deps:
+      - check
+    cmds:
+      - rm -f ./build/android/*.apk || true
+      - >-
+        godot --headless --export-debug "Android"
+        ./build/android/SuperHexagon-$(./scripts/get_version.sh --short).apk
+
+  dev-build-all:
+    platforms: [linux]
+    deps:
+      - dev-build-web
+      - dev-build-windows
+      - dev-build-linux
+      - dev-build-andorid
+    cmds:
+      - echo Build completed
+
+  deploy-build-dev:
+    platforms: [linux]
+    deps:
+      - dev-buld-all
+    cmds:
+      - ansible-playbook ./deploy/dev/deploy_local.yaml -l local_pi,
