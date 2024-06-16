@@ -17,8 +17,8 @@ static func set_scene(_self: Node, scene_name: String):
     _self.get_tree().root.get_child(1).change_scene(scene_name)
     pass
 
-static func set_shader_param(node: Node3D, name: String, value: Variant):
-    node.get_active_material(0).set_shader_parameter(name, value)
+static func set_shader_param(node: Node3D, _name: String, value: Variant):
+    node.get_active_material(0).set_shader_parameter(_name, value)
 
 enum RenderMethods {GL_COMPATIBILITY, MOBILE, FORWARD_PLUS}
 
