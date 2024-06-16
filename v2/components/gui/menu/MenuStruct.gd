@@ -6,7 +6,7 @@ const menu_items = {
     items = {
         1: {
             name = "start",
-            action = "menu_action",
+            action = "menu_start_game",
         },
         2: {
             name = "settings",
@@ -79,8 +79,12 @@ const menu_items = {
                 },
             }
         },
-        5: {
+        3: {
             name = "achivemets",
+        },
+        5: {
+            name = "exit",
+            action = "menu_exit_game",
         },
         6: {
             name = "credits",

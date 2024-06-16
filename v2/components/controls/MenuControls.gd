@@ -34,12 +34,14 @@ func call_menu_action():
         call(selected.action)
         return
 
-func menu_action():
+func menu_start_game():
     if Utils.main_scene(self) == 'MenuScene':
         get_tree().quit()
         return
     Utils.set_scene(self, 'LoopScene')
 
+func menu_exit_game():
+    get_tree().quit()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     if not controlledNode:

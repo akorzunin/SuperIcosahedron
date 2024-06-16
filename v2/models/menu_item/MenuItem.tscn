@@ -27,7 +27,7 @@ texture = SubResource("ViewportTexture_46tj2")
 
 [node name="SubViewport" type="SubViewport" parent="Sprite3D"]
 transparent_bg = true
-size = Vector2i(1261, 240)
+size = Vector2i(1271, 250)
 render_target_update_mode = 4
 script = ExtResource("1_63vfa")
 
