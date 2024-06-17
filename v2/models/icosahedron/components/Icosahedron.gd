@@ -2,6 +2,7 @@ extends Node3D
 class_name Icosahedron
 
 const ICOSAHEDRON_SHADER_V_1 = preload('res://v2/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
+const CUTPLANE_EFFECT_V_2 = preload("res://v2/models/icosahedron/shaders/cutplane_effect_v2.gdshader")
 
 @export var DEBUG_VISUAL: bool
 @export var scaling_enabled = false
@@ -22,6 +23,7 @@ func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionar
 
 func set_cutplane(v: Vector4):
     Utils.set_shader_param(mesh_icosahedron, "cutplane", v)
+    Utils.set_shader_param(mesh_icosahedron, "cutplane", v, 1)
     cutplane_vector = Vector3(v.x, v.y, v.z).normalized()
     if DEBUG_VISUAL:
         var a = RayCast3D.new()
@@ -30,6 +32,7 @@ func set_cutplane(v: Vector4):
 
 func set_color(arr: Array):
     Utils.set_shader_param(mesh_icosahedron, "color", Vector3(arr[0], arr[1], arr[2]))
+    Utils.set_shader_param(mesh_icosahedron, "color", Vector3(arr[0], arr[1], arr[2]), 1)
 
 const dst := IcosahedronVarints.dst
 
@@ -41,13 +44,18 @@ func _ready() -> void:
     var variant = IcosahedronVarints.figure_variants[shader_type]
     var sm = ShaderMaterial.new()
     sm.shader = ICOSAHEDRON_SHADER_V_1
+    var sm2 = ShaderMaterial.new()
+    sm2.shader = CUTPLANE_EFFECT_V_2
     mesh_icosahedron.material_override = sm
+    mesh_icosahedron.material_override.next_pass = sm2
     if variant.get("cutplane"):
         set_cutplane(variant.cutplane)
     else:
         Utils.set_shader_param(mesh_icosahedron, "cutplate_visible", false)
+        Utils.set_shader_param(mesh_icosahedron, "enable", false, 1)
     if Utils.get_render_method() == Utils.RenderMethods.GL_COMPATIBILITY:
         Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true)
+        Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true, 1)
     set_color(G.theme.figure_variants.get(variant.name, G.theme.base_color))
 
     if inital_transfrm:
