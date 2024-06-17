@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
         call_menu_action()
     if controlledNode and target.get("progress", 1) < 1:
         target.progress += 0.05
-        var t = target.prev_pos.slerp(target.quat, target.progress)
+        var t = target.prev_pos.slerp(target.quat, ease(target.progress, -5))
         controlledNode.transform.basis = Basis(t).orthonormalized()
         return
     if Input.is_action_just_pressed("ui_down"):
@@ -74,6 +74,7 @@ func change_selection(direction, ):
     tw.tween_property(controlledNode, "position:z", controlledNode.position.y - val, dur)
     tw.set_parallel(false)
     tw.tween_property(controlledNode, "position:y", controlledNode.position.y, dur)
+    tw.set_parallel()
     tw.tween_property(controlledNode, "position:z", controlledNode.position.y, dur)
 
     target = {
