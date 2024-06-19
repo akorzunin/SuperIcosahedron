@@ -14,6 +14,8 @@ var target = {
     progress = 0,
     quat = Quaternion(),
 }
+var initial_pos := Vector3()
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     MENU_ROTATION_SPEED = settings.ROTATION_SPEED
@@ -44,24 +46,32 @@ func menu_exit_game():
     get_tree().quit()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-    if not controlledNode:
-        controlledNode = get_controlled_node()
-        target.prev_pos = controlledNode.quaternion
-    if Input.is_action_just_pressed("ui_accept"):
-        call_menu_action()
+func _physics_process(delta: float) -> void:
     if controlledNode and target.get("progress", 1) < 1:
         target.progress += 0.05
         var t = target.prev_pos.slerp(target.quat, ease(target.progress, -5))
         controlledNode.transform.basis = Basis(t).orthonormalized()
         return
-    if Input.is_action_just_pressed("ui_down"):
+
+func check_controlled_node():
+    if not controlledNode:
+        controlledNode = get_controlled_node()
+        initial_pos = controlledNode.position
+        target.prev_pos = controlledNode.quaternion
+
+func _input(event: InputEvent):
+    check_controlled_node()
+    if event.is_action_pressed(&"ui_accept"):
+        call_menu_action()
+    if controlledNode and target.get("progress", 1) < 1:
+        return
+    if event.is_action(&"ui_down"):
         change_selection(controlledNode.quaternion * Quats.menu_quat_down(),)
-    if Input.is_action_just_pressed("ui_up") or Input.is_action_just_pressed('ui_cancel'):
+    if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&'ui_cancel'):
         change_selection(Quaternion(),)
-    if Input.is_action_just_pressed("ui_right"):
+    if event.is_action(&"ui_right"):
         change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
-    if Input.is_action_just_pressed("ui_left"):
+    if event.is_action(&"ui_left"):
         change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
     pass
 
@@ -69,13 +79,13 @@ func change_selection(direction, ):
     var dur = 0.2
     var val = 0.03
     var tw = controlledNode.create_tween().set_loops(1)
-    tw.tween_property(controlledNode, "position:y", controlledNode.position.y - val, dur)
+    tw.tween_property(controlledNode, "position:y", initial_pos.y - val, dur)
     tw.set_parallel()
-    tw.tween_property(controlledNode, "position:z", controlledNode.position.y - val, dur)
+    tw.tween_property(controlledNode, "position:z", initial_pos.z - val, dur)
     tw.set_parallel(false)
-    tw.tween_property(controlledNode, "position:y", controlledNode.position.y, dur)
+    tw.tween_property(controlledNode, "position:y", initial_pos.y, dur)
     tw.set_parallel()
-    tw.tween_property(controlledNode, "position:z", controlledNode.position.y, dur)
+    tw.tween_property(controlledNode, "position:z", initial_pos.z, dur)
 
     target = {
         prev_pos = controlledNode.quaternion,
