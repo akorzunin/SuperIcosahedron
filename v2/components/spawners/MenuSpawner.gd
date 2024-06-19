@@ -24,6 +24,18 @@ func add_menu_items(node: Node3D, layer : Dictionary):
                 val = items[key]
             })
         node.add_child(new_item)
+
+func clean_menu_items(node: Node3D):
+    for i in node.get_children():
+        if i.is_in_group("menu_item"):
+            i.queue_free()
+    pass
+
+func open_menu_section(node, items):
+    clean_menu_items(node)
+    add_menu_items(node, items)
+    pass
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
     # only one node allowed at startup

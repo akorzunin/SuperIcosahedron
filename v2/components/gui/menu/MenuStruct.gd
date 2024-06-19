@@ -77,6 +77,9 @@ const menu_items = {
                     name = "controls",
                     action = "menu_open_controls_editor"
                 },
+                5: {
+                    name = "back",
+                },
             }
         },
         3: {

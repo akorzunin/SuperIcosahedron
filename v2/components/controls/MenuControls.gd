@@ -3,7 +3,7 @@ class_name MenuControls
 
 
 @onready var settings = %Settings
-@onready var figureRoot := $"../MenuSpawner"
+@onready var menuSpawner := $"../MenuSpawner"
 @onready var menu_selector: MenuSelector = %MenuSelector
 @onready var menu_scene: Node3D = $'..'
 
@@ -24,16 +24,19 @@ func _ready() -> void:
 
 ## In menu we apply all rotations to Anshor node
 func get_controlled_node() -> Node3D:
-    var a = figureRoot.get_node("Anchor").get_children()
+    var a = menuSpawner.get_node("Anchor").get_children()
     if len(a) > 0:
-        return figureRoot.get_node("Anchor")
+        return menuSpawner.get_node("Anchor")
     return null
 
 ## Get selected menu intem and execute action that item meant to do
 func call_menu_action():
     var selected = menu_selector.get_selected_item()
-    if selected.get("action"):
+    if selected.get("action") != "placeholder_action":
         call(selected.action)
+        return
+    if selected.get("items"):
+        menuSpawner.open_menu_section(controlledNode, selected.items)
         return
 
 func menu_start_game():
