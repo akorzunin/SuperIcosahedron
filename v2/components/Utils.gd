@@ -1,4 +1,4 @@
-extends Node
+extends RefCounted
 class_name Utils
 
 ## Only works in scene level script
