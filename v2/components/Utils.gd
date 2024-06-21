@@ -17,11 +17,14 @@ static func set_scene(_self: Node, scene_name: String):
     _self.get_tree().root.get_child(1).change_scene(scene_name)
     pass
 
-static func set_shader_param(node: Node3D, _name: String, value: Variant, idx: int = 0):
+static func set_shader_param(node: MeshInstance3D, _name: String, value: Variant, idx: int = 0):
+    var m = node.get_active_material(0) as ShaderMaterial
     if idx == 0:
-        node.get_active_material(0).set_shader_parameter(_name, value)
-    else:
-        node.get_active_material(0).next_pass.set_shader_parameter(_name, value)
+        m.set_shader_parameter(_name, value)
+    elif idx == 1 and m.next_pass:
+        (m.next_pass as ShaderMaterial).set_shader_parameter(_name, value)
+    elif idx == 2 and m.next_pass and m.next_pass.next_pass:
+        (m.next_pass.next_pass as ShaderMaterial).set_shader_parameter(_name, value)
     return
 
 enum RenderMethods {GL_COMPATIBILITY, MOBILE, FORWARD_PLUS}
