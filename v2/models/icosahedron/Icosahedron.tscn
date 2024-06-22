@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=16 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://v2/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
@@ -7,6 +7,7 @@
 [ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/cutplane_effect_v2.gdshader" id="5_cipg0"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
 [ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
+[ext_resource type="Shader" path="res://v2/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucv21"]
 [ext_resource type="Script" path="res://v2/models/icosahedron/components/Collider.gd" id="7_6oydw"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
@@ -18,12 +19,20 @@ shader = ExtResource("2_u8yhs")
 [sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
 size = Vector3(1.66211, 1.56055, 1.42188)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i83je"]
+render_priority = 2
+shader = ExtResource("5_ucv21")
+shader_parameter/enable = true
+shader_parameter/outline_thickness = 0.05
+shader_parameter/color = Color(0.358796, 0.73469, 0.907072, 1)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
-render_priority = -1
+render_priority = 1
+next_pass = SubResource("ShaderMaterial_i83je")
 shader = ExtResource("5_cipg0")
 shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
 shader_parameter/color = Color(0, 1, 0, 1)
-shader_parameter/enable = true
+shader_parameter/enable = false
 shader_parameter/outline_thickness = 0.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
