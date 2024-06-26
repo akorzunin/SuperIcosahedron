@@ -14,6 +14,9 @@ enum DespawneMode {NORMAL = 16633, IMMEDIATE = 0, BEFORE_END = 10000}
 enum SpawnMode {QUEUE, RANDOM, CENTER, SIDE}
 @export var SPAWN_MODE := SpawnMode.RANDOM
 
+enum RoatationSpeed {NORMAL = 12, SLOW = 5, FAST = 15}
+@export var ROTATION_SPEED := RoatationSpeed.FAST
+
 func parse_preset() -> void:
     var sp = SettingsPreset
     match preset:

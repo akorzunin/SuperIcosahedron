@@ -64,17 +64,17 @@ func check_controlled_node():
 
 func _input(event: InputEvent):
     check_controlled_node()
-    if event.is_action_pressed(&"ui_accept"):
+    if event.is_action_pressed('ui_accept'):
         call_menu_action()
     if controlledNode and target.get("progress", 1) < 1:
         return
-    if event.is_action(&"ui_down"):
+    if event.is_action('ui_down'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_down(),)
-    if event.is_action_pressed(&"ui_up") or event.is_action_pressed(&'ui_cancel'):
+    if event.is_action_pressed('ui_up') or event.is_action_pressed(&'ui_cancel'):
         change_selection(Quaternion(),)
-    if event.is_action(&"ui_right"):
+    if event.is_action('ui_right'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
-    if event.is_action(&"ui_left"):
+    if event.is_action('ui_left'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
     pass
 

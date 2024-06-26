@@ -6,9 +6,10 @@ class_name LoopControls
 @export var figureRoot: FigureRoot
 @export var controlledNode: MeshIcosahedron
 @export var ROTATION_SPEED: float
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    ROTATION_SPEED = settings.ROTATION_SPEED
+    ROTATION_SPEED = settings.gs.ROTATION_SPEED
     pass # Replace with function body.
 
 func set_controlled_node(node: MeshIcosahedron):
@@ -20,29 +21,14 @@ func set_controlled_node(node: MeshIcosahedron):
     Utils.set_shader_param(controlledNode, "enable", true, 2)
 
 func update_controlled_node():
-    var a = figureRoot.get_node("Anchor").get_children() as Array[Icosahedron]
-    var b = Array() as Array[MeshIcosahedron]
-    for i in a:
-        if not i.mesh_icosahedron.angle_good:
-            b.append(i.mesh_icosahedron)
-
-    if len(b) > 0 and controlledNode != b[0]:
-        set_controlled_node(b[0])
-
-    return null
-
-func get_controlled_node() -> Node3D:
-    var a = figureRoot.get_node("Anchor").get_children() as Array[Icosahedron]
-    for i in a:
-        if i.mesh_icosahedron.angle_good:
-            Utils.set_shader_param(i.mesh_icosahedron, "enable", false, 2)
-            continue
-        Utils.set_shader_param(i.mesh_icosahedron, "enable", true, 2)
-        return i.mesh_icosahedron
-
-    if controlledNode:
-        return controlledNode
-    return null
+    var figures = figureRoot.get_node("Anchor").get_children() as Array[Icosahedron]
+    var unchecked_mesh: MeshIcosahedron
+    for figure in figures:
+        if not figure.mesh_icosahedron.angle_good:
+            unchecked_mesh = figure.mesh_icosahedron
+            break
+    if unchecked_mesh and controlledNode != unchecked_mesh:
+        set_controlled_node(unchecked_mesh)
 
 func pass_next_node(node: Collider):
     if controlledNode != null \
@@ -51,32 +37,43 @@ func pass_next_node(node: Collider):
         controlledNode.angle_good = true
     update_controlled_node()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-    if get_tree().paused:
-        if Input.is_action_just_pressed("ui_cancel"):
-            if Utils.main_scene(self) == 'LoopScene':
-                get_tree().paused = false
-                get_tree().reload_current_scene()
-                return
-            Utils.set_scene(self, 'LoopScene')
-    if Input.is_action_just_pressed("ui_cancel"):
+func _input(event: InputEvent) -> void:
+    if event.is_action_pressed('ui_accept'):
+        if Utils.main_scene(self) == 'LoopScene':
+            get_tree().paused = false
+            get_tree().reload_current_scene()
+            return
+    if get_tree().paused and event.is_action_pressed('ui_cancel'):
+        if Utils.main_scene(self) == 'LoopScene':
+            get_tree().paused = false
+            get_tree().reload_current_scene()
+            return
+        Utils.set_scene(self, 'LoopScene')
+        return
+    if event.is_action_pressed('ui_cancel'):
         if Utils.main_scene(self) == 'LoopScene':
             return
         Utils.set_scene(self, 'MenuScene')
+        return
 
+    pass
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
     if not controlledNode:
         update_controlled_node()
         return
     var rotation: Quaternion
+    var rs := ROTATION_SPEED / 10. * delta
+
     if Input.is_action_pressed("ui_up"):
-        rotation = rotation * Quaternion(0, 0, -ROTATION_SPEED, 1, )
+        rotation = rotation * Quaternion(0, 0, -rs, 1, )
     if Input.is_action_pressed("ui_down"):
-        rotation = rotation * Quaternion(0, 0, ROTATION_SPEED, 1, )
+        rotation = rotation * Quaternion(0, 0, rs, 1, )
     if Input.is_action_pressed("ui_right"):
-        rotation = rotation * Quaternion(0, ROTATION_SPEED, 0, 1, )
+        rotation = rotation * Quaternion(0, rs, 0, 1, )
     if Input.is_action_pressed("ui_left"):
-        rotation = rotation * Quaternion(0, -ROTATION_SPEED, 0, 1, )
+        rotation = rotation * Quaternion(0, -rs, 0, 1, )
     if controlledNode and rotation:
         var t = rotation.normalized() * controlledNode.quaternion
         controlledNode.transform.basis = Basis(t).orthonormalized()
