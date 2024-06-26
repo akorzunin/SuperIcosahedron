@@ -10,7 +10,7 @@
       "request": "launch",
       "project": "${workspaceFolder}",
       "port": 6005,
-      "address": "http://127.0.0.1",
+      "address": "127.0.0.1",
       "launch_game_instance": true,
       "launch_scene": false
     }
