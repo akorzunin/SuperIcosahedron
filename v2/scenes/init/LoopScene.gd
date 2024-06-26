@@ -4,8 +4,11 @@ extends Node3D
 const utils = preload("res://v2/components/Utils.gd")
 @onready var settings = %Settings
 @onready var game_state_manager: GameStateManager = %GameStateManager
+var game_settings
 
-func init():
+func init(props: Dictionary):
+    if props.get("game_settings"):
+        game_settings = props.game_settings
     return self
 
 func deinit():

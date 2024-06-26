@@ -3,6 +3,8 @@ extends Node3D
 const LOOP_SCENE = preload('res://v2/scenes/LoopScene.tscn')
 const MENU_SCENE = preload('res://v2/scenes/MenuScene.tscn')
 
+@onready var game_settings: GameSettings = %GameSettings
+
 @export var start_fullscreen := false
 var current_scene
 
@@ -41,12 +43,17 @@ func set_window_settings():
 
     pass
 
+func init_scene(scene: Resource) -> Node3D:
+    return scene.instantiate().init({
+        game_settings = game_settings
+    })
+
 func change_scene(scene_name: String):
     if current_scene:
         current_scene.deinit()
     match scene_name:
         'MenuScene':
-            current_scene = MENU_SCENE.instantiate().init()
+            current_scene = init_scene(MENU_SCENE)
         'LoopScene':
-            current_scene = LOOP_SCENE.instantiate().init()
+            current_scene = init_scene(LOOP_SCENE)
     get_tree().root.add_child.call_deferred(current_scene)

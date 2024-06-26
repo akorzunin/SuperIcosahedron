@@ -113,9 +113,8 @@ text = "[center]00:00:000[/center]
 [node name="Settings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("9_ami33")
-DEBUG_VISUAL = true
 SCALING_ENABLED = true
-spawn_speed = 5
+spawn_speed = 10
 
 [node name="GameStateManager" type="Node" parent="."]
 unique_name_in_owner = true

@@ -29,7 +29,17 @@ class Figure:
 
 enum FigureType {ICOSAHEDRON, OCTAHEDRON}
 
-
+func get_spawn_type():
+    var s = settings.gs.SpawnMode
+    match settings.gs.SPAWN_MODE:
+        s.CENTER:
+            return 3
+        s.SIDE:
+            return 1
+        s.RANDOM:
+            return randi_range(1, 8)
+        s.QUEUE:
+            pass
 
 func spawn_figure(figure: Figure) -> void:
     var new_figure
@@ -38,7 +48,7 @@ func spawn_figure(figure: Figure) -> void:
             new_figure = IcosahedronScene.instantiate() \
                 .init(
                     settings,
-                    {type = randi_range(1, 8)},
+                    {type = get_spawn_type()},
                     {quat = G.D.init_pos},
                 )
         FigureType.OCTAHEDRON:
