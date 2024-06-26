@@ -3,6 +3,8 @@ class_name MeshIcosahedron
 
 
 @onready var icosahedron: Icosahedron = $'..'
+@onready var collider: Collider = $'../Collider'
+
 var angle_good := false
 
 # Called when the node enters the scene tree for the first time.

@@ -3,6 +3,7 @@ class_name Icosahedron
 
 const ICOSAHEDRON_SHADER_V_1 = preload('res://v2/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
 const CUTPLANE_EFFECT_V_2 = preload("res://v2/models/icosahedron/shaders/cutplane_effect_v2.gdshader")
+const OUTLINE_V_1 = preload('res://v2/models/icosahedron/shaders/outline_v1.gdshader')
 
 @export var DEBUG_VISUAL: bool
 @export var scaling_enabled = false
@@ -11,7 +12,9 @@ const CUTPLANE_EFFECT_V_2 = preload("res://v2/models/icosahedron/shaders/cutplan
 @export var inital_transfrm: Quaternion
 @onready var cut_plane: CutPlane = $CutPlane
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
+
 var cutplane_vector := Vector3(1,1,1).normalized()
+
 func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
     scale_factor = settings.SCALE_FACTOR
     scaling_enabled = settings.SCALING_ENABLED
@@ -46,13 +49,17 @@ func _ready() -> void:
     sm.shader = ICOSAHEDRON_SHADER_V_1
     var sm2 = ShaderMaterial.new()
     sm2.shader = CUTPLANE_EFFECT_V_2
+    var sm3 = ShaderMaterial.new()
+    sm3.shader = OUTLINE_V_1
     mesh_icosahedron.material_override = sm
     mesh_icosahedron.material_override.next_pass = sm2
+    mesh_icosahedron.material_override.next_pass.next_pass = sm3
     if variant.get("cutplane"):
         set_cutplane(variant.cutplane)
     else:
         Utils.set_shader_param(mesh_icosahedron, "cutplate_visible", false)
         Utils.set_shader_param(mesh_icosahedron, "enable", false, 1)
+        Utils.set_shader_param(mesh_icosahedron, "enable", false, 2)
     if Utils.get_render_method() == Utils.RenderMethods.GL_COMPATIBILITY:
         Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true)
         Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true, 1)
