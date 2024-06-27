@@ -17,6 +17,12 @@ enum SpawnMode {QUEUE, RANDOM, CENTER, SIDE}
 enum RoatationSpeed {NORMAL = 12, SLOW = 5, FAST = 15}
 @export var ROTATION_SPEED := RoatationSpeed.FAST
 
+@export_category("window settings")
+@export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
+
+func _ready() -> void:
+    set_window_settings()
+
 func parse_preset() -> void:
     var sp = SettingsPreset
     match preset:
@@ -27,3 +33,34 @@ func parse_preset() -> void:
             DESPAWNER_MODE = DespawneMode.BEFORE_END
         sp.CUSTOM:
             pass
+
+func set_window_settings():
+    var V = get_viewport()
+    var P = Utils.Platform
+    var R = Utils.RenderMethods
+
+    match Utils.get_platform():
+        P.PC:
+            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+        P.WEB:
+            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+        P.MOBILE:
+            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+    if OS.has_feature('editor'):
+        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+    V.use_debanding = true
+
+    if Utils.get_render_method() == R.FORWARD_PLUS:
+        V.msaa_3d = Viewport.MSAA_8X
+        V.use_taa = true
+
+    if Utils.get_render_method() == R.MOBILE:
+        V.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
+
+    if Utils.get_render_method() == R.GL_COMPATIBILITY:
+        V.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
+        V.msaa_3d = Viewport.MSAA_8X
+
+    pass

@@ -1,4 +1,5 @@
 extends Node3D
+class_name LoopScene
 
 
 const utils = preload("res://v2/components/Utils.gd")

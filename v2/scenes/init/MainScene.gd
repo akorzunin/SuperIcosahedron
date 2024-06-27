@@ -10,37 +10,12 @@ var current_scene
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-    set_window_settings()
     change_scene('MenuScene')
     pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-    pass
-
-func set_window_settings():
-    var V = get_viewport()
-    var P = Utils.Platform
-    var R = Utils.RenderMethods
-
-    DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-    V.use_debanding = true
-
-    if Utils.get_platform() == P.PC and start_fullscreen:
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-
-    if Utils.get_render_method() == R.FORWARD_PLUS:
-        V.msaa_3d = Viewport.MSAA_8X
-        V.use_taa = true
-
-    if Utils.get_render_method() == R.MOBILE:
-        V.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
-
-    if Utils.get_render_method() == R.GL_COMPATIBILITY:
-        V.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
-        V.msaa_3d = Viewport.MSAA_8X
-
     pass
 
 func init_scene(scene: Resource) -> Node3D:

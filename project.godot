@@ -12,7 +12,6 @@ config_version=5
 
 config/name="SuperIcosahedron"
 run/main_scene="res://v2/scenes/MainScene.tscn"
-run/disable_stdout=true
 config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/image="res://icon.png"
 boot_splash/fullsize=false
@@ -41,6 +40,10 @@ window/stretch/mode="canvas_items"
 [filesystem]
 
 import/blender/enabled=false
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
 
 [layer_names]
 

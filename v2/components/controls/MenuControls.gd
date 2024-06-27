@@ -1,4 +1,4 @@
-extends Node
+extends Control
 class_name MenuControls
 
 
@@ -18,7 +18,7 @@ var initial_pos := Vector3()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    MENU_ROTATION_SPEED = settings.ROTATION_SPEED
+    MENU_ROTATION_SPEED = settings.gs.ROTATION_SPEED
 
     pass  # Replace with function body.
 
@@ -70,13 +70,19 @@ func _input(event: InputEvent):
         return
     if event.is_action('ui_down'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_down(),)
-    if event.is_action_pressed('ui_up') or event.is_action_pressed(&'ui_cancel'):
+    if event.is_action_pressed('ui_up') or event.is_action_pressed('ui_cancel'):
         change_selection(Quaternion(),)
     if event.is_action('ui_right'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
     if event.is_action('ui_left'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
     pass
+
+func _unhandled_input(event: InputEvent) -> void:
+    if event is InputEventScreenTouch:
+        InputEmit.new().emit({
+            action = 'ui_accept'
+        })
 
 func change_selection(direction, ):
     var dur = 0.2

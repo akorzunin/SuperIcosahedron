@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=12 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://v2/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://v2/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://v2/components/Settings.gd" id="3_wp0wc"]
 [ext_resource type="Script" path="res://v2/components/controls/MenuControls.gd" id="4_rh2oc"]
 [ext_resource type="Script" path="res://v2/components/gui/menu/MenuSelector.gd" id="5_idm6q"]
+[ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://v2/addons/virtual_joystick/virtual_joystick_scene.tscn" id="8_d1sip"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
 shader = ExtResource("2_72pw2")
@@ -44,7 +45,9 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 script = ExtResource("3_wp0wc")
 
-[node name="MenuControls" type="Node" parent="."]
+[node name="MenuControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("4_rh2oc")
 
 [node name="MenuSelector" type="Area3D" parent="."]
@@ -54,3 +57,18 @@ script = ExtResource("5_idm6q")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MenuSelector"]
 transform = Transform3D(1, 0, 0, 0, 0.9282, 0.372081, 0, -0.372081, 0.9282, 0, 0.788826, 1.42193)
 shape = SubResource("BoxShape3D_51eil")
+
+[node name="Gui" type="CanvasLayer" parent="."]
+
+[node name="Virtual Joystick" parent="Gui" instance=ExtResource("8_d1sip")]
+anchors_preset = -1
+anchor_left = 0.078
+anchor_top = 0.865
+anchor_right = 0.078
+anchor_bottom = 0.865
+offset_left = -149.76
+offset_top = -150.2
+offset_right = 150.24
+offset_bottom = 149.8
+size_flags_horizontal = 4
+size_flags_vertical = 8
