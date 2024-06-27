@@ -73,7 +73,7 @@ tasks:
   deploy-build-dev:
     platforms: [linux]
     deps:
-      - dev-buld-all
+      - dev-build-all
     cmds:
       - ansible-playbook ./deploy/dev/deploy_local.yaml -l local_pi,
 
