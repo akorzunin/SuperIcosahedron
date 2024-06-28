@@ -24,8 +24,8 @@ func _ready() -> void:
 
 ## In menu we apply all rotations to Anshor node
 func get_controlled_node() -> Node3D:
-    var a = menuSpawner.get_node("Anchor").get_children()
-    if len(a) > 0:
+    var node = menuSpawner.get_node("Anchor").get_children()
+    if len(node) > 0:
         return menuSpawner.get_node("Anchor")
     return null
 

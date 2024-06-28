@@ -5,9 +5,9 @@ class_name Collider
 @onready var mesh_icosahedron = $"../MeshIcosahedron"
 
 func get_cutplane_vector():
-    var a = icosahedron.cutplane_vector
-    var e = mesh_icosahedron.quaternion
-    var f = e * a
+    var cv = icosahedron.cutplane_vector
+    var rot = mesh_icosahedron.quaternion
+    var f = rot * cv
     return to_global(f)
 
 func get_figure():

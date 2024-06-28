@@ -29,9 +29,9 @@ func set_cutplane(v: Vector4):
     Utils.set_shader_param(mesh_icosahedron, "cutplane", v, 1)
     cutplane_vector = Vector3(v.x, v.y, v.z).normalized()
     if DEBUG_VISUAL:
-        var a = RayCast3D.new()
-        a.target_position = $Collider.get_cutplane_vector()
-        mesh_icosahedron.add_child(a)
+        var ray = RayCast3D.new()
+        ray.target_position = $Collider.get_cutplane_vector()
+        mesh_icosahedron.add_child(ray)
 
 func set_color(arr: Array):
     Utils.set_shader_param(mesh_icosahedron, "color", Vector3(arr[0], arr[1], arr[2]))
