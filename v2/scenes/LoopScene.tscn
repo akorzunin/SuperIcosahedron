@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://brpqxl3eljkml"]
+[gd_scene load_steps=20 format=3 uid="uid://brpqxl3eljkml"]
 
 [ext_resource type="Script" path="res://v2/scenes/init/LoopScene.gd" id="1_rcev2"]
 [ext_resource type="Shader" path="res://v2/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://v2/components/spawners/LoopSpawner.gd" id="5_r6722"]
 [ext_resource type="Script" path="res://v2/components/gui/LoopGui.gd" id="7_q37nr"]
 [ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://v2/addons/virtual_joystick/virtual_joystick_scene.tscn" id="8_hv6rq"]
+[ext_resource type="Script" path="res://v2/components/gui/ControlButton.gd" id="9_51xq3"]
 [ext_resource type="Script" path="res://v2/components/Settings.gd" id="9_ami33"]
 [ext_resource type="Script" path="res://v2/components/timers/LoopTimer.gd" id="10_5cngg"]
 [ext_resource type="Script" path="res://v2/components/GameStateManager.gd" id="10_v8l0a"]
@@ -125,6 +126,56 @@ size_flags_horizontal = 4
 size_flags_vertical = 8
 use_input_actions = true
 use_input_emit = false
+
+[node name="ControlsContainer" type="PanelContainer" parent="Gui"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(437.78, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 2
+
+[node name="RightGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(437.39, 151.48)
+layout_mode = 2
+size_flags_horizontal = 8
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 3
+
+[node name="UpGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(966.735, 341.23)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 4
+
+[node name="BotGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(1011.59, 290.225)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 5
+
+[node name="CenterGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(1011.59, 290.225)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("9_51xq3")
+action = 1
 
 [node name="Settings" type="Node" parent="."]
 unique_name_in_owner = true

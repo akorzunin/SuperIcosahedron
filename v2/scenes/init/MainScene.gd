@@ -23,7 +23,12 @@ func init_scene(scene: Resource) -> Node3D:
         game_settings = game_settings
     })
 
+func release_inputs():
+    for a in InputMap.get_actions():
+        Input.action_release(a)
+
 func change_scene(scene_name: String):
+    release_inputs()
     if current_scene:
         current_scene.deinit()
     match scene_name:

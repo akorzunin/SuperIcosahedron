@@ -32,6 +32,8 @@ func get_controlled_node() -> Node3D:
 ## Get selected menu intem and execute action that item meant to do
 func call_menu_action():
     var selected = menu_selector.get_selected_item()
+    if not selected:
+        return
     if selected.get("action") != "placeholder_action":
         call(selected.action)
         return
