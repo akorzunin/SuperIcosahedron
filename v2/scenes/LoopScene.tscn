@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://v2/components/spawners/Anchor.gd" id="4_vihkp"]
 [ext_resource type="Script" path="res://v2/components/spawners/LoopSpawner.gd" id="5_r6722"]
 [ext_resource type="Script" path="res://v2/components/gui/LoopGui.gd" id="7_q37nr"]
-[ext_resource type="PackedScene" uid="uid://dmr0fcamx7t56" path="res://v2/addons/virtual_joystick/virtual_joystick_scene.tscn" id="8_hv6rq"]
+[ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://v2/themes/Base.theme" id="8_tiwnl"]
 [ext_resource type="Script" path="res://v2/components/gui/ControlButton.gd" id="9_51xq3"]
 [ext_resource type="Script" path="res://v2/components/Settings.gd" id="9_ami33"]
 [ext_resource type="Script" path="res://v2/components/timers/LoopTimer.gd" id="10_5cngg"]
@@ -112,28 +112,13 @@ bbcode_enabled = true
 text = "[center]00:00:000[/center]
 "
 
-[node name="Virtual Joystick" parent="Gui" instance=ExtResource("8_hv6rq")]
-anchors_preset = -1
-anchor_left = 0.078
-anchor_top = 0.865
-anchor_right = 0.078
-anchor_bottom = 0.865
-offset_left = -149.76
-offset_top = -150.2
-offset_right = 150.24
-offset_bottom = 149.8
-size_flags_horizontal = 4
-size_flags_vertical = 8
-use_input_actions = true
-use_input_emit = false
-
 [node name="ControlsContainer" type="PanelContainer" parent="Gui"]
-modulate = Color(1, 1, 1, 0)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("8_tiwnl")
 
 [node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer"]
 custom_minimum_size = Vector2(437.78, 0)

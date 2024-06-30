@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=14 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://v2/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://v2/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -21,6 +21,21 @@ background_mode = 2
 sky = SubResource("Sky_v8mvj")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_51eil"]
+
+[sub_resource type="GDScript" id="GDScript_ptf72"]
+script/source = "extends PanelContainer
+class_name GamePanelContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+    pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+    pass
+"
 
 [node name="MenuScene" type="Node3D"]
 script = ExtResource("1_75ovp")
@@ -62,12 +77,13 @@ shape = SubResource("BoxShape3D_51eil")
 [node name="Gui" type="CanvasLayer" parent="."]
 
 [node name="ControlsContainer" type="PanelContainer" parent="Gui"]
-modulate = Color(1, 1, 1, 0)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("7_vbk8k")
+script = SubResource("GDScript_ptf72")
 
 [node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer"]
 custom_minimum_size = Vector2(437.78, 0)
@@ -81,6 +97,7 @@ custom_minimum_size = Vector2(437.39, 151.48)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("7_vbk8k")
+theme_type_variation = &"FlatButton"
 script = ExtResource("8_0medo")
 action = 3
 
