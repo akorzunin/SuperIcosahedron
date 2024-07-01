@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=15 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/components/Settings.gd" id="3_wp0wc"]
 [ext_resource type="Script" path="res://src/components/controls/MenuControls.gd" id="4_rh2oc"]
 [ext_resource type="Script" path="res://src/components/gui/menu/MenuSelector.gd" id="5_idm6q"]
+[ext_resource type="Script" path="res://src/components/GameSettings.gd" id="5_lbadu"]
 [ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="7_vbk8k"]
 [ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="8_0medo"]
 
@@ -60,6 +61,12 @@ unique_name_in_owner = true
 [node name="Settings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("3_wp0wc")
+
+[node name="GameSettings" type="Node" parent="Settings"]
+unique_name_in_owner = true
+script = ExtResource("5_lbadu")
+preset = 2
+WINDOW_MODE = 3
 
 [node name="MenuControls" type="Control" parent="."]
 layout_mode = 3

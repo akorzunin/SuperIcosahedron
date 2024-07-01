@@ -1,4 +1,4 @@
-extends Node3D
+extends Node
 
 const LOOP_SCENE = preload('res://src/scenes/LoopScene.tscn')
 const MENU_SCENE = preload('res://src/scenes/MenuScene.tscn')

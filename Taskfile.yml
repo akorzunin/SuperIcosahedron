@@ -2,7 +2,7 @@
 
 version: "3"
 
-output: 'prefixed'
+output: "prefixed"
 
 tasks:
   default:
@@ -25,10 +25,11 @@ tasks:
           xargs clang-format -i -style=file
         {{end}}
     sources:
-      - '**/*.gdshader'
-      - '**/*.gdshaderinc'
+      - "**/*.gdshader"
+      - "**/*.gdshaderinc"
   check:
     desc: run linters and formatters
+    interactive: true
     aliases: [fmt]
     deps:
       - format-shaders
@@ -39,6 +40,7 @@ tasks:
   dev-build-web:
     platforms: [linux]
     desc: build project for web
+    interactive: true
     deps:
       - check
     cmds:
@@ -52,21 +54,23 @@ tasks:
     cmds:
       - rm -f ./build/pc/*.exe || true
       - >-
-        godot --headless --export-debug "Windows Desktop"
+        godot --headless --export-debug "Windows Desktop" --rendering-method forward_plus
         ./build/pc/SuperHexagon-$(./scripts/get_version.sh --short).exe
   dev-build-linux:
     platforms: [linux]
     desc: build project for linux pc
+    interactive: true
     deps:
       - check
     cmds:
       - rm -f ./build/linux/*.x86_64 || true
       - >-
-        godot --headless --export-debug "Linux/X11"
+        godot --headless --export-debug "Linux/X11" --redering-method forward_plus
         ./build/linux/SuperHexagon-$(./scripts/get_version.sh --short).x86_64
   dev-build-android:
     platforms: [linux]
     desc: build project for android
+    interactive: true
     deps:
       - check
     cmds:
@@ -78,6 +82,7 @@ tasks:
   dev-build-all:
     platforms: [linux]
     desc: build for all platforms
+    interactive: true
     aliases: [all]
     deps:
       - dev-build-web
@@ -90,6 +95,7 @@ tasks:
   deploy-build-dev:
     platforms: [linux]
     desc: build for all platforms and upload files to file server
+    interactive: true
     deps:
       - dev-build-all
     cmds:
@@ -97,5 +103,6 @@ tasks:
 
   caddy:
     desc: run reverce proxy to view web build and file server locally
+    interactive: true
     cmds:
       - caddy run --config ./deploy/dev/Caddyfile.local --watch

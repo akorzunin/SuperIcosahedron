@@ -20,8 +20,16 @@ enum RoatationSpeed {NORMAL = 12, SLOW = 5, FAST = 15}
 @export_category("window settings")
 @export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
 
-func _ready() -> void:
+@onready var parent: Node = $'..'
+
+func init():
     set_window_settings()
+
+func _ready() -> void:
+    # use gamesettings node from main scene inside other scenes
+    if parent.name == 'Settings' and Utils.main_scene(self) == 'MainScene':
+        return
+    init()
 
 func parse_preset() -> void:
     var sp = SettingsPreset
@@ -48,7 +56,8 @@ func set_window_settings():
             DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
     if OS.has_feature('editor'):
-        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+        DisplayServer.window_set_mode(WINDOW_MODE)
+
 
     V.use_debanding = true
 
