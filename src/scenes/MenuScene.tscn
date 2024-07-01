@@ -1,0 +1,126 @@
+[gd_scene load_steps=14 format=3 uid="uid://cb5c5tcycst1v"]
+
+[ext_resource type="Script" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
+[ext_resource type="Script" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
+[ext_resource type="Shader" path="res://src/shaders/MenuSceneSky.gdshader" id="2_72pw2"]
+[ext_resource type="Script" path="res://src/components/Settings.gd" id="3_wp0wc"]
+[ext_resource type="Script" path="res://src/components/controls/MenuControls.gd" id="4_rh2oc"]
+[ext_resource type="Script" path="res://src/components/gui/menu/MenuSelector.gd" id="5_idm6q"]
+[ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="7_vbk8k"]
+[ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="8_0medo"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
+shader = ExtResource("2_72pw2")
+shader_parameter/bg_color = Vector3(0.729, 0.902, 0.992)
+
+[sub_resource type="Sky" id="Sky_v8mvj"]
+sky_material = SubResource("ShaderMaterial_4go8s")
+
+[sub_resource type="Environment" id="Environment_dki5q"]
+background_mode = 2
+sky = SubResource("Sky_v8mvj")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_51eil"]
+
+[sub_resource type="GDScript" id="GDScript_ptf72"]
+script/source = "extends PanelContainer
+class_name GamePanelContainer
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+    pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+    pass
+"
+
+[node name="MenuScene" type="Node3D"]
+script = ExtResource("1_75ovp")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.547242, 0.799069, 0.472056, 0.37236, 0.155482, 0.644891, 0.176892)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_dki5q")
+
+[node name="Camera3D" type="Camera3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.966957, 0.25494, 0, -0.25494, 0.966957, 0, 0.626921, 1.89439)
+
+[node name="MenuSpawner" type="Marker3D" parent="."]
+script = ExtResource("1_83tbr")
+
+[node name="Anchor" type="Marker3D" parent="MenuSpawner"]
+unique_name_in_owner = true
+
+[node name="Settings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_wp0wc")
+
+[node name="MenuControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("4_rh2oc")
+
+[node name="MenuSelector" type="Area3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("5_idm6q")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MenuSelector"]
+transform = Transform3D(1, 0, 0, 0, 0.9282, 0.372081, 0, -0.372081, 0.9282, 0, 0.788826, 1.42193)
+shape = SubResource("BoxShape3D_51eil")
+
+[node name="Gui" type="CanvasLayer" parent="."]
+
+[node name="ControlsContainer" type="PanelContainer" parent="Gui"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("7_vbk8k")
+script = SubResource("GDScript_ptf72")
+
+[node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(437.78, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+script = ExtResource("8_0medo")
+action = 2
+
+[node name="RightGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(437.39, 151.48)
+layout_mode = 2
+size_flags_horizontal = 8
+theme = ExtResource("7_vbk8k")
+theme_type_variation = &"FlatButton"
+script = ExtResource("8_0medo")
+action = 3
+
+[node name="UpGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(966.735, 341.23)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+script = ExtResource("8_0medo")
+action = 4
+
+[node name="BotGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(1011.59, 290.225)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+script = ExtResource("8_0medo")
+action = 5
+
+[node name="CenterGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(1011.59, 290.225)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("8_0medo")
+action = 1

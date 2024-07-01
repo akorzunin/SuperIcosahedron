@@ -1,0 +1,194 @@
+[gd_scene load_steps=20 format=3 uid="uid://brpqxl3eljkml"]
+
+[ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
+[ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
+[ext_resource type="Script" path="res://src/components/controls/LoopControls.gd" id="2_ddung"]
+[ext_resource type="Script" path="res://src/components/spawners/FigureRoot.gd" id="3_qa50p"]
+[ext_resource type="Script" path="res://src/components/spawners/Anchor.gd" id="4_vihkp"]
+[ext_resource type="Script" path="res://src/components/spawners/LoopSpawner.gd" id="5_r6722"]
+[ext_resource type="Script" path="res://src/components/gui/LoopGui.gd" id="7_q37nr"]
+[ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="8_tiwnl"]
+[ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="9_51xq3"]
+[ext_resource type="Script" path="res://src/components/Settings.gd" id="9_ami33"]
+[ext_resource type="Script" path="res://src/components/timers/LoopTimer.gd" id="10_5cngg"]
+[ext_resource type="Script" path="res://src/components/GameStateManager.gd" id="10_v8l0a"]
+[ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
+[ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
+shader = ExtResource("1_xr744")
+shader_parameter/bg_color = Vector3(0.729, 0.902, 0.992)
+
+[sub_resource type="Sky" id="Sky_puicm"]
+sky_material = SubResource("ShaderMaterial_kgifq")
+
+[sub_resource type="Environment" id="Environment_27kur"]
+background_mode = 2
+sky = SubResource("Sky_puicm")
+
+[sub_resource type="BoxMesh" id="BoxMesh_is403"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cw5a6"]
+
+[node name="LoopScene" type="Node3D"]
+script = ExtResource("1_rcesrc")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.547242, 0.799069, 0.472056, 0.37236, 0.155482, 0.644891, 0.176892)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_27kur")
+
+[node name="Camera3D" type="Camera3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.907777, 0.419452, 0, -0.419452, 0.907777, 0, 5.94938, 11.9444)
+
+[node name="LoopControls" type="Node" parent="." node_paths=PackedStringArray("figureRoot")]
+process_mode = 3
+script = ExtResource("2_ddung")
+figureRoot = NodePath("../FigureRoot")
+
+[node name="FigureRoot" type="Node3D" parent="."]
+script = ExtResource("3_qa50p")
+
+[node name="SpawnPoint" type="MeshInstance3D" parent="FigureRoot"]
+mesh = SubResource("BoxMesh_is403")
+
+[node name="Anchor" type="Node" parent="FigureRoot"]
+unique_name_in_owner = true
+script = ExtResource("4_vihkp")
+
+[node name="LoopSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
+script = ExtResource("5_r6722")
+figureRoot = NodePath("../FigureRoot")
+
+[node name="Gui" type="CanvasLayer" parent="."]
+script = ExtResource("7_q37nr")
+
+[node name="GameStatePanel" type="PanelContainer" parent="Gui"]
+offset_right = 264.0
+offset_bottom = 80.0
+
+[node name="CenterContainer" type="VFlowContainer" parent="Gui/GameStatePanel"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Gui/GameStatePanel"]
+layout_mode = 2
+alignment = 1
+
+[node name="HFlowContainer" type="HFlowContainer" parent="Gui/GameStatePanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="Gui/GameStatePanel/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+text = "GAME_STATE: "
+horizontal_alignment = 1
+
+[node name="GameStateLabel" type="Label" parent="Gui/GameStatePanel/VBoxContainer/HFlowContainer"]
+layout_mode = 2
+text = "NULL"
+
+[node name="TimerPanel" type="PanelContainer" parent="Gui"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -144.0
+offset_bottom = 56.0
+grow_horizontal = 0
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="CenterContainer" type="CenterContainer" parent="Gui/TimerPanel"]
+layout_mode = 2
+
+[node name="TimerRichTextLabel" type="RichTextLabel" parent="Gui/TimerPanel/CenterContainer"]
+custom_minimum_size = Vector2(86.765, 23.805)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[center]00:00:000[/center]
+"
+
+[node name="ControlsContainer" type="PanelContainer" parent="Gui"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("8_tiwnl")
+
+[node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(437.78, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 2
+
+[node name="RightGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(437.39, 151.48)
+layout_mode = 2
+size_flags_horizontal = 8
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 3
+
+[node name="UpGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(966.735, 341.23)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 4
+
+[node name="BotGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(1011.59, 290.225)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+script = ExtResource("9_51xq3")
+input_type = 0
+action = 5
+
+[node name="CenterGameButton" type="Button" parent="Gui/ControlsContainer"]
+custom_minimum_size = Vector2(1011.59, 290.225)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("9_51xq3")
+action = 1
+
+[node name="Settings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("9_ami33")
+SCALING_ENABLED = true
+spawn_speed = 10
+
+[node name="GameStateManager" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("10_v8l0a")
+
+[node name="LoopTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+script = ExtResource("10_5cngg")
+
+[node name="Despawner" type="Area3D" parent="."]
+script = ExtResource("11_wkoqb")
+
+[node name="DespawnerShape" type="CollisionShape3D" parent="Despawner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5666, 0, 0)
+shape = SubResource("BoxShape3D_cw5a6")
+
+[node name="EndDetector" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.38583, 10.9777)
+
+[node name="EndRay" type="RayCast3D" parent="EndDetector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.432071, 0.596067)
+target_position = Vector3(0, -5.8179, -11.5738)
+collide_with_areas = true
+debug_shape_thickness = 5
+script = ExtResource("12_486y3")

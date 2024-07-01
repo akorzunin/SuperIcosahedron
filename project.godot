@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="SuperIcosahedron"
-run/main_scene="res://v2/scenes/MainScene.tscn"
+run/main_scene="res://src/scenes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/image="res://icon.png"
 boot_splash/fullsize=false
@@ -20,7 +20,7 @@ config/windows_native_icon="res://icon.ico"
 
 [autoload]
 
-G="*res://v2/globals.gd"
+G="*res://src/globals.gd"
 
 [debug]
 

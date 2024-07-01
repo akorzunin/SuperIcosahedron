@@ -1,0 +1,69 @@
+[gd_scene load_steps=16 format=3 uid="uid://c28nbcejwepp8"]
+
+[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
+[ext_resource type="Script" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
+[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/cut_plane_shader.gdshader" id="2_u8yhs"]
+[ext_resource type="Script" path="res://src/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
+[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/cutplane_effect_v2.gdshader" id="5_cipg0"]
+[ext_resource type="Script" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
+[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
+[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
+[ext_resource type="Script" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
+render_priority = 0
+shader = ExtResource("2_u8yhs")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_8mu0u"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
+size = Vector3(1.66211, 1.56055, 1.42188)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i83je"]
+render_priority = 2
+shader = ExtResource("5_ucsrc1")
+shader_parameter/enable = true
+shader_parameter/outline_thickness = 0.05
+shader_parameter/color = Color(0.358796, 0.73469, 0.907072, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
+render_priority = 1
+next_pass = SubResource("ShaderMaterial_i83je")
+shader = ExtResource("5_cipg0")
+shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/enable = false
+shader_parameter/outline_thickness = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_c0lt3")
+shader = ExtResource("5_s1usq")
+shader_parameter/pulse_enabled = false
+shader_parameter/colorflow_enbled = false
+shader_parameter/cutplate_visible = true
+shader_parameter/use_web_colors = false
+shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/color = Vector3(0, 1, 0)
+
+[node name="Icosahedron" type="MeshInstance3D"]
+script = ExtResource("1_w7qn7")
+
+[node name="CutPlane" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.761007, -0.570635, -0.308616, -0.107281, 0.579858, -0.807623, 0.639811, -0.581498, -0.502495, -0.843964, 0.0584427, -0.468957)
+visible = false
+material_override = SubResource("ShaderMaterial_rdyh1")
+mesh = SubResource("PlaneMesh_8mu0u")
+script = ExtResource("2_yg3qy")
+
+[node name="Collider" type="Area3D" parent="."]
+script = ExtResource("7_6oydw")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
+shape = SubResource("BoxShape3D_nvmtx")
+
+[node name="MeshIcosahedron" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_bjqtf")
+cast_shadow = 0
+mesh = ExtResource("1_kd7xu")
+script = ExtResource("5_q8b2e")
