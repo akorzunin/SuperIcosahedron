@@ -2,31 +2,43 @@
 
 version: "3"
 
-vars:
-  GREETING: |
-    help:
-
-      task format-shaders - run shaders formatting
+output: 'prefixed'
 
 tasks:
   default:
     cmds:
-      - echo "{{.GREETING}}"
+      - echo "run task -l or task --list-all to see all avaliable tasks"
     silent: true
   format-shaders:
-    - |
-      {{if eq OS "windows"}}
-        powershell -c '$files=(git ls-files --exclude-standard); foreach ($file in $files) { if ((get-item $file).Extension -in ".gdshader", ".glsl", ".glslv", ".glslf") { clang-format -i -style=file $file } }'
-      {{else}}
-        git ls-files --exclude-standard | grep -E '\.(gdshader|glsl|glslv|glslf)$' | xargs clang-format -i -style=file
-      {{end}}
+    desc: format all ".gdshader" files w/ clang-format
+    cmds:
+      - |
+        {{if eq OS "windows"}}
+          powershell -c
+            '$files=(git ls-files --exclude-standard); foreach ($file in $files) {
+              if ((get-item $file).Extension -in ".gdshader", ".gdshaderinc", ".glsl", ".glslv", ".glslf")
+              { clang-format -i -style=file $file }
+            }'
+        {{else}}
+          git ls-files --exclude-standard |
+          grep -E '\.(gdshader|gdshaderinc|glsl|glslv|glslf)$' |
+          xargs clang-format -i -style=file
+        {{end}}
+    sources:
+      - '**/*.gdshader'
+      - '**/*.gdshaderinc'
   check:
+    desc: run linters and formatters
+    aliases: [fmt]
     deps:
       - format-shaders
     cmds:
-      - pre-commit run --all-files
+      - pre-commit run --all-files --color always
+    sources:
+      - ./*
   dev-build-web:
     platforms: [linux]
+    desc: build project for web
     deps:
       - check
     cmds:
@@ -34,6 +46,7 @@ tasks:
       - godot --headless --export-debug "Web" ./build/web/index.html
   dev-build-windows:
     platforms: [linux]
+    desc: build project for windows pc
     deps:
       - check
     cmds:
@@ -43,6 +56,7 @@ tasks:
         ./build/pc/SuperHexagon-$(./scripts/get_version.sh --short).exe
   dev-build-linux:
     platforms: [linux]
+    desc: build project for linux pc
     deps:
       - check
     cmds:
@@ -52,6 +66,7 @@ tasks:
         ./build/linux/SuperHexagon-$(./scripts/get_version.sh --short).x86_64
   dev-build-android:
     platforms: [linux]
+    desc: build project for android
     deps:
       - check
     cmds:
@@ -62,6 +77,8 @@ tasks:
 
   dev-build-all:
     platforms: [linux]
+    desc: build for all platforms
+    aliases: [all]
     deps:
       - dev-build-web
       - dev-build-windows
@@ -72,11 +89,13 @@ tasks:
 
   deploy-build-dev:
     platforms: [linux]
+    desc: build for all platforms and upload files to file server
     deps:
       - dev-build-all
     cmds:
       - ansible-playbook ./deploy/dev/deploy_local.yaml -l local_pi,
 
   caddy:
+    desc: run reverce proxy to view web build and file server locally
     cmds:
       - caddy run --config ./deploy/dev/Caddyfile.local --watch
