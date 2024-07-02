@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://b00khg3mstn6t"]
+
+[ext_resource type="Script" path="res://src/components/gui/FpsLabel.gd" id="1_a8hv7"]
+
+[sub_resource type="Gradient" id="Gradient_ehij4"]
+offsets = PackedFloat32Array(0, 0.333, 0.667, 1)
+colors = PackedColorArray(1, 0.17, 0.17, 1, 1, 0.816, 0.08, 1, 0.644, 1, 0.11, 1, 0.14, 0.885333, 1, 1)
+
+[node name="FPSLabel" type="Label"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+offset_right = 40.0
+grow_vertical = 0
+size_flags_horizontal = 8
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+horizontal_alignment = 2
+script = ExtResource("1_a8hv7")
+metadata/gradient = SubResource("Gradient_ehij4")

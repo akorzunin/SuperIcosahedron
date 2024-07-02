@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=16 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://src/components/GameSettings.gd" id="5_lbadu"]
 [ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="7_vbk8k"]
 [ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="8_0medo"]
+[ext_resource type="PackedScene" uid="uid://b00khg3mstn6t" path="res://src/components/gui/fps_label.tscn" id="10_djqxo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
 shader = ExtResource("2_72pw2")
@@ -132,3 +133,5 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 script = ExtResource("8_0medo")
 action = 1
+
+[node name="FPSLabel" parent="Gui" instance=ExtResource("10_djqxo")]
