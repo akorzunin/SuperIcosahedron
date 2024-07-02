@@ -4,6 +4,7 @@ class_name LoopSpawner
 @onready var settings: Settings = %Settings
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var loop_timer: LoopTimer = %LoopTimer
+@onready var scale_timer: ScaleTimer = %ScaleTimer
 
 @export var figureRoot: FigureRoot
 const IcosahedronScene = preload('res://src/models/icosahedron/Icosahedron.tscn')
@@ -49,7 +50,10 @@ func spawn_figure(figure: Figure) -> void:
                 .init(
                     settings,
                     {type = get_spawn_type()},
-                    {quat = G.D.init_pos},
+                    {
+                        quat = G.D.init_pos,
+                        scale_timer = scale_timer,
+                    },
                 )
         FigureType.OCTAHEDRON:
             #new_figure = OctahedronScene.instantiate() \

@@ -33,6 +33,12 @@ enum RoatationSpeed {NORMAL = 12, SLOW = 5, FAST = 15}
         ROTATION_SPEED = value
         upd_preset()
 
+enum ScaleFactor {SLOW = 8, NORMAL = 10, FAST = 15}
+@export var SCALE_FACTOR := ScaleFactor.NORMAL:
+    set(value):
+        SCALE_FACTOR = value
+        upd_preset()
+
 @export_category("non presettable")
 @export_group("window")
 @export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
@@ -46,6 +52,7 @@ func upd_preset(p = SettingsPreset.CUSTOM):
 
 func init():
     set_window_settings()
+    # Engine.max_fps = 60
 
 func _ready() -> void:
     if Engine.is_editor_hint():

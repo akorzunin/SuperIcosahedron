@@ -14,13 +14,16 @@ const OUTLINE_V_1 = preload('res://src/models/icosahedron/shaders/outline_v1.gds
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 
 var cutplane_vector := Vector3(1,1,1).normalized()
+var scale_timer: ScaleTimer
+var sf: float
 
 func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
-    scale_factor = settings.SCALE_FACTOR
+    scale_factor = settings.gs.SCALE_FACTOR
     scaling_enabled = settings.SCALING_ENABLED
     DEBUG_VISUAL = settings.DEBUG_VISUAL
     shader_type = shader_args.get("type", 0)
     inital_transfrm = transform_args.get("quat", Quaternion())
+    scale_timer = transform_args.get("scale_timer")
 
     return self
 
@@ -43,7 +46,10 @@ const dst := IcosahedronVarints.dst
 func _ready() -> void:
     if not DEBUG_VISUAL:
         cut_plane.hide()
-
+    if scale_timer:
+        scale_timer.timeout.connect(_on_scale_tick)
+    if scale_factor:
+        sf = (scale_factor + 1000.) / 1000.
     var variant = IcosahedronVarints.figure_variants[shader_type]
     var sm = ShaderMaterial.new()
     sm.shader = ICOSAHEDRON_SHADER_V_1
@@ -71,7 +77,6 @@ func _ready() -> void:
     pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-    var sf = scale_factor / 10. * delta
+func _on_scale_tick() -> void:
     if scaling_enabled:
         scale_object_local(Vector3(sf, sf, sf))

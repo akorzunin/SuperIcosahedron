@@ -18,7 +18,7 @@ func _ready():
 func _process(delta):
     pass
 
-func init_scene(scene: Resource) -> Node3D:
+func init_scene(scene: PackedScene) -> Node3D:
     return scene.instantiate().init({
         game_settings = game_settings
     })

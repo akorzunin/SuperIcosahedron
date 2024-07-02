@@ -9,8 +9,8 @@ enum ActionType {UI_CANCEL, UI_ACCEPT, UI_LEFT, UI_RIGHT, UI_UP, UI_DOWN}
 
 #const BASE = preload('res://src/themes/Base.theme')
 
-func get_action_name(a: ActionType) -> StringName:
-    match a:
+func get_action_name(at: ActionType) -> StringName:
+    match at:
         ActionType.UI_RIGHT:
             return 'ui_right'
         ActionType.UI_LEFT:
