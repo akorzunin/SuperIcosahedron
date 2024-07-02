@@ -29,7 +29,7 @@ void fragment() {
             discard;
         }
         float c = 1. - smoothstep(0., 2.5, clamp(-dist, 0.0, 1.0) * TAU);
-        c = sin(c *TAU * 3. * noiseValue - TIME * time_scale) * c;
+        c = sin(c * TAU * 3. * noiseValue - TIME * time_scale) * c;
         ALBEDO = color;
         ALPHA = c;
     } else {
