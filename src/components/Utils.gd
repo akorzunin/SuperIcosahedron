@@ -11,7 +11,10 @@ static func is_main_scene(_self) -> bool:
 ## Returns current main scene name
 static func main_scene(_self) -> String:
     # Globals always loads first so index of main scene is 1
-    return _self.get_tree().root.get_child(1).name
+    var node = _self.get_tree().root.get_child(1)
+    if not node:
+        return ''
+    return node.name
 
 static func set_scene(_self: Node, scene_name: String):
     _self.get_tree().root.get_child(1).change_scene(scene_name)
