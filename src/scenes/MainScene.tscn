@@ -9,5 +9,4 @@ script = ExtResource("1_7yre0")
 [node name="GameSettings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_mjoy8")
-preset = 2
-SPAWN_MODE = 2
+ROTATION_SPEED = 12

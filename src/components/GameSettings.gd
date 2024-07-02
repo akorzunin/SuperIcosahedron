@@ -1,6 +1,11 @@
+@tool
 extends Node
 class_name GameSettings
 
+@onready var parent: Node = $'..'
+
+@export_category("pssetable")
+@export_group("preset")
 enum SettingsPreset {DEFAULT, DEBUG, CUSTOM}
 @export var preset: SettingsPreset:
     set(value):
@@ -8,19 +13,36 @@ enum SettingsPreset {DEFAULT, DEBUG, CUSTOM}
         parse_preset()
         notify_property_list_changed()
 
+
+@export_subgroup("gameplay")
 enum DespawneMode {NORMAL = 16633, IMMEDIATE = 0, BEFORE_END = 10000}
-@export var DESPAWNER_MODE := DespawneMode.NORMAL
+@export var DESPAWNER_MODE := DespawneMode.NORMAL:
+    set(value):
+        DESPAWNER_MODE = value
+        upd_preset()
 
 enum SpawnMode {QUEUE, RANDOM, CENTER, SIDE}
-@export var SPAWN_MODE := SpawnMode.RANDOM
+@export var SPAWN_MODE := SpawnMode.RANDOM:
+    set(value):
+        SPAWN_MODE = value
+        upd_preset()
 
 enum RoatationSpeed {NORMAL = 12, SLOW = 5, FAST = 15}
-@export var ROTATION_SPEED := RoatationSpeed.FAST
+@export var ROTATION_SPEED := RoatationSpeed.FAST:
+    set(value):
+        ROTATION_SPEED = value
+        upd_preset()
 
-@export_category("window settings")
+@export_category("non presettable")
+@export_group("window")
 @export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
 
-@onready var parent: Node = $'..'
+var setting_preset = false
+
+func upd_preset(p = SettingsPreset.CUSTOM):
+    if setting_preset:
+        return
+    preset = p
 
 func init():
     set_window_settings()
@@ -31,16 +53,22 @@ func _ready() -> void:
         return
     init()
 
+
 func parse_preset() -> void:
     var sp = SettingsPreset
+    setting_preset = true
     match preset:
         sp.DEFAULT:
             DESPAWNER_MODE = DespawneMode.NORMAL
             SPAWN_MODE = SpawnMode.RANDOM
+            ROTATION_SPEED = RoatationSpeed.NORMAL
         sp.DEBUG:
             DESPAWNER_MODE = DespawneMode.BEFORE_END
+            SPAWN_MODE = SpawnMode.SIDE
+            ROTATION_SPEED = RoatationSpeed.SLOW
         sp.CUSTOM:
             pass
+    setting_preset = false
 
 func set_window_settings():
     var V = get_viewport()
