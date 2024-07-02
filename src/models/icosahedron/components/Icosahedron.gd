@@ -71,6 +71,7 @@ func _ready() -> void:
     pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
+    var sf = scale_factor / 10. * delta
     if scaling_enabled:
-        scale_object_local(Vector3(scale_factor, scale_factor, scale_factor, ))
+        scale_object_local(Vector3(sf, sf, sf))
