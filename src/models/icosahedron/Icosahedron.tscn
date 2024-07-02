@@ -67,6 +67,8 @@ mesh = SubResource("PlaneMesh_8mu0u")
 script = ExtResource("2_yg3qy")
 
 [node name="Collider" type="Area3D" parent="."]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource("7_6oydw")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]

@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
 [ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
 [ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="13_5pxmk"]
+[ext_resource type="Shape3D" uid="uid://btrsj0kixks2v" path="res://src/resources/new_box_shape_3d.tres" id="15_vjoix"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -28,8 +29,6 @@ background_mode = 2
 sky = SubResource("Sky_puicm")
 
 [sub_resource type="BoxMesh" id="BoxMesh_is403"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_cw5a6"]
 
 [node name="LoopScene" type="Node3D"]
 script = ExtResource("1_rcesrc")
@@ -182,11 +181,13 @@ unique_name_in_owner = true
 script = ExtResource("13_5pxmk")
 
 [node name="Despawner" type="Area3D" parent="."]
+collision_layer = 3
+collision_mask = 3
 script = ExtResource("11_wkoqb")
 
 [node name="DespawnerShape" type="CollisionShape3D" parent="Despawner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5666, 0, 0)
-shape = SubResource("BoxShape3D_cw5a6")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.78273, 0, 0)
+shape = ExtResource("15_vjoix")
 
 [node name="EndDetector" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.38583, 10.9777)
