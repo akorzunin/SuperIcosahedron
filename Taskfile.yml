@@ -4,6 +4,10 @@ version: "3"
 
 output: "prefixed"
 
+vars:
+  APP_NAME:
+    sh: echo "SuperIcosahedron-$(./scripts/get_version.sh --short)-$(./scripts/get_version.sh --tag)"
+
 tasks:
   default:
     cmds:
@@ -29,7 +33,6 @@ tasks:
       - "**/*.gdshaderinc"
   check:
     desc: run linters and formatters
-    interactive: true
     aliases: [fmt]
     deps:
       - format-shaders
@@ -45,6 +48,7 @@ tasks:
       - check
     cmds:
       - rm -f ./build/web/* || true
+      - mkdir -p ./build/web
       - godot --headless --export-debug "Web" ./build/web/index.html
   dev-build-windows:
     platforms: [linux]
@@ -53,9 +57,10 @@ tasks:
       - check
     cmds:
       - rm -f ./build/pc/*.exe || true
+      - mkdir -p ./build/pc
       - >-
         godot --headless --export-debug "Windows Desktop" --rendering-method forward_plus
-        ./build/pc/SuperHexagon-$(./scripts/get_version.sh --short).exe
+        ./build/pc/{{.APP_NAME}}-dev.exe
   dev-build-linux:
     platforms: [linux]
     desc: build project for linux pc
@@ -64,9 +69,10 @@ tasks:
       - check
     cmds:
       - rm -f ./build/linux/*.x86_64 || true
+      - mkdir -p ./build/linux
       - >-
-        godot --headless --export-debug "Linux/X11" --redering-method forward_plus
-        ./build/linux/SuperHexagon-$(./scripts/get_version.sh --short).x86_64
+        godot --headless --export-debug "Linux/X11" --rendering-method forward_plus
+        ./build/linux/{{.APP_NAME}}-dev.x86_64
   dev-build-android:
     platforms: [linux]
     desc: build project for android
@@ -75,9 +81,10 @@ tasks:
       - check
     cmds:
       - rm -f ./build/android/*.apk || true
+      - mkdir -p ./build/android
       - >-
         godot --headless --export-debug "Android"
-        ./build/android/SuperHexagon-$(./scripts/get_version.sh --short).apk
+        ./build/android/{{.APP_NAME}}-dev.apk
 
   dev-build-all:
     platforms: [linux]
