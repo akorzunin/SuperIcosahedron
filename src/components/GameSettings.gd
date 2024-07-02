@@ -2,7 +2,7 @@
 extends Node
 class_name GameSettings
 
-@onready var parent: Node = $'..'
+@onready var parent: Node
 
 @export_category("pssetable")
 @export_group("preset")
@@ -48,6 +48,9 @@ func init():
     set_window_settings()
 
 func _ready() -> void:
+    if Engine.is_editor_hint():
+        return
+    parent = get_parent()
     # use gamesettings node from main scene inside other scenes
     if parent.name == 'Settings' and Utils.main_scene(self) == 'MainScene':
         return
