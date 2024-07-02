@@ -28,6 +28,8 @@ static func set_shader_param(node: MeshInstance3D, _name: String, value: Variant
         (m.next_pass as ShaderMaterial).set_shader_parameter(_name, value)
     elif idx == 2 and m.next_pass and m.next_pass.next_pass:
         (m.next_pass.next_pass as ShaderMaterial).set_shader_parameter(_name, value)
+    elif idx == 3 and m.next_pass and m.next_pass.next_pass and m.next_pass.next_pass.next_pass:
+        (m.next_pass.next_pass.next_pass as ShaderMaterial).set_shader_parameter(_name, value)
     return
 
 enum RenderMethods {GL_COMPATIBILITY, MOBILE, FORWARD_PLUS}
