@@ -7,7 +7,7 @@ render_mode cull_back;
 uniform bool enable = true;
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
 uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
-uniform vec3 color : source_color = vec3(0., 0., 0.);
+uniform vec3 color : source_color = vec3(0., .5, 0.);
 uniform float time_scale = 10.;
 uniform sampler2D noise_pattern;
 
@@ -30,7 +30,10 @@ void fragment() {
         }
         float c = 1. - smoothstep(0., 2.5, clamp(-dist, 0.0, 1.0) * TAU);
         c = sin(c * TAU * 3. * noiseValue - TIME * time_scale) * c;
-        ALBEDO = color;
+        vec3 cc = color;
+        vec3 c_hsv = rgb2hsv(color);
+        c_hsv[2] = c;
+        ALBEDO = hsv2rgb(c_hsv);
         ALPHA = c;
     } else {
         ALPHA = .0;
