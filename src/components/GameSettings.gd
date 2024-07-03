@@ -39,6 +39,17 @@ enum ScaleFactor {SLOW = 8, NORMAL = 10, FAST = 15}
         SCALE_FACTOR = value
         upd_preset()
 
+@export_subgroup("UI")
+@export var FPS_COUNTER_ENABLED := false:
+    set(value):
+        FPS_COUNTER_ENABLED = value
+        upd_preset()
+
+@export var SHOW_APP_VERSION := false:
+    set(value):
+        SHOW_APP_VERSION = value
+        upd_preset()
+
 @export_category("non presettable")
 @export_group("window")
 @export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
@@ -72,10 +83,12 @@ func parse_preset() -> void:
             DESPAWNER_MODE = DespawneMode.NORMAL
             SPAWN_MODE = SpawnMode.RANDOM
             ROTATION_SPEED = RoatationSpeed.NORMAL
+            FPS_COUNTER_ENABLED = true
         sp.DEBUG:
             DESPAWNER_MODE = DespawneMode.BEFORE_END
             SPAWN_MODE = SpawnMode.SIDE
             ROTATION_SPEED = RoatationSpeed.SLOW
+            FPS_COUNTER_ENABLED = true
         sp.CUSTOM:
             pass
     setting_preset = false
