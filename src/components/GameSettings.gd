@@ -40,7 +40,7 @@ enum ScaleFactor {SLOW = 8, NORMAL = 10, FAST = 15}
         upd_preset()
 
 @export_subgroup("UI")
-@export var FPS_COUNTER_ENABLED := false:
+@export var FPS_COUNTER_ENABLED := true:
     set(value):
         FPS_COUNTER_ENABLED = value
         upd_preset()

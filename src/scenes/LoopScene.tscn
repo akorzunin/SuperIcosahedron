@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=23 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://src/components/GameStateManager.gd" id="10_v8l0a"]
 [ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
 [ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
+[ext_resource type="Script" path="res://src/components/GameSettings.gd" id="12_xjudj"]
 [ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
@@ -171,6 +172,11 @@ unique_name_in_owner = true
 script = ExtResource("9_ami33")
 SCALING_ENABLED = true
 spawn_speed = 10
+
+[node name="GameSettings" type="Node" parent="Settings"]
+unique_name_in_owner = true
+script = ExtResource("12_xjudj")
+preset = 2
 
 [node name="GameStateManager" type="Node" parent="."]
 unique_name_in_owner = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=19 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
+[ext_resource type="Texture2D" uid="uid://bpr01fnnfusau" path="res://src/models/icosahedron/resources/edge_noise.res" id="6_ai0t7"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
@@ -25,8 +26,9 @@ render_priority = 0
 shader = ExtResource("5_al5e2")
 shader_parameter/enable = true
 shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
-shader_parameter/color = Color(0, 0, 0, 1)
-shader_parameter/time_scale = 7.94
+shader_parameter/color = Color(0, 0.5, 0, 1)
+shader_parameter/time_scale = 10.0
+shader_parameter/noise_pattern = ExtResource("6_ai0t7")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i83je"]
 render_priority = 2

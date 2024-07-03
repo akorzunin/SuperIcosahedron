@@ -42,8 +42,10 @@ func set_cutplane(v: Vector4):
         mesh_icosahedron.add_child(ray)
 
 func set_color(arr: Array):
-    Utils.set_shader_param(mesh_icosahedron, "color", Vector3(arr[0], arr[1], arr[2]))
-    Utils.set_shader_param(mesh_icosahedron, "color", Vector3(arr[0], arr[1], arr[2]), 1)
+    var c = Vector3(arr[0], arr[1], arr[2])
+    Utils.set_shader_param(mesh_icosahedron, "color", c)
+    Utils.set_shader_param(mesh_icosahedron, "color", c, 1)
+    Utils.set_shader_param(mesh_icosahedron, "color", c, 3)
 
 const dst := IcosahedronVarints.dst
 

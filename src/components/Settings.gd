@@ -9,6 +9,7 @@ class_name Settings
 enum SpawnSpeeds {SPEED_0 = 7, SPEED_1 = 10, SPEED_2 = 20, SPEED_3 = 50}
 @export var spawn_speed: SpawnSpeeds
 
+# TODO: fix wrong init order
 var gs: GameSettings = GameSettings.new()
 
 func _ready() -> void:
