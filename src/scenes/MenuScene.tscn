@@ -67,7 +67,6 @@ script = ExtResource("3_wp0wc")
 unique_name_in_owner = true
 script = ExtResource("5_lbadu")
 preset = 2
-SCALE_FACTOR = null
 WINDOW_MODE = 3
 
 [node name="MenuControls" type="Control" parent="."]

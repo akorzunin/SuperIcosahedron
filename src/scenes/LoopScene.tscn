@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=22 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -11,10 +11,11 @@
 [ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="9_51xq3"]
 [ext_resource type="Script" path="res://src/components/Settings.gd" id="9_ami33"]
 [ext_resource type="Script" path="res://src/components/timers/LoopTimer.gd" id="10_5cngg"]
-[ext_resource type="PackedScene" path="res://src/components/gui/fps_label.tscn" id="10_20kj1"]
+[ext_resource type="PackedScene" uid="uid://b00khg3mstn6t" path="res://src/components/gui/fps_label.tscn" id="10_20kj1"]
 [ext_resource type="Script" path="res://src/components/GameStateManager.gd" id="10_v8l0a"]
 [ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
 [ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
+[ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -178,6 +179,10 @@ script = ExtResource("10_v8l0a")
 [node name="LoopTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 script = ExtResource("10_5cngg")
+
+[node name="ScaleTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+script = ExtResource("14_3258y")
 
 [node name="Despawner" type="Area3D" parent="."]
 collision_layer = 3
