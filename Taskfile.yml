@@ -46,6 +46,7 @@ tasks:
     interactive: true
     deps:
       - check
+      - build-check
     cmds:
       - rm -f ./build/web/* || true
       - mkdir -p ./build/web
@@ -55,6 +56,7 @@ tasks:
     desc: build project for windows pc
     deps:
       - check
+      - build-check
     cmds:
       - rm -f ./build/pc/*.exe || true
       - mkdir -p ./build/pc
@@ -67,6 +69,7 @@ tasks:
     interactive: true
     deps:
       - check
+      - build-check
     cmds:
       - rm -f ./build/linux/*.x86_64 || true
       - mkdir -p ./build/linux
@@ -79,6 +82,7 @@ tasks:
     interactive: true
     deps:
       - check
+      - build-check
     cmds:
       - rm -f ./build/android/*.apk || true
       - mkdir -p ./build/android
@@ -113,3 +117,10 @@ tasks:
     interactive: true
     cmds:
       - caddy run --config ./deploy/dev/Caddyfile.local --watch
+
+  build-check:
+    desc: run prebuild scripts
+    cmds:
+      - python ./scripts/build_check.py
+    sources:
+      - project.godot
