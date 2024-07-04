@@ -2,6 +2,8 @@
 extends Node
 class_name GameSettings
 
+const config = preload('res://src/components/settings/SettingsConfig.gd')
+
 @onready var parent: Node
 
 @export_category("pssetable")
@@ -12,7 +14,6 @@ enum SettingsPreset {DEFAULT, DEBUG, CUSTOM}
         preset = value
         parse_preset()
         notify_property_list_changed()
-
 
 @export_subgroup("gameplay")
 enum DespawneMode {NORMAL = 16633, IMMEDIATE = 0, BEFORE_END = 10000}
@@ -60,6 +61,13 @@ func upd_preset(p = SettingsPreset.CUSTOM):
     if setting_preset:
         return
     preset = p
+
+func load_from_config(_config: ConfigFile):
+    # init all fields from fields that in .cfg file
+    # also mb a ggod idea to setting_preset = true while initting
+    #pass
+    # default values will be used if config not provided
+    return self
 
 func init():
     set_window_settings()
