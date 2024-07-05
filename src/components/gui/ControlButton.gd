@@ -65,10 +65,8 @@ func set_button_size():
             custom_minimum_size.y = int(screenSize.y * (d / 100.))
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    process_mode = Node.PROCESS_MODE_ALWAYS
-    set_button_size()
-    pass # Replace with function body.
-
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_button_size()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

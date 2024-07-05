@@ -38,19 +38,18 @@ func open_menu_section(node, items):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-    # only one node allowed at startup
-    if anchor.get_node_or_null("Icosahedron"):
-        return
-    var new_figure = IcosahedronScene.instantiate() \
-                .init(
-                    settings,
-                    {type=0},
-                    {quat=G.D.init_pos}
-                )
-    #new_figure.hide()
-    anchor.add_child(new_figure)
-    add_menu_items(anchor, MenuStruct.menu_items)
-    pass # Replace with function body.
+	# only one node allowed at startup
+	if anchor.get_node_or_null("Icosahedron"):
+		return
+	var new_figure = IcosahedronScene.instantiate() \
+				.init(
+					settings,
+					{type=0},
+					{quat=G.D.init_pos}
+				)
+	#new_figure.hide()
+	anchor.add_child(new_figure)
+	add_menu_items(anchor, MenuStruct.menu_items)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

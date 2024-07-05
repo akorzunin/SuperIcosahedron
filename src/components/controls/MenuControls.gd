@@ -18,9 +18,7 @@ var initial_pos := Vector3()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    MENU_ROTATION_SPEED = settings.gs.ROTATION_SPEED
-
-    pass  # Replace with function body.
+	MENU_ROTATION_SPEED = settings.gs.ROTATION_SPEED
 
 ## In menu we apply all rotations to Anshor node
 func get_controlled_node() -> Node3D:
