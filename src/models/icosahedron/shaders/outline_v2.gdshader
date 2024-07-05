@@ -20,7 +20,7 @@ uniform vec3 shadow_color : source_color = vec3(0.0);
 
 float getDepth(vec2 screen_uv, sampler2D depth_texture,
                mat4 inv_projection_matrix) {
-    //	Credit:
+    //  Credit:
     // https://godotshaders.com/shader/depth-modulated-pixel-outline-in-screen-space/
     float raw_depth = texture(depth_texture, screen_uv)[0];
     vec3 normalized_device_coordinates = vec3(screen_uv * 2.0 - 1.0, raw_depth);
@@ -55,7 +55,7 @@ void fragment() {
     vec2 uv = cellSize * round(SCREEN_UV / cellSize);
     vec2 orig_uv = SCREEN_UV;
 
-    //	Shadows
+    //  Shadows
     float depth_diff = 0.0;
     float neg_depth_diff = 0.0;
     if (shadows_enabled) {
@@ -87,7 +87,7 @@ void fragment() {
         // ALBEDO = vec3(depth_diff);
     }
 
-    //	Highlights
+    //  Highlights
     float normal_diff = 0.;
     if (highlights_enabled) {
         vec2 uv_use = max(uv, orig_uv);

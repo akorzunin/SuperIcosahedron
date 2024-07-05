@@ -25,9 +25,9 @@ func _ready() -> void:
 
 func _gui_input(event: InputEvent) -> void:
     # We must start touching inside, but we can drag or unpress outside.
-#	if not (event is InputEventScreenDrag or
-#		(event is InputEventScreenTouch and (not event.pressed or get_global_rect().has_point(event.position)))):
-#		return
+#   if not (event is InputEventScreenDrag or
+#       (event is InputEventScreenTouch and (not event.pressed or get_global_rect().has_point(event.position)))):
+#       return
     if event is InputEventScreenTouch or event is InputEventMouseButton:
         Input.action_press('ui_accept')
 

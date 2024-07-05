@@ -29,11 +29,11 @@ uniform vec4 ColorParameter : source_color = vec4(0.931317, 0.540617, 0.726391, 
 
 void fragment() {
 // ColorParameter:4
-	vec4 n_out4p0 = ColorParameter;
+    vec4 n_out4p0 = ColorParameter;
 
 
 // Output:0
-	ALBEDO = vec3(n_out4p0.xyz);
+    ALBEDO = vec3(n_out4p0.xyz);
 
 
 }
