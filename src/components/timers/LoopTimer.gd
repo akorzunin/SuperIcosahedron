@@ -7,7 +7,6 @@ var time_start: int
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
-    pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

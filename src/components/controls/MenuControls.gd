@@ -20,8 +20,6 @@ var initial_pos := Vector3()
 func _ready() -> void:
     MENU_ROTATION_SPEED = settings.gs.ROTATION_SPEED
 
-    pass  # Replace with function body.
-
 ## In menu we apply all rotations to Anshor node
 func get_controlled_node() -> Node3D:
     var node = menuSpawner.get_node("Anchor").get_children()

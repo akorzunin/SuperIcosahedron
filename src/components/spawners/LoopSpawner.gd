@@ -12,7 +12,6 @@ const IcosahedronScene = preload('res://src/models/icosahedron/Icosahedron.tscn'
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
     loop_timer.timeout.connect(_on_loop_timer)
-    pass  # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

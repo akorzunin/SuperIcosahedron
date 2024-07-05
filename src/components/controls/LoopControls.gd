@@ -10,7 +10,6 @@ class_name LoopControls
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     ROTATION_SPEED = settings.gs.ROTATION_SPEED
-    pass # Replace with function body.
 
 func set_controlled_node(node: MeshIcosahedron):
     if controlledNode != null and controlledNode is MeshIcosahedron:

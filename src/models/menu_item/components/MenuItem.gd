@@ -34,8 +34,6 @@ func _ready() -> void:
             transform.basis = Basis(t * t * t * t)
         6:
             transform.basis = Basis(Quats.menu_quat_down().inverse())
-    pass # Replace with function body.
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
