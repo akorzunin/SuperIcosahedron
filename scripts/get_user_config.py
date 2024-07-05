@@ -13,7 +13,7 @@ default_config = Path("./src/components/settings/default_settings.cfg")
 
 def get_config_path(project_name: str) -> Path:
     if sys.platform.startswith("win"):
-        path = Path(os.getenv("APPDATA")) / "Godot" / "app_userdata" / project_name
+        path = Path(os.getenv("APPDATA")) / "Godot" / "app_userdata" / project_name # type: ignore
     elif sys.platform == "darwin":
         path = (
             Path.home()
@@ -63,9 +63,7 @@ def main():
         "--default",
         action="store_true",
         help="Use default config",
-        default=default_config,
     )
-
 
     args = parser.parse_args()
 
@@ -74,9 +72,7 @@ def main():
     if args.default:
         config_file = default_config
 
-    if args.show:
-        print(f"Config File Path: {config_file}")
-    elif args.open:
+    if args.open:
         try:
             if sys.platform.startswith("win") and args.editor == opener:
                 os.startfile(config_file)
@@ -84,6 +80,10 @@ def main():
                 os.system(f"{args.editor} {config_file}")
         except Exception as e:
             print(f"Error opening file: {e}")
+    elif args.show:
+        print(f"Config File Path: {config_file}")
+    elif len(sys.argv) == 1:
+        print(config_file)
 
 
 if __name__ == "__main__":
