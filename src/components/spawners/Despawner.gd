@@ -8,8 +8,6 @@ class_name Despawner
 func _ready() -> void:
     despawner_shape.position = Vector3(settings.gs.DESPAWNER_MODE / 1000., 0, 0)
     area_shape_entered.connect(_on_shape_entered)
-    pass # Replace with function body.
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

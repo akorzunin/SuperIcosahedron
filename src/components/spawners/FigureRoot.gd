@@ -8,7 +8,6 @@ class_name FigureRoot
 func _ready() -> void:
     if not settings.DEBUG_VISUAL:
         spawn_point.hide()
-    pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

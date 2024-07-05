@@ -67,8 +67,6 @@ func set_button_size():
 func _ready() -> void:
     process_mode = Node.PROCESS_MODE_ALWAYS
     set_button_size()
-    pass # Replace with function body.
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

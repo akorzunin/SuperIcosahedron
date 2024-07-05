@@ -50,7 +50,6 @@ func _ready():
     #new_figure.hide()
     anchor.add_child(new_figure)
     add_menu_items(anchor, MenuStruct.menu_items)
-    pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
