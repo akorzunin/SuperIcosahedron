@@ -65,6 +65,8 @@ func check_controlled_node():
 func _input(event: InputEvent):
     check_controlled_node()
     if event.is_action_pressed('ui_accept'):
+        if event is InputEventKey and event.alt_pressed:
+            return
         call_menu_action()
     if controlledNode and target.get("progress", 1) < 1:
         return
