@@ -9,7 +9,7 @@ class_name Settings
 enum SpawnSpeeds {SPEED_0 = 7, SPEED_1 = 10, SPEED_2 = 20, SPEED_3 = 50}
 @export var spawn_speed: SpawnSpeeds
 
-const SettingsConfig = preload('res://src/components/settings/SettingsConfig.gd')
+const settings_config = preload('res://src/components/settings/SettingsConfig.gd')
 # TODO: fix wrong init order
 var gs: GameSettings:
     get = get_gs
@@ -24,8 +24,8 @@ var config: SettingsConfig:
     get = get_settings_config
 
 func get_settings_config():
-    var config = SettingsConfig.new()
-    var config_file = config.load_config()
+    var _config = SettingsConfig.new()
+    var config_file = _config.load_config()
     return GameSettings.new().load_from_config(config_file)
 
 
