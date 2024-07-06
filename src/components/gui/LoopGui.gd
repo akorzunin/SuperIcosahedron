@@ -5,10 +5,13 @@ class_name LoopGui
 @onready var game_state_label: Label = $GameStatePanel/VBoxContainer/HFlowContainer/GameStateLabel
 @onready var loop_timer: LoopTimer = %LoopTimer
 @onready var timer_rich_text_label: RichTextLabel = $TimerPanel/CenterContainer/TimerRichTextLabel
+@onready var debug_stats_container: DebugStatsContainer = %DebugStatsContainer
+@onready var common_controls: CommonControls = %CommonControls
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
+    common_controls.toggle_debug_stats.connect(_on_toggle)
 
 func _physics_process(delta: float) -> void:
     timer_rich_text_label.set_text(loop_timer.get_elapsed_time())
@@ -17,3 +20,9 @@ func _physics_process(delta: float) -> void:
 
 func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     game_state_label.set_text(GameStateManager.GameStateNames[new_state])
+
+func _on_toggle(v: bool):
+    if v:
+        debug_stats_container.hide()
+    else:
+        debug_stats_container.show()

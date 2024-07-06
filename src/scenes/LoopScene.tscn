@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=25 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/components/spawners/Anchor.gd" id="4_vihkp"]
 [ext_resource type="Script" path="res://src/components/spawners/LoopSpawner.gd" id="5_r6722"]
 [ext_resource type="Script" path="res://src/components/gui/LoopGui.gd" id="7_q37nr"]
+[ext_resource type="PackedScene" uid="uid://derbnrboktp1g" path="res://src/components/gui/DebugStatsContainer.tscn" id="8_jh3v8"]
 [ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="8_tiwnl"]
 [ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="9_51xq3"]
 [ext_resource type="Script" path="res://src/components/Settings.gd" id="9_ami33"]
@@ -15,6 +16,7 @@
 [ext_resource type="Script" path="res://src/components/GameStateManager.gd" id="10_v8l0a"]
 [ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
 [ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
+[ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="12_fcd1m"]
 [ext_resource type="Script" path="res://src/components/GameSettings.gd" id="12_xjudj"]
 [ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
 
@@ -69,7 +71,11 @@ figureRoot = NodePath("../FigureRoot")
 [node name="Gui" type="CanvasLayer" parent="."]
 script = ExtResource("7_q37nr")
 
+[node name="DebugStatsContainer" parent="Gui" instance=ExtResource("8_jh3v8")]
+unique_name_in_owner = true
+
 [node name="GameStatePanel" type="PanelContainer" parent="Gui"]
+visible = false
 offset_right = 264.0
 offset_bottom = 80.0
 
@@ -166,6 +172,14 @@ script = ExtResource("9_51xq3")
 action = 1
 
 [node name="FPSLabel" parent="Gui" instance=ExtResource("10_20kj1")]
+
+[node name="CommonControls" type="Control" parent="Gui"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("12_fcd1m")
 
 [node name="Settings" type="Node" parent="."]
 unique_name_in_owner = true

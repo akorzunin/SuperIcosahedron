@@ -3,6 +3,8 @@ extends RayCast3D
 class_name EndRay
 
 @onready var loop_controls: LoopControls = $'../../LoopControls'
+@onready var gui: LoopGui = $'../../Gui'
+
 ## vactor that points at EndGame marker
 var pass_vec: Vector3
 var MIN_END_DISTANCE := 0.05
@@ -29,7 +31,7 @@ func _physics_process(delta):
         if angle == AngleType.ANGLE_OK:
             loop_controls.pass_next_node(node)
 
-    $'../../Gui/GameStatePanel/VBoxContainer/HFlowContainer/GameStateLabel'.set_text("%f" % miss_angle)
+    gui.debug_stats_container.angle.label_text = str(miss_angle)
     pass
 
 enum AngleType {ANGLE_WRONG, ANGLE_OK, ANGLE_GOOD}

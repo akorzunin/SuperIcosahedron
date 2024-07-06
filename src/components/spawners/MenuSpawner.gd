@@ -4,6 +4,7 @@ class_name MenuSpawner
 @onready var settings: Settings = %Settings
 @onready var anchor: Marker3D = %Anchor
 @onready var menu_scene: MenuSpawner = $'.'
+@onready var gui: MenuGui = $'../Gui'
 
 const IcosahedronScene = preload ('res://src/models/icosahedron/Icosahedron.tscn')
 const MenuItemScene = preload('res://src/models/menu_item/MenuItem.tscn')
@@ -49,7 +50,11 @@ func _ready():
                 )
     #new_figure.hide()
     anchor.add_child(new_figure)
+    call_deferred('set_debug_angle', anchor.get_child_count())
     add_menu_items(anchor, MenuStruct.menu_items)
+
+func set_debug_angle(v: int):
+    gui.debug_stats_container.figures_count.label_text = str(v)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

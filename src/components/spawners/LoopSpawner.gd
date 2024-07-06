@@ -63,5 +63,6 @@ func spawn_figure(figure: Figure) -> void:
 
     figureRoot.add_figure(new_figure)
 
+
 func _on_loop_timer():
     spawn_figure(Figure.new(FigureType.ICOSAHEDRON))
