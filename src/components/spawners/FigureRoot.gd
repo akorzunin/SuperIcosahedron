@@ -1,13 +1,12 @@
 extends Node3D
 class_name FigureRoot
 
-@onready var settings = %Settings
 @onready var spawn_point = $SpawnPoint
 @onready var gui: LoopGui = $'../Gui'
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    if not settings.DEBUG_VISUAL:
+    if not G.settings.get("DEBUG_VISUAL", true):
         spawn_point.hide()
 
 func add_figure(new_figure) -> void:

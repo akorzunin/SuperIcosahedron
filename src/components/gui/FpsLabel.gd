@@ -1,12 +1,11 @@
 extends Label
 
-@onready var settings = %Settings
 @export var enabled := true
 var counter := 0.
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    enabled = settings.gs.FPS_COUNTER_ENABLED
+    enabled = G.settings.FPS_COUNTER_ENABLED
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

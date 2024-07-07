@@ -1,18 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://bl2xm774sjmm6"]
+[gd_scene load_steps=5 format=3 uid="uid://bl2xm774sjmm6"]
 
 [ext_resource type="Script" path="res://src/scenes/init/MainScene.gd" id="1_7yre0"]
 [ext_resource type="Script" path="res://src/components/GameSettings.gd" id="2_mjoy8"]
+[ext_resource type="Script" path="res://src/components/settings/Config.gd" id="3_656kb"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="3_eruj2"]
 
 [node name="MainScene" type="Node"]
 script = ExtResource("1_7yre0")
-
-[node name="GameSettings" type="Node" parent="."]
-unique_name_in_owner = true
-script = ExtResource("2_mjoy8")
-preset = 2
-ROTATION_SPEED = 12
-SHOW_DEBUG_STATS = null
 
 [node name="CommonControls" type="Control" parent="."]
 unique_name_in_owner = true
@@ -21,3 +15,9 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("3_eruj2")
+
+[node name="Config" type="Node" parent="."]
+script = ExtResource("3_656kb")
+
+[node name="GameSettings" type="Node" parent="."]
+script = ExtResource("2_mjoy8")

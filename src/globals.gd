@@ -7,3 +7,4 @@ var D = {
     init_pos = Quaternion(0, 0.707, 0, 0.707).normalized(),
 }
 var data := {}
+var settings := {}

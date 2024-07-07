@@ -1,17 +1,16 @@
-[gd_scene load_steps=19 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=18 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
 [ext_resource type="Shader" path="res://src/shaders/MenuSceneSky.gdshader" id="2_72pw2"]
-[ext_resource type="Script" path="res://src/components/Settings.gd" id="3_wp0wc"]
 [ext_resource type="Script" path="res://src/components/controls/MenuControls.gd" id="4_rh2oc"]
 [ext_resource type="Script" path="res://src/components/gui/menu/MenuSelector.gd" id="5_idm6q"]
-[ext_resource type="Script" path="res://src/components/GameSettings.gd" id="5_lbadu"]
 [ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="7_vbk8k"]
 [ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="8_0medo"]
 [ext_resource type="Script" path="res://src/components/gui/MenuGui.gd" id="8_rgs6i"]
 [ext_resource type="PackedScene" uid="uid://derbnrboktp1g" path="res://src/components/gui/DebugStatsContainer.tscn" id="8_w8wvy"]
 [ext_resource type="PackedScene" uid="uid://b00khg3mstn6t" path="res://src/components/gui/fps_label.tscn" id="10_djqxo"]
+[ext_resource type="Script" path="res://src/components/settings/Config.gd" id="12_qaxtt"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="13_cfv8o"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
@@ -55,17 +54,6 @@ script = ExtResource("1_83tbr")
 
 [node name="Anchor" type="Marker3D" parent="MenuSpawner"]
 unique_name_in_owner = true
-
-[node name="Settings" type="Node" parent="."]
-unique_name_in_owner = true
-script = ExtResource("3_wp0wc")
-
-[node name="GameSettings" type="Node" parent="Settings"]
-unique_name_in_owner = true
-script = ExtResource("5_lbadu")
-preset = 2
-FPS_COUNTER_ENABLED = false
-WINDOW_MODE = 3
 
 [node name="MenuControls" type="Control" parent="."]
 layout_mode = 3
@@ -144,3 +132,6 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("13_cfv8o")
+
+[node name="Config" type="Node" parent="."]
+script = ExtResource("12_qaxtt")

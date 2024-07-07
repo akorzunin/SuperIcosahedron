@@ -3,8 +3,6 @@ extends Node
 const LOOP_SCENE = preload('res://src/scenes/LoopScene.tscn')
 const MENU_SCENE = preload('res://src/scenes/MenuScene.tscn')
 
-@onready var game_settings: GameSettings = %GameSettings
-
 @export var start_fullscreen := false
 var current_scene
 
@@ -18,9 +16,7 @@ func _process(delta):
     pass
 
 func init_scene(scene: PackedScene) -> Node3D:
-    return scene.instantiate().init({
-        game_settings = game_settings
-    })
+    return scene.instantiate().init({})
 
 func release_inputs():
     for a in InputMap.get_actions():

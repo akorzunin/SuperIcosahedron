@@ -19,10 +19,10 @@ var cutplane_vector := Vector3(1,1,1).normalized()
 var scale_timer: ScaleTimer
 var sf: float
 
-func init(settings: Settings, shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
-    scale_factor = settings.gs.SCALE_FACTOR
-    scaling_enabled = settings.SCALING_ENABLED
-    DEBUG_VISUAL = settings.DEBUG_VISUAL
+func init(shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
+    scale_factor = G.settings.SCALE_FACTOR
+    scaling_enabled = G.settings.get("SCALING_ENABLED", true)
+    DEBUG_VISUAL = G.settings.get("DEBUG_VISUAL", false)
     shader_type = shader_args.get("type", 0)
     inital_transfrm = transform_args.get("quat", Quaternion())
     scale_timer = transform_args.get("scale_timer")

@@ -1,7 +1,6 @@
 extends Node3D
 class_name MenuSpawner
 
-@onready var settings: Settings = %Settings
 @onready var anchor: Marker3D = %Anchor
 @onready var menu_scene: MenuSpawner = $'.'
 @onready var gui: MenuGui = $'../Gui'
@@ -44,7 +43,6 @@ func _ready():
         return
     var new_figure = IcosahedronScene.instantiate() \
                 .init(
-                    settings,
                     {type=0},
                     {quat=G.D.init_pos}
                 )

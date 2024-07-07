@@ -1,15 +1,13 @@
 extends Node
 class_name LoopControls
 
-@onready var settings = %Settings
-
 @export var figureRoot: FigureRoot
 @export var controlledNode: MeshIcosahedron
 @export var ROTATION_SPEED: float
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    ROTATION_SPEED = settings.gs.ROTATION_SPEED
+    ROTATION_SPEED = G.settings.ROTATION_SPEED
 
 func set_controlled_node(node: MeshIcosahedron):
     if controlledNode != null and controlledNode is MeshIcosahedron:

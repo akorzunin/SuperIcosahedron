@@ -2,81 +2,10 @@
 extends Node
 class_name GameSettings
 
-const config = preload('res://src/components/settings/SettingsConfig.gd')
-
-@onready var parent: Node
-
-@export_category("pssetable")
-@export_group("preset")
-enum SettingsPreset {DEFAULT, DEBUG, CUSTOM}
-@export var preset: SettingsPreset:
-    set(value):
-        preset = value
-        parse_preset()
-        notify_property_list_changed()
-
-@export_subgroup("gameplay")
-enum DespawneMode {NORMAL = 16633, IMMEDIATE = 0, BEFORE_END = 10000}
-@export var DESPAWNER_MODE := DespawneMode.NORMAL:
-    set(value):
-        DESPAWNER_MODE = value
-        upd_preset()
-
-enum SpawnMode {QUEUE, RANDOM, CENTER, SIDE}
-@export var SPAWN_MODE := SpawnMode.RANDOM:
-    set(value):
-        SPAWN_MODE = value
-        upd_preset()
-
-enum RoatationSpeed {NORMAL = 12, SLOW = 5, FAST = 15}
-@export var ROTATION_SPEED := RoatationSpeed.FAST:
-    set(value):
-        ROTATION_SPEED = value
-        upd_preset()
-
-enum ScaleFactor {SLOW = 8, NORMAL = 10, FAST = 15}
-@export var SCALE_FACTOR := ScaleFactor.NORMAL:
-    set(value):
-        SCALE_FACTOR = value
-        upd_preset()
-
-@export_subgroup("UI")
-@export var FPS_COUNTER_ENABLED := true:
-    set(value):
-        FPS_COUNTER_ENABLED = value
-        upd_preset()
-
-@export var SHOW_APP_VERSION := false:
-    set(value):
-        SHOW_APP_VERSION = value
-        upd_preset()
-
-@export var SHOW_DEBUG_STATS := false:
-    set(value):
-        SHOW_DEBUG_STATS = value
-        upd_preset()
-
-@export_category("non presettable")
 @export_group("window")
 @export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
 
-var setting_preset = false
-
-func upd_preset(p = SettingsPreset.CUSTOM):
-    if setting_preset:
-        return
-    preset = p
-
-func load_from_config(_config: ConfigFile):
-    setting_preset = true
-    # init all fields from fields that in .cfg file
-    # also mb a ggod idea to setting_preset = true while initting
-    #pass
-    # default values will be used if config not provided
-    SHOW_DEBUG_STATS = true
-
-    setting_preset = false
-    return self
+var parent
 
 func init():
     set_window_settings()
@@ -90,25 +19,6 @@ func _ready() -> void:
     if parent.name == 'Settings' and Utils.main_scene(self) == 'MainScene':
         return
     init()
-
-
-func parse_preset() -> void:
-    var sp = SettingsPreset
-    setting_preset = true
-    match preset:
-        sp.DEFAULT:
-            DESPAWNER_MODE = DespawneMode.NORMAL
-            SPAWN_MODE = SpawnMode.RANDOM
-            ROTATION_SPEED = RoatationSpeed.NORMAL
-            FPS_COUNTER_ENABLED = true
-        sp.DEBUG:
-            DESPAWNER_MODE = DespawneMode.BEFORE_END
-            SPAWN_MODE = SpawnMode.SIDE
-            ROTATION_SPEED = RoatationSpeed.SLOW
-            FPS_COUNTER_ENABLED = true
-        sp.CUSTOM:
-            pass
-    setting_preset = false
 
 func set_window_settings():
     var V = get_viewport()

@@ -1,7 +1,6 @@
 extends Node3D
 class_name MenuScene
 
-@onready var settings: Settings = %Settings
 var game_settings
 
 func init(props: Dictionary):

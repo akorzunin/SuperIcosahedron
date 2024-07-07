@@ -7,13 +7,12 @@ class_name LoopGui
 @onready var timer_rich_text_label: RichTextLabel = $TimerPanel/CenterContainer/TimerRichTextLabel
 @onready var debug_stats_container: DebugStatsContainer = %DebugStatsContainer
 @onready var common_controls: CommonControls = %CommonControls
-@onready var settings: Settings = %Settings
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
     common_controls.toggle_debug_stats.connect(_on_toggle)
-    if settings.gs.SHOW_DEBUG_STATS:
+    if G.settings.SHOW_DEBUG_STATS:
         debug_stats_container.show()
     else:
         debug_stats_container.hide()

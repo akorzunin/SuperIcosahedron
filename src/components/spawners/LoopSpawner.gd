@@ -1,7 +1,6 @@
 extends Marker3D
 class_name LoopSpawner
 
-@onready var settings: Settings = %Settings
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var loop_timer: LoopTimer = %LoopTimer
 @onready var scale_timer: ScaleTimer = %ScaleTimer
@@ -31,8 +30,8 @@ enum FigureType {ICOSAHEDRON, OCTAHEDRON}
 
 func get_spawn_type():
 # R:TODO move enum to another palse
-    var s = settings.gs.SPAWN_MODE
-    match settings.gs.SPAWN_MODE:
+    #var s = G.settings.SPAWN_MODE
+    match G.settings.SPAWN_MODE:
         #s.CENTER:
         0:
             return 3
@@ -52,7 +51,6 @@ func spawn_figure(figure: Figure) -> void:
         FigureType.ICOSAHEDRON:
             new_figure = IcosahedronScene.instantiate() \
                 .init(
-                    settings,
                     {type = get_spawn_type()},
                     {
                         quat = G.D.init_pos,

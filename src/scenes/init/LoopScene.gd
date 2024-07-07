@@ -2,7 +2,6 @@ extends Node3D
 class_name LoopScene
 
 
-@onready var settings = %Settings
 @onready var game_state_manager: GameStateManager = %GameStateManager
 var game_settings
 
@@ -19,7 +18,7 @@ func deinit():
 func _ready():
     var gs := GameStateManager.GameState
     if Utils.is_main_scene(self):
-        var new_gs := gs.GAME_ACTIVE if not settings.START_PAUSED else gs.GAME_PAUSED
+        var new_gs := gs.GAME_ACTIVE if not G.settings.get("START_PAUSED", false) else gs.GAME_PAUSED
         game_state_manager.game_state_changed.emit(gs.GAME_MENU, new_gs)
     else:
         game_state_manager.game_state_changed.emit(gs.GAME_MENU, gs.GAME_ACTIVE)

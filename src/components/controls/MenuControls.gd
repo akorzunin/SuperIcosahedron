@@ -2,7 +2,6 @@ extends Control
 class_name MenuControls
 
 
-@onready var settings = %Settings
 @onready var menuSpawner := $"../MenuSpawner"
 @onready var menu_selector: MenuSelector = %MenuSelector
 @onready var menu_scene: Node3D = $'..'
@@ -18,7 +17,7 @@ var initial_pos := Vector3()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    MENU_ROTATION_SPEED = settings.gs.ROTATION_SPEED
+    MENU_ROTATION_SPEED = G.settings.ROTATION_SPEED
 
 ## In menu we apply all rotations to Anshor node
 func get_controlled_node() -> Node3D:
