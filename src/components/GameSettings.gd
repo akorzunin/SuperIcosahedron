@@ -51,6 +51,11 @@ enum ScaleFactor {SLOW = 8, NORMAL = 10, FAST = 15}
         SHOW_APP_VERSION = value
         upd_preset()
 
+@export var SHOW_DEBUG_STATS := false:
+    set(value):
+        SHOW_DEBUG_STATS = value
+        upd_preset()
+
 @export_category("non presettable")
 @export_group("window")
 @export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
@@ -63,10 +68,14 @@ func upd_preset(p = SettingsPreset.CUSTOM):
     preset = p
 
 func load_from_config(_config: ConfigFile):
+    setting_preset = true
     # init all fields from fields that in .cfg file
     # also mb a ggod idea to setting_preset = true while initting
     #pass
     # default values will be used if config not provided
+    SHOW_DEBUG_STATS = true
+
+    setting_preset = false
     return self
 
 func init():
@@ -132,3 +141,9 @@ func set_window_settings():
         V.msaa_3d = Viewport.MSAA_8X
 
     pass
+
+func update_from_dict(d: Dictionary):
+    for section in d.keys():
+        for key in d[section]:
+            set(key, d[section][key])
+    return self

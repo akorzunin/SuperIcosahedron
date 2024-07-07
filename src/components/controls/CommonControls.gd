@@ -2,7 +2,14 @@ extends Node
 class_name CommonControls
 
 signal toggle_debug_stats(state: bool)
-@export var display_debug_stats := false
+
+@onready var game_settings: GameSettings = %GameSettings
+
+@export var display_debug_stats := false:
+    set(val):
+        game_settings.SHOW_DEBUG_STATS = val
+        display_debug_stats = val
+
 var prev_window_mode := DisplayServer.window_get_mode()
 
 func _input(event):

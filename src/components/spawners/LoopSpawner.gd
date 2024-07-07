@@ -30,15 +30,20 @@ class Figure:
 enum FigureType {ICOSAHEDRON, OCTAHEDRON}
 
 func get_spawn_type():
-    var s = settings.gs.SpawnMode
+# R:TODO move enum to another palse
+    var s = settings.gs.SPAWN_MODE
     match settings.gs.SPAWN_MODE:
-        s.CENTER:
+        #s.CENTER:
+        0:
             return 3
-        s.SIDE:
+        #s.SIDE:
+        1:
             return 1
-        s.RANDOM:
+        #s.RANDOM:
+        2:
             return randi_range(1, 8)
-        s.QUEUE:
+        #s.QUEUE:
+        3:
             pass
 
 func spawn_figure(figure: Figure) -> void:

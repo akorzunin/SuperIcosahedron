@@ -12,6 +12,7 @@ unique_name_in_owner = true
 script = ExtResource("2_mjoy8")
 preset = 2
 ROTATION_SPEED = 12
+SHOW_DEBUG_STATS = null
 
 [node name="CommonControls" type="Control" parent="."]
 unique_name_in_owner = true
