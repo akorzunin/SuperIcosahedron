@@ -3,7 +3,7 @@ class_name CommonControls
 
 signal toggle_debug_stats(state: bool)
 
-@export var display_debug_stats := false:
+@export var display_debug_stats: bool:
     set(val):
         G.settings.SHOW_DEBUG_STATS = val
         display_debug_stats = val
@@ -27,6 +27,7 @@ func _unhandled_input(event: InputEvent) -> void:
         prev_window_mode = m
         get_viewport().set_input_as_handled()
 
-    if Input.is_action_just_pressed("toggle_debug_stats"):
+    if event.is_action_pressed("toggle_debug_stats"):
         display_debug_stats = not display_debug_stats
         toggle_debug_stats.emit(display_debug_stats)
+        get_viewport().set_input_as_handled()

@@ -1,4 +1,5 @@
 extends Label
+class_name DebugLabel
 
 var key := name
 @export var label_text: String = "":
@@ -17,11 +18,13 @@ enum LabelType {
     WINDOW_MODE,
 }
 @export var type := LabelType.NONE
+@export var regular_update := false
 @onready var timer: Timer = $'../../Timer'
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    timer.timeout.connect(_on_update)
+    if regular_update:
+        timer.timeout.connect(_on_update)
     key = name
     _on_update()
 

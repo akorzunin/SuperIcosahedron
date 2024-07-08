@@ -6,7 +6,7 @@ class_name FigureRoot
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-    if not G.settings.get("DEBUG_VISUAL", true):
+    if not G.settings.get("DEBUG_VISUAL", false):
         spawn_point.hide()
 
 func add_figure(new_figure) -> void:
