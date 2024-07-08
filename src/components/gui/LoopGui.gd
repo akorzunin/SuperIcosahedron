@@ -11,7 +11,7 @@ class_name LoopGui
 # Called when the node enters the scene tree for the first time.
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
-    common_controls.toggle_debug_stats.connect(_on_toggle)
+    common_controls.toggle_debug_stats.connect(_on_debug_stats_toggle)
     if G.settings.SHOW_DEBUG_STATS:
         debug_stats_container.show()
     else:
@@ -25,9 +25,5 @@ func _physics_process(delta: float) -> void:
 func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     game_state_label.set_text(GameStateManager.GameStateNames[new_state])
 
-# R:TODO rename
-func _on_toggle(v: bool):
-    if v:
-        debug_stats_container.show()
-    else:
-        debug_stats_container.hide()
+func _on_debug_stats_toggle(v: bool):
+    DebugStatsContainer.toggle(v, debug_stats_container)
