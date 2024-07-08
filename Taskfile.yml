@@ -48,6 +48,7 @@ tasks:
       - check
       - build-check
     cmds:
+      - defer: {task: build-cleanup}
       - rm -f ./build/web/* || true
       - mkdir -p ./build/web
       - godot --headless --export-debug "Web" ./build/web/index.html
@@ -58,6 +59,7 @@ tasks:
       - check
       - build-check
     cmds:
+      - defer: {task: build-cleanup}
       - rm -f ./build/pc/*.exe || true
       - mkdir -p ./build/pc
       - >-
@@ -71,6 +73,7 @@ tasks:
       - check
       - build-check
     cmds:
+      - defer: {task: build-cleanup}
       - rm -f ./build/linux/*.x86_64 || true
       - mkdir -p ./build/linux
       - >-
@@ -84,6 +87,7 @@ tasks:
       - check
       - build-check
     cmds:
+      - defer: {task: build-cleanup}
       - rm -f ./build/android/*.apk || true
       - mkdir -p ./build/android
       - >-
@@ -121,6 +125,9 @@ tasks:
   build-check:
     desc: run prebuild scripts
     cmds:
-      - python ./scripts/build_check.py
-    sources:
-      - project.godot
+      - python ./scripts/on_build.py
+
+  build-cleanup:
+    desc: run afterbuild scripts
+    cmds:
+      - python ./scripts/on_build.py --cleanup
