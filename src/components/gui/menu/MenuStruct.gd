@@ -1,7 +1,7 @@
-extends Node
+extends RefCounted
 class_name MenuStruct
 
-const menu_items = {
+static var menu_items = {
     name = "root",
     items = {
         1: {
@@ -76,9 +76,6 @@ const menu_items = {
                 3: {
                     name = "controls",
                     action = "menu_open_controls_editor"
-                },
-                5: {
-                    name = "back",
                 },
             }
         },

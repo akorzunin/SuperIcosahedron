@@ -35,8 +35,23 @@ func call_menu_action():
         call(selected.action)
         return
     if selected.get("items"):
+        add_back_button(selected.items)
         menuSpawner.open_menu_section(controlledNode, selected.items)
         return
+
+func add_back_button(d: Dictionary) -> Dictionary:
+    if not d.get("items"):
+        return d
+    d.items[5] = {
+        name = "back",
+        action = "menu_back",
+    }
+    return d
+
+func menu_back():
+    var selected = menu_selector.get_selected_item()
+    menuSpawner.open_menu_section(controlledNode, MenuStruct.menu_items)
+    return
 
 func menu_start_game():
     if Utils.main_scene(self) == 'MenuScene':

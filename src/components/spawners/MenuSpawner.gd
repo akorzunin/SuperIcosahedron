@@ -12,7 +12,7 @@ func menu_action():
     print_debug("aboba")
 
 
-func add_menu_items(node: Node3D, layer : Dictionary):
+func add_menu_items(node: Marker3D, layer: Dictionary):
     var items = layer.get("items")
     if not items:
         return
