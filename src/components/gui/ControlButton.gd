@@ -45,7 +45,6 @@ const c := 30
 const b := 100 - 2 * a
 const d := 100 - 2 * c
 func set_button_size():
-    #var screenSize = get_window().size
     var screenSize = get_viewport_rect().size
     match action:
         ActionType.UI_LEFT:

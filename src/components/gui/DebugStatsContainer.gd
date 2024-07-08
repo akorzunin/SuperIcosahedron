@@ -4,17 +4,12 @@ class_name DebugStatsContainer
 @onready var figures_count: Label = $VBoxContainer/FiguresCount
 @onready var angle: Label = $VBoxContainer/Angle
 
+var width_percent := 20
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-#R:TODO set as width %
-    custom_minimum_size.x = 200
-    pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-    pass
+    var screenSize = get_viewport_rect().size
+    custom_minimum_size.x = int(screenSize.x * (width_percent / 100.))
 
 static func toggle(val: bool, node: DebugStatsContainer):
     if val:
