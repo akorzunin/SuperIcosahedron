@@ -10,9 +10,9 @@ signal toggle_debug_stats(state: bool)
 
 var prev_window_mode := DisplayServer.window_get_mode()
 
-func _input(event):
+func _unhandled_input(event: InputEvent) -> void:
     var m = DisplayServer.window_get_mode()
-    if Input.is_action_just_pressed("toggle_fullscreen"):
+    if event.is_action_pressed("toggle_fullscreen"):
         # R:TDOO unwarap enums or move to another func
         match m:
             0, 1, 2:
@@ -25,6 +25,7 @@ func _input(event):
                 else:
                     DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
         prev_window_mode = m
+        get_viewport().set_input_as_handled()
 
     if Input.is_action_just_pressed("toggle_debug_stats"):
         display_debug_stats = not display_debug_stats

@@ -14,12 +14,18 @@ enum LabelType {
     OS_NAME,
     FIGURES_COUNT,
     ANGLE,
+    WINDOW_MODE,
 }
 @export var type := LabelType.NONE
+@onready var timer: Timer = $'../../Timer'
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    timer.timeout.connect(_on_update)
     key = name
+    _on_update()
+
+func _on_update():
     match type:
         LabelType.VERSION:
             label_text = get_version()
@@ -29,6 +35,8 @@ func _ready() -> void:
             label_text = str(0)
         LabelType.ANGLE:
             label_text = str(0.0)
+        LabelType.WINDOW_MODE:
+            label_text = str(DisplayServer.window_get_mode())
         _:
             label_text = label_text
 
