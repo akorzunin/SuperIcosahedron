@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://dr612yxxuqkob"]
+
+[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_26764"]
+[ext_resource type="Script" path="res://src/models/icosahedron/test/cutplanes.gd" id="1_gtl60"]
+[ext_resource type="Script" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="2_32806"]
+
+[node name="Cutplanes" type="Node3D"]
+script = ExtResource("1_gtl60")
+cutplane = Vector4(1, 1, 1, 1.369)
+
+[node name="MeshIcosahedron" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_26764")
+script = ExtResource("2_32806")
