@@ -44,12 +44,13 @@ func _on_update():
             label_text = label_text
 
 func get_version():
-# R:TODO fix null safety
-# R:TODO replase value before build
-#and discard them after build
     var version_file = load("res://src/version.gd") # can be null
-
+    if not version_file:
+        version_file = {}
     var v = version_file.get("VERSION")
     var c = version_file.get("COMMIT")
-
+    if not v:
+        v = ''
+    if not c:
+        c = ''
     return "%s commit: %s" % [v, c]
