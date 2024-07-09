@@ -38,3 +38,11 @@ static func config_to_dict(config: ConfigFile):
             d[section][key] = config.get_value(section, key)
             d[key] = config.get_value(section, key)
     return d
+
+static func dict_to_config(d: Dictionary) -> ConfigFile:
+    var config = ConfigFile.new()
+    for section in d.keys():
+        if d[section] is Dictionary:
+            for key in d[section].keys():
+                config.set_value(section, key, d[section][key])
+    return config
