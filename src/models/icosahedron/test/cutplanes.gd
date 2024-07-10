@@ -7,6 +7,7 @@ const w_2 := .849
 const w_3 := 1.369
 
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
+@onready var pointer_sphere: MeshInstance3D = $PointerSphere
 
 @export var enable_shader := true:
     set(val):
@@ -73,10 +74,11 @@ func upd_cutplane():
     notify_property_list_changed()
 
 
-enum TransformType {NONE, NEG_X, NEG_Y, NEG_Z, SWAP_X}
-func get_next_cutplane(_cutplane, transfrom):
-    var diag_vec = is_equal_approx(_cutplane.x, _cutplane.y) \
-        and is_equal_approx(_cutplane.y, _cutplane.z)
+enum TransformType {NONE, SOME, NEG_X, NEG_Y, NEG_Z, SWAP_X}
+func get_next_cutplane(_cutplane: Vector4, transfrom: TransformType) -> Vector4:
+    var c = _cutplane.abs()
+    var diag_vec = is_equal_approx(c.x, c.y) \
+        and is_equal_approx(c.y, c.z)
     match transfrom:
         TransformType.NEG_X:
             _cutplane.x = -_cutplane.x
@@ -99,8 +101,25 @@ func get_next_cutplane(_cutplane, transfrom):
                     sign(max(cutplane.z, 1.)),
                     w_3
                 )
-    return _cutplane
+    var a = pointer_sphere.position - mesh_icosahedron.position
+    print_debug(a)
+    var b = get_closest(a)
+    print_debug("v: ", b)
+    return Vector4(b.x, b.y, b.z, w_3 if diag_vec else w_2)
 
+func get_closest(v: Vector3) -> Vector3:
+    var a = v.clamp(Vector3(-1, -1, -1), Vector3(1,1,1))
+    var diag := false
+    if a.abs() > Vector3(phi,phi,phi):
+        print_debug("a")
+    #for i in 3:
+        #var s = sign(a[i])
+        #if abs(a[i]) < phi:
+            #a[i] = 0
+        #else:
+            #a[i] = phi * s
+        #print_debug(a[i])
+    return a
 
 func angle_to_float(ia: IcoAngle) -> float:
     match ia:
@@ -143,8 +162,50 @@ func float_to_angle(f: float) -> IcoAngle:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    pointer_sphere.pointer_changed.connect(_aboba)
     pass # Replace with function body.
+
+func _aboba() -> void:
+    trans = TransformType.NONE
+    print_debug("aboba")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
+
+const faces: Array[Vector3] = [
+    Vector3(1, 1, 1,),
+    Vector3(-1, 1, 1,),
+    Vector3(-1, -1, 1,),
+    Vector3(-1, 1, -1,),
+    Vector3(-1, -1, -1,),
+
+    Vector3(0, 1, phi,),
+    Vector3(0, 1, -phi,),
+    Vector3(0, -1, phi,),
+    Vector3(1, 0, phi,),
+    Vector3(1, 0, -phi,),
+    Vector3(-1, 0, phi,),
+
+    Vector3(1, phi, 0,),
+    Vector3(1, -phi, 0,),
+    Vector3(-1, phi, 0,),
+    Vector3(0, phi, 1,),
+    Vector3(0, -phi, 1,),
+    Vector3(0, phi, -1,),
+
+    Vector3(phi, 1, 0,),
+    Vector3(-phi, 1, 0,),
+    Vector3(phi, -1, 0,),
+    Vector3(phi, 0, 1,),
+    Vector3(-phi, 0, 1,),
+    Vector3(phi, 0, -1,),
+]
+
+@export_range(0, 19, 1, "or_greater", "or_less") var fi: int:
+    set(val):
+        fi = val
+        var v = faces[fi]
+        var diag = is_equal_approx(v.x, v.y) \
+            and is_equal_approx(v.y, v.z)
+        cutplane = Vector4(v.x, v.y, v.z, w_3 if diag else w_2)
