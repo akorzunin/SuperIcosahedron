@@ -13,6 +13,7 @@ tasks:
     cmds:
       - echo "run task -l or task --list-all to see all avaliable tasks"
     silent: true
+
   format-shaders:
     desc: format all ".gdshader" files w/ clang-format
     cmds:
@@ -31,6 +32,7 @@ tasks:
     sources:
       - "**/*.gdshader"
       - "**/*.gdshaderinc"
+
   check:
     desc: run linters and formatters
     aliases: [fmt]
@@ -40,6 +42,14 @@ tasks:
       - pre-commit run --all-files --color always
     sources:
       - ./*
+
+  gd-dev-build-web:
+    internal: true
+    cmds:
+      - rm -f ./build/web/* || true
+      - mkdir -p ./build/web
+      - godot --headless --export-debug "Web" ./build/web/index.html
+
   dev-build-web:
     platforms: [linux]
     desc: build project for web
@@ -48,10 +58,18 @@ tasks:
       - check
       - build-check
     cmds:
-      - defer: {task: build-cleanup}
-      - rm -f ./build/web/* || true
-      - mkdir -p ./build/web
-      - godot --headless --export-debug "Web" ./build/web/index.html
+      - defer: { task: build-cleanup }
+      - task: gd-dev-build-web
+
+  gd-dev-build-windows:
+    internal: true
+    cmds:
+      - rm -f ./build/pc/*.exe || true
+      - mkdir -p ./build/pc
+      - >-
+        godot --headless --export-debug "Windows Desktop" --rendering-method forward_plus
+        ./build/pc/{{.APP_NAME}}-dev.exe
+
   dev-build-windows:
     platforms: [linux]
     desc: build project for windows pc
@@ -59,12 +77,18 @@ tasks:
       - check
       - build-check
     cmds:
-      - defer: {task: build-cleanup}
-      - rm -f ./build/pc/*.exe || true
-      - mkdir -p ./build/pc
+      - defer: { task: build-cleanup }
+      - task: gd-dev-build-windows
+
+  gd-dev-build-linux:
+    internal: true
+    cmds:
+      - rm -f ./build/linux/*.x86_64 || true
+      - mkdir -p ./build/linux
       - >-
-        godot --headless --export-debug "Windows Desktop" --rendering-method forward_plus
-        ./build/pc/{{.APP_NAME}}-dev.exe
+        godot --headless --export-debug "Linux/X11" --rendering-method forward_plus
+        ./build/linux/{{.APP_NAME}}-dev.x86_64
+
   dev-build-linux:
     platforms: [linux]
     desc: build project for linux pc
@@ -73,12 +97,18 @@ tasks:
       - check
       - build-check
     cmds:
-      - defer: {task: build-cleanup}
-      - rm -f ./build/linux/*.x86_64 || true
-      - mkdir -p ./build/linux
+      - defer: { task: build-cleanup }
+      - task: gd-dev-build-linux
+
+  gd-dev-build-android:
+    internal: true
+    cmds:
+      - rm -f ./build/android/*.apk || true
+      - mkdir -p ./build/android
       - >-
-        godot --headless --export-debug "Linux/X11" --rendering-method forward_plus
-        ./build/linux/{{.APP_NAME}}-dev.x86_64
+        godot --headless --export-debug "Android"
+        ./build/android/{{.APP_NAME}}-dev.apk
+
   dev-build-android:
     platforms: [linux]
     desc: build project for android
@@ -87,12 +117,18 @@ tasks:
       - check
       - build-check
     cmds:
-      - defer: {task: build-cleanup}
-      - rm -f ./build/android/*.apk || true
-      - mkdir -p ./build/android
-      - >-
-        godot --headless --export-debug "Android"
-        ./build/android/{{.APP_NAME}}-dev.apk
+      - defer: { task: build-cleanup }
+      - task: gd-dev-build-android
+
+  build-parallel:
+    internal: true
+    deps:
+      - gd-dev-build-web
+      - gd-dev-build-windows
+      - gd-dev-build-linux
+      - gd-dev-build-android
+    cmds:
+      - echo Build for app {{.APP_NAME}} completed
 
   dev-build-all:
     platforms: [linux]
@@ -100,12 +136,11 @@ tasks:
     interactive: true
     aliases: [all]
     deps:
-      - dev-build-web
-      - dev-build-windows
-      - dev-build-linux
-      - dev-build-android
+      - check
+      - build-check
     cmds:
-      - echo Build completed
+      - defer: { task: build-cleanup }
+      - task: build-parallel
 
   deploy-build-dev:
     platforms: [linux]
