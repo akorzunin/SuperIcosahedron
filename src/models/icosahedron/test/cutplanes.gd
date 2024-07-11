@@ -6,14 +6,21 @@ const phi := 0.398
 const w_2 := .849
 const w_3 := 1.369
 
-@onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
+#@onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 @onready var pointer_sphere: MeshInstance3D = $PointerSphere
+@onready var mesh_icosahedron: MeshInstance3D = $Solid
 
 @export var enable_shader := true:
     set(val):
         enable_shader = val
-        var m = mesh_icosahedron.get_active_material(0) as ShaderMaterial
-        m.set_shader_parameter("enable", val)
+        var m = mesh_icosahedron.material_override
+        m.next_pass.set_shader_parameter("enable", val)
+
+func set_shader_cutplane(_cutplane: Vector4):
+    if not mesh_icosahedron:
+        return
+    var m = mesh_icosahedron.material_override
+    m.next_pass.set_shader_parameter("cutplane", _cutplane)
 
 @export var cutplane := Vector4(-0.577, -0.577, -0.577, IcosahedronVarints.dst):
     set(val):
@@ -63,11 +70,7 @@ var set_silent := false
         set_silent = false
         notify_property_list_changed()
 
-func set_shader_cutplane(_cutplane: Vector4):
-    if not mesh_icosahedron:
-        return
-    var m = mesh_icosahedron.get_active_material(0) as ShaderMaterial
-    m.set_shader_parameter("cutplane", _cutplane)
+
 
 func upd_cutplane():
     set_shader_cutplane(cutplane)
@@ -167,45 +170,40 @@ func _ready() -> void:
 
 func _aboba() -> void:
     trans = TransformType.NONE
-    print_debug("aboba")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
 
+# TODO instead of 1 an phi use chi an phi
+
+## icosahedron faces index according to UV map
 const faces: Array[Vector3] = [
-    Vector3(1, 1, 1,),
-    Vector3(-1, 1, 1,),
-    Vector3(-1, -1, 1,),
-    Vector3(-1, 1, -1,),
-    Vector3(-1, -1, -1,),
-
-    Vector3(0, 1, phi,),
-    Vector3(0, 1, -phi,),
-    Vector3(0, -1, phi,),
-    Vector3(1, 0, phi,),
-    Vector3(1, 0, -phi,),
-    Vector3(-1, 0, phi,),
-
-    Vector3(1, phi, 0,),
-    Vector3(1, -phi, 0,),
-    Vector3(-1, phi, 0,),
-    Vector3(0, phi, 1,),
-    Vector3(0, -phi, 1,),
-    Vector3(0, phi, -1,),
-
-    Vector3(phi, 1, 0,),
-    Vector3(-phi, 1, 0,),
-    Vector3(phi, -1, 0,),
-    Vector3(phi, 0, 1,),
-    Vector3(-phi, 0, 1,),
-    Vector3(phi, 0, -1,),
+    Vector3(1, 1, -1,), # 0
+    Vector3(0, 1, -phi,), # 1
+    Vector3(0, 1, phi,), # 2
+    Vector3(1, 1, 1,), # 3
+    Vector3(1, phi, 0,), # 4
+    Vector3(1, -phi, 0,), # 5
+    Vector3(-1, 1, 1,), # 6
+    Vector3(-phi, 0, 1,), # 7
+    Vector3(phi, 0, 1,), # 8
+    Vector3(1, -1, 1,), # 9
+    Vector3(-1, phi, 0), # 10
+    Vector3(-1, -phi, 0), # 11
+    Vector3(-1, -1, 1,), # 12
+    Vector3(-1, 1, -1,), # 13
+    Vector3(-phi, 0, -1), # 14
+    Vector3(-1, -1, -1,), # 15
+    Vector3(0, -1, -phi), # 16
+    Vector3(0, -1, phi), # 17
+    Vector3(phi, 0, -1,), # 18
+    Vector3(1, -1, -1,), # 19
 ]
 
-@export_range(0, 19, 1, "or_greater", "or_less") var fi: int:
+@export_range(0, 19) var fi: int:
     set(val):
         fi = val
         var v = faces[fi]
-        var diag = is_equal_approx(v.x, v.y) \
-            and is_equal_approx(v.y, v.z)
+        var diag = is_equal_approx(abs(v.x), abs(v.y))
         cutplane = Vector4(v.x, v.y, v.z, w_3 if diag else w_2)
