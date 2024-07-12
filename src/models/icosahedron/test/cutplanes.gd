@@ -7,12 +7,15 @@ const phi := 0.398
 const ico_a := 0.934
 ## fine analog of phi for cutplane
 const ico_b := 0.358
+## for diagonal vectors
+const ico_c := 0.577
 
 
 const w_2 := .849
 const w_3 := 1.369
 ## correcn value in fine case for dst and dst
-const ico_dst := IcosahedronVarints.dst
+#const ico_dst := IcosahedronVarints.dst
+const ico_dst := 0.794
 
 #@onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 @onready var pointer_sphere: MeshInstance3D = $PointerSphere
@@ -185,32 +188,60 @@ func _process(delta: float) -> void:
 
 
 ## icosahedron faces index according to UV map
-const faces: Array[Vector3] = [
-    Vector3(ico_a, ico_a, -ico_a,), # 0
-    Vector3(0, ico_a, -ico_b,), # 1
-    Vector3(0, ico_a, ico_b,), # 2
-    Vector3(ico_a, ico_a, ico_a,), # 3
-    Vector3(ico_a, ico_b, 0,), # 4
-    Vector3(ico_a, -ico_b, 0,), # 5
-    Vector3(-ico_a, ico_a, ico_a,), # 6
-    Vector3(-ico_b, 0, ico_a,), # 7
-    Vector3(ico_b, 0, ico_a,), # 8
-    Vector3(ico_a, -ico_a, ico_a,), # 9
-    Vector3(-ico_a, ico_b, 0), # 10
-    Vector3(-ico_a, -ico_b, 0), # 11
-    Vector3(-ico_a, -ico_a, ico_a,), # 12
-    Vector3(-ico_a, ico_a, -ico_a,), # 13
-    Vector3(-ico_b, 0, -ico_a), # 14
-    Vector3(-ico_a, -ico_a, -ico_a,), # 15
-    Vector3(0, -ico_a, -ico_b), # 16
-    Vector3(0, -ico_a, ico_b), # 17
-    Vector3(ico_b, 0, -ico_a,), # 18
-    Vector3(ico_a, -ico_a, -ico_a,), # 19
+const faces: Array[Vector4] = [
+    Vector4(ico_c, ico_c, -ico_c, ico_dst), # 0
+    Vector4(0, ico_a, -ico_b, ico_dst), # 1
+    Vector4(0, ico_a, ico_b, ico_dst), # 2
+    Vector4(ico_c, ico_c, ico_c, ico_dst), # 3
+    Vector4(ico_a, ico_b, 0, ico_dst), # 4
+    Vector4(ico_a, -ico_b, 0, ico_dst), # 5
+    Vector4(-ico_c, ico_c, ico_c, ico_dst), # 6
+    Vector4(-ico_b, 0, ico_a, ico_dst), # 7
+    Vector4(ico_b, 0, ico_a, ico_dst), # 8
+    Vector4(ico_c, -ico_c, ico_c, ico_dst), # 9
+    Vector4(-ico_a, ico_b, 0, ico_dst), # 10
+    Vector4(-ico_a, -ico_b, 0, ico_dst), # 11
+    Vector4(-ico_c, -ico_c, ico_c, ico_dst), # 12
+    Vector4(-ico_c, ico_c, -ico_c, ico_dst), # 13
+    Vector4(-ico_b, 0, -ico_a, ico_dst), # 14
+    Vector4(-ico_c, -ico_c, -ico_c, ico_dst), # 15
+    Vector4(0, -ico_a, -ico_b, ico_dst), # 16
+    Vector4(0, -ico_a, ico_b, ico_dst), # 17
+    Vector4(ico_b, 0, -ico_a, ico_dst), # 18
+    Vector4(ico_c, -ico_c, -ico_c, ico_dst), # 19
 ]
 
 @export_range(0, 19) var fi: int:
     set(val):
         fi = val
         var v = faces[fi]
-        var diag = is_equal_approx(abs(v.x), abs(v.y))
         cutplane = Vector4(v.x, v.y, v.z, ico_dst)
+
+@export_enum("f_none", "f_circle", "f_roatate_edge", ) var transfrom_list: String:
+    set(val):
+        transfrom_list = val
+        call(val)
+
+func f_none():
+    pass
+
+func f_circle():
+    var res = roatate_circle(cutplane, fi)
+    cutplane = res.cutplane
+    fi = res.cur_id
+    notify_property_list_changed()
+
+static func roatate_circle(cutplane: Vector4, cur_id: int):
+    cur_id += 1
+    if cur_id > 19:
+        cur_id = 0
+    return {
+        cutplane = faces[cur_id],
+        cur_id = cur_id,
+    }
+
+func f_roatate_edge():
+    print_debug("aboba")
+
+static func roatate_edge(cutplane: Vector4, cur_id: int):
+    pass

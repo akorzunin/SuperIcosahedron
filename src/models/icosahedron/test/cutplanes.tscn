@@ -26,8 +26,10 @@ blend_shape_mode = 0
 
 [node name="Cutplanes" type="Node3D"]
 script = ExtResource("1_gtl60")
-cutplane = Vector4(1, 1, 1, 1.369)
+cutplane = Vector4(0.577, 0.577, -0.577, 0.794)
+w = 5
 fi = 0
+transfrom_list = "f_circle"
 metadata/_edit_pinned_properties_ = [&"fi"]
 
 [node name="Solid" type="MeshInstance3D" parent="."]
