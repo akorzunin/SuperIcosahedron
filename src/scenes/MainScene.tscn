@@ -5,9 +5,9 @@
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="3_656kb"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="3_eruj2"]
 [ext_resource type="Script" path="res://src/components/sfx/SfxPlayer.gd" id="5_6wmow"]
-[ext_resource type="AudioStream" uid="uid://csad4cc416wjj" path="res://src/sfx/temp/section_change.wav" id="6_ulnd2"]
-[ext_resource type="AudioStream" uid="uid://bmg38au147ke8" path="res://src/sfx/temp/section_select.wav" id="7_kgm0w"]
-[ext_resource type="AudioStream" uid="uid://cv28l0xdr18fy" path="res://src/sfx/temp/action_select.wav" id="8_6pb6f"]
+[ext_resource type="AudioStream" uid="uid://csad4cc416wjj" path="res://src/sfx/out/section_change.wav" id="6_ulnd2"]
+[ext_resource type="AudioStream" uid="uid://bmg38au147ke8" path="res://src/sfx/out/section_select.wav" id="7_kgm0w"]
+[ext_resource type="AudioStream" uid="uid://cv28l0xdr18fy" path="res://src/sfx/out/action_select.wav" id="8_6pb6f"]
 
 [node name="MainScene" type="Node"]
 script = ExtResource("1_7yre0")

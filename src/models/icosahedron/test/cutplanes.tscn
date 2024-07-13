@@ -29,11 +29,11 @@ script = ExtResource("1_gtl60")
 cutplane = Vector4(-0.934, 0.358, 0, 0.794)
 x = 0
 y = 2
+z = 0
 w = 5
 trans = 2
 fi = 10
 transfrom_list = "f_circle"
-test_effect = null
 metadata/_edit_pinned_properties_ = [&"fi"]
 
 [node name="Solid" type="MeshInstance3D" parent="."]
