@@ -1,6 +1,7 @@
 extends Control
 class_name MenuControls
 
+@onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
 
 @onready var menuSpawner := $"../MenuSpawner"
 @onready var menu_selector: MenuSelector = %MenuSelector
@@ -28,6 +29,8 @@ func get_controlled_node() -> Node3D:
 
 ## Get selected menu intem and execute action that item meant to do
 func call_menu_action():
+    #sfx_player.on_section_select.emit()
+    sfx_player.on_action_select.emit()
     var selected = menu_selector.get_selected_item()
     if not selected:
         return
@@ -101,6 +104,7 @@ func _unhandled_input(event: InputEvent) -> void:
         })
 
 func change_selection(direction, ):
+    sfx_player.on_section_chaged.emit()
     var dur = 0.2
     var val = 0.03
     var tw = controlledNode.create_tween().set_loops(1)
