@@ -26,14 +26,20 @@ blend_shape_mode = 0
 
 [node name="Cutplanes" type="Node3D"]
 script = ExtResource("1_gtl60")
-cutplane = Vector4(0.577, 0.577, -0.577, 0.794)
+cutplane = Vector4(-0.934, 0.358, 0, 0.794)
+x = 0
+y = 2
 w = 5
-fi = 0
+trans = 2
+fi = 10
 transfrom_list = "f_circle"
+test_effect = null
 metadata/_edit_pinned_properties_ = [&"fi"]
 
 [node name="Solid" type="MeshInstance3D" parent="."]
 material_override = ExtResource("2_tiql4")
+transparency = 0.15
+cast_shadow = 0
 mesh = SubResource("ArrayMesh_f5xtf")
 skeleton = NodePath("")
 

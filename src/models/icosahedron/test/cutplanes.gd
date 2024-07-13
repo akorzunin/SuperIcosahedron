@@ -217,19 +217,23 @@ const faces: Array[Vector4] = [
         var v = faces[fi]
         cutplane = Vector4(v.x, v.y, v.z, ico_dst)
 
-@export_enum("f_none", "f_circle", "f_roatate_edge", ) var transfrom_list: String:
-    set(val):
-        transfrom_list = val
-        call(val)
+@export_category("Debug transform effects")
+@export_enum("f_circle", "f_roatate_edge", ) var transfrom_list: String
+@export var test_effect: bool:
+    set(value):
+        call(transfrom_list)
 
 func f_none():
     pass
 
-func f_circle():
-    var res = roatate_circle(cutplane, fi)
+func f_call(_f: Callable):
+    var res = _f.call(cutplane, fi)
     cutplane = res.cutplane
     fi = res.cur_id
     notify_property_list_changed()
+
+func f_circle():
+    f_call(roatate_circle)
 
 static func roatate_circle(cutplane: Vector4, cur_id: int):
     cur_id += 1
@@ -241,7 +245,20 @@ static func roatate_circle(cutplane: Vector4, cur_id: int):
     }
 
 func f_roatate_edge():
-    print_debug("aboba")
+    f_call(roatate_edge)
 
 static func roatate_edge(cutplane: Vector4, cur_id: int):
-    pass
+    match cur_id:
+        0,1,2,3,4:
+            cur_id += 1
+            if cur_id > 4:
+                cur_id = 0
+            return {
+                cutplane = faces[cur_id],
+                cur_id = cur_id,
+            }
+        _:
+            return {
+                cutplane = faces[0],
+                cur_id = 0,
+            }

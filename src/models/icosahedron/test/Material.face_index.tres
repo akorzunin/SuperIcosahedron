@@ -6,7 +6,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2ft62"]
 render_priority = 0
 shader = ExtResource("2_x1gid")
-shader_parameter/cutplane = Vector4(0.934, 0.934, -0.934, 0.794)
+shader_parameter/cutplane = Vector4(0.358, 0, 0.934, 0.794)
 shader_parameter/color = Color(0, 1, 0, 1)
 shader_parameter/enable = true
 shader_parameter/outline_thickness = 0.0
@@ -14,6 +14,5 @@ shader_parameter/outline_thickness = 0.0
 [resource]
 resource_name = "Material.002"
 next_pass = SubResource("ShaderMaterial_2ft62")
-cull_mode = 2
 albedo_texture = ExtResource("1_w4ekc")
 roughness = 0.5
