@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=19 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://derbnrboktp1g" path="res://src/components/gui/DebugStatsContainer.tscn" id="8_w8wvy"]
 [ext_resource type="PackedScene" uid="uid://b00khg3mstn6t" path="res://src/components/gui/fps_label.tscn" id="10_djqxo"]
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="12_qaxtt"]
+[ext_resource type="Script" path="res://src/components/gui/menu/MenuState.gd" id="13_416wy"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="13_cfv8o"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
@@ -135,3 +136,7 @@ script = ExtResource("13_cfv8o")
 
 [node name="Config" type="Node" parent="."]
 script = ExtResource("12_qaxtt")
+
+[node name="MenuState" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("13_416wy")

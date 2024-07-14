@@ -4,6 +4,9 @@ class_name MenuSpawner
 @onready var anchor: Marker3D = %Anchor
 @onready var menu_scene: MenuSpawner = $'.'
 @onready var gui: MenuGui = $'../Gui'
+@onready var menu_controls: MenuControls = $'../MenuControls'
+@onready var menu_state: MenuState = %MenuState
+
 
 const IcosahedronScene = preload ('res://src/models/icosahedron/Icosahedron.tscn')
 const MenuItemScene = preload('res://src/models/menu_item/MenuItem.tscn')
@@ -16,7 +19,7 @@ func add_menu_items(node: Marker3D, layer: Dictionary):
     var items = layer.get("items")
     if not items:
         return
-#for loop over first level items
+    #for loop over first level items
     for key in items.keys():
         var new_item = MenuItemScene.instantiate() \
             .init({
@@ -24,6 +27,8 @@ func add_menu_items(node: Marker3D, layer: Dictionary):
                 val = items[key]
             })
         node.add_child(new_item)
+    if menu_controls.is_node_ready():
+        menu_controls.change_selection(Quaternion(), true)
 
 func clean_menu_items(node: Node3D):
     for i in node.get_children():
@@ -36,6 +41,28 @@ func open_menu_section(node, items):
     add_menu_items(node, items)
     pass
 
+# R:TODO types and cringe  w/ items
+func open_options_section(node, items):
+    var options = items.options
+    clean_menu_items(node)
+    add_back_to_options(options)
+    add_option_name(options, items.name)
+    add_menu_items(node, {items = options})
+
+func add_back_to_options(d: Dictionary) -> Dictionary:
+    d[5] = {
+        name = "back",
+        action = "menu_back",
+    }
+    return d
+
+func add_option_name(d: Dictionary, _name: String) -> Dictionary:
+    d[6] = {
+        name = _name,
+        action = "menu_back",
+    }
+    return d
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
     # only one node allowed at startup
@@ -46,12 +73,11 @@ func _ready():
                     {type=0},
                     {quat=G.D.init_pos}
                 )
-    #new_figure.hide()
     anchor.add_child(new_figure)
-    call_deferred('set_debug_angle', anchor.get_child_count())
-    add_menu_items(anchor, MenuStruct.menu_items)
+    call_deferred('set_figures_count', anchor.get_child_count())
+    add_menu_items(anchor, menu_state.state)
 
-func set_debug_angle(v: int):
+func set_figures_count(v: int):
     gui.debug_stats_container.figures_count.label_text = str(v)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

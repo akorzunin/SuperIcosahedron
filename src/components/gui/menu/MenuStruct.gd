@@ -1,7 +1,7 @@
 extends RefCounted
 class_name MenuStruct
 
-static var menu_items = {
+static var menu_items := {
     name = "root",
     items = {
         1: {
@@ -12,10 +12,29 @@ static var menu_items = {
             name = "settings",
             items = {
                 1: {
+                    name = "ui",
+                    items = {
+                        1: {
+                            name = "fps\ncounter",
+                            options = {
+                                1: {
+                                    name = "on",
+                                    action = "settings_fps_counter_on"
+                                },
+                                2: {
+                                    name = "off",
+                                    action = "settings_fps_counter_off"
+                                },
+                            },
+                        }
+                        # R:TODO display debug stats
+                    }
+                },
+                2: {
                     name = "video",
                     items = {
                         1: {
-                            name = "window_mode",
+                            name = "window mode",
                             options = {
                                 1: {
                                     name = "fullscreen",
@@ -42,7 +61,7 @@ static var menu_items = {
                         }
                     }
                 },
-                2: {
+                3: {
                     name = "audio",
                     items = {
                         1: {
@@ -72,10 +91,6 @@ static var menu_items = {
                             },
                         }
                     }
-                },
-                3: {
-                    name = "controls",
-                    action = "menu_open_controls_editor"
                 },
             }
         },
