@@ -37,18 +37,30 @@ func clean_menu_items(node: Node3D):
     pass
 
 func open_menu_section(node, items):
+    add_back_button(items)
     clean_menu_items(node)
-    add_back_button(items.items)
     add_menu_items(node, items)
     pass
 
 func open_options_section(node: Node3D, items: Dictionary):
+    var options = items.options
     clean_menu_items(node)
-    add_back_button(items.options)
-    add_option_name(items.options, items.name)
-    add_menu_items(node, items)
+    add_back_to_options(options)
+    add_option_name(options, items.name)
+    add_menu_items(node, {items = options})
 
 func add_back_button(d: Dictionary) -> Dictionary:
+    if not d.get("items"):
+        return d
+    if d.items.get(5):
+        return d
+    d.items[5] = {
+        name = "back",
+        action = "menu_back",
+    }
+    return d
+
+func add_back_to_options(d: Dictionary) -> Dictionary:
     d[5] = {
         name = "back",
         action = "menu_back",
