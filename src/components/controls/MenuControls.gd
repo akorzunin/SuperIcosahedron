@@ -34,19 +34,18 @@ func call_menu_action():
     var selected = menu_selector.get_selected_item()
     if not selected:
         return
-    # R:TODO mb play this onlt on start button pressed
-    #sfx_player.on_action_select.emit()
-    sfx_player.on_section_select.emit()
-    if selected.get("action") != "placeholder_action":
+    var action = selected.get("action")
+    if action == "menu_start_game":
+        sfx_player.on_action_select.emit()
+    else:
+        sfx_player.on_section_select.emit()
+    if action != "placeholder_action":
 # TODO mb we cal do ModuleName.call to not overpopulate this script
         call(selected.action)
         return
     if selected.get("options"):
         pass
     if selected.get("items"):
-        # R:TODO move to open munu sec body
-        add_back_button(selected.items)
-
         if selected.items.get("options"):
             menuSpawner.open_options_section(controlledNode, selected.items)
             return
@@ -55,15 +54,6 @@ func call_menu_action():
             return
         menuSpawner.open_menu_section(controlledNode, selected.items)
         return
-
-func add_back_button(d: Dictionary) -> Dictionary:
-    if not d.get("items"):
-        return d
-    d.items[5] = {
-        name = "back",
-        action = "menu_back",
-    }
-    return d
 
 func settings_fps_counter_on():
     config.set_fps_counter_state.emit(true)

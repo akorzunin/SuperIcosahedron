@@ -38,18 +38,17 @@ func clean_menu_items(node: Node3D):
 
 func open_menu_section(node, items):
     clean_menu_items(node)
+    add_back_button(items.items)
     add_menu_items(node, items)
     pass
 
-# R:TODO types and cringe  w/ items
-func open_options_section(node, items):
-    var options = items.options
+func open_options_section(node: Node3D, items: Dictionary):
     clean_menu_items(node)
-    add_back_to_options(options)
-    add_option_name(options, items.name)
-    add_menu_items(node, {items = options})
+    add_back_button(items.options)
+    add_option_name(items.options, items.name)
+    add_menu_items(node, items)
 
-func add_back_to_options(d: Dictionary) -> Dictionary:
+func add_back_button(d: Dictionary) -> Dictionary:
     d[5] = {
         name = "back",
         action = "menu_back",
