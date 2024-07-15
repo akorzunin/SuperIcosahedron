@@ -28,5 +28,6 @@ func _ready() -> void:
     set_fps_counter_state.connect(_on_fps_counter_state)
 
 func _on_fps_counter_state(state: bool):
-# TODO figure out how to change state to visible/invisble for both scenes
+    G.settings.FPS_COUNTER_ENABLED = state
+    SettingsConfig.write_key(config, "user_settings", "FPS_COUNTER_ENABLED", state)
     pass

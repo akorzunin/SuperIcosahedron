@@ -46,3 +46,14 @@ static func dict_to_config(d: Dictionary) -> ConfigFile:
             for key in d[section].keys():
                 config.set_value(section, key, d[section][key])
     return config
+
+static func write_key(_config_path: String, section: String, key: String, value: Variant) -> Error:
+    var c = ConfigFile.new()
+    var err := c.load(_config_path)
+    if err != OK:
+        return err
+    c.set_value(section, key, value)
+    err = c.save(_config_path)
+    if err != OK:
+        return err
+    return OK

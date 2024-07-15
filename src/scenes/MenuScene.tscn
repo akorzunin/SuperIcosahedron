@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene load_steps=20 format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="12_qaxtt"]
 [ext_resource type="Script" path="res://src/components/gui/menu/MenuState.gd" id="13_416wy"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="13_cfv8o"]
+[ext_resource type="Script" path="res://src/components/gui/menu/MenuActions.gd" id="14_ywwly"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4go8s"]
 shader = ExtResource("2_72pw2")
@@ -136,7 +137,12 @@ script = ExtResource("13_cfv8o")
 
 [node name="Config" type="Node" parent="."]
 script = ExtResource("12_qaxtt")
+config_name = 1
 
 [node name="MenuState" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("13_416wy")
+
+[node name="MenuActions" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("14_ywwly")

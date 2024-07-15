@@ -2,12 +2,12 @@ extends Control
 class_name MenuControls
 
 @onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
-
 @onready var menuSpawner := $"../MenuSpawner"
 @onready var menu_selector: MenuSelector = %MenuSelector
 @onready var menu_scene: Node3D = $'..'
 @onready var menu_state: MenuState = %MenuState
 @onready var config: Config = $'../Config'
+@onready var actions: MenuActions = %MenuActions
 
 @export var controlledNode: Node3D
 @export var MENU_ROTATION_SPEED: float
@@ -40,8 +40,7 @@ func call_menu_action():
     else:
         sfx_player.on_section_select.emit()
     if action != "placeholder_action":
-# TODO mb we cal do ModuleName.call to not overpopulate this script
-        call(selected.action)
+        actions.call(selected.action)
         return
     if selected.get("options"):
         pass
@@ -54,36 +53,6 @@ func call_menu_action():
             return
         menuSpawner.open_menu_section(controlledNode, selected.items)
         return
-
-func settings_fps_counter_on():
-    config.set_fps_counter_state.emit(true)
-
-func settings_fps_counter_off():
-    config.set_fps_counter_state.emit(false)
-
-func settings_sfx_on():
-    sfx_player.toggle_sfx.emit(true)
-
-func settings_sfx_off():
-    sfx_player.toggle_sfx.emit(false)
-
-
-func menu_back():
-    var selected = menu_selector.get_selected_item()
-    menuSpawner.open_menu_section(controlledNode, menu_state.back())
-    return
-
-func menu_start_game():
-    if Utils.main_scene(self) == 'MenuScene':
-        get_tree().quit()
-        return
-    Utils.set_scene(self, 'LoopScene')
-
-func menu_open_controls_editor():
-    push_warning("not implemented")
-
-func menu_exit_game():
-    get_tree().quit()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:

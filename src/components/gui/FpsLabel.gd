@@ -2,10 +2,19 @@ extends Label
 
 @export var enabled := true
 var counter := 0.
+@onready var config: Config = $'../../Config'
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     enabled = G.settings.FPS_COUNTER_ENABLED
+    config.set_fps_counter_state.connect(_on_state_changed)
+
+func _on_state_changed(state: bool):
+    enabled = state
+    if state:
+        show()
+    else:
+        hide()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
