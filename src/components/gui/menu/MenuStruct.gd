@@ -26,8 +26,20 @@ static var menu_items := {
                                     action = "settings_fps_counter_off"
                                 },
                             },
-                        }
-                        # R:TODO display debug stats
+                        },
+                        2: {
+                            name = "display\ndebug\nstats",
+                            options = {
+                                1: {
+                                    name = "on",
+                                    action = "settings_display_debug_stats_on"
+                                },
+                                2: {
+                                    name = "off",
+                                    action = "settings_display_debug_stats_off"
+                                },
+                            },
+                        },
                     }
                 },
                 2: {
