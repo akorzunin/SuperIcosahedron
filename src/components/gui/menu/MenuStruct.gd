@@ -108,6 +108,7 @@ static var menu_items := {
         },
         3: {
             name = "achivemets",
+            action = "menu_show_achivemets"
         },
         5: {
             name = "exit",
@@ -115,6 +116,7 @@ static var menu_items := {
         },
         6: {
             name = "credits",
+            action = "menu_show_credits"
         },
     }
 }

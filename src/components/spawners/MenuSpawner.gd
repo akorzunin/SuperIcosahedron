@@ -11,10 +11,6 @@ class_name MenuSpawner
 const IcosahedronScene = preload ('res://src/models/icosahedron/Icosahedron.tscn')
 const MenuItemScene = preload('res://src/models/menu_item/MenuItem.tscn')
 
-func menu_action():
-    print_debug("aboba")
-
-
 func add_menu_items(node: Marker3D, layer: Dictionary):
     var items = layer.get("items")
     if not items:
