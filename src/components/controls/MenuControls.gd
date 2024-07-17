@@ -75,7 +75,18 @@ func _input(event: InputEvent):
             return
         call_menu_action()
     if event.is_action_pressed('ui_cancel'):
-        change_selection(Quaternion(),)
+        var selected = menu_selector.get_selected_item()
+        if selected == null:
+            return
+        if selected.label == "start":
+            change_selection(Quats.menu_quat_left(),)
+            return
+        if selected.label == "exit":
+            actions.call("menu_exit_game")
+            return
+        actions.call("menu_back")
+        sfx_player.on_section_select.emit()
+        return
     if controlledNode and target.get("progress", 1) < 1:
         return
     if event.is_action('ui_down'):
