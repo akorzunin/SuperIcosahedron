@@ -12,3 +12,6 @@ func get_cutplane_vector():
 
 func get_figure():
     return icosahedron
+
+func despawn():
+    return icosahedron.despawn()

@@ -13,4 +13,5 @@ func _process(delta: float) -> void:
     pass
 
 func _on_shape_entered(area_rid: RID, area: Area3D, area_shape_index: int, local_shape_index: int):
-    area.get_parent().queue_free()
+    if area is Collider:
+        area.despawn()
