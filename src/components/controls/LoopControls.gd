@@ -4,6 +4,7 @@ class_name LoopControls
 @export var figureRoot: FigureRoot
 @export var controlledNode: MeshIcosahedron
 @export var ROTATION_SPEED: float
+@onready var game_progress: GameProgress = %GameProgress
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -11,10 +12,14 @@ func _ready() -> void:
 
 func set_controlled_node(node: MeshIcosahedron):
     if controlledNode != null and controlledNode is MeshIcosahedron:
+        # TODO implemet comments in mesh node
+        #controlledNode.set_controlled(false)
         Utils.set_shader_param(controlledNode, "enable", false, 2)
         controlledNode.collider.set_collision_mask_value(1, false)
         controlledNode.collider.set_collision_layer_value(1, false)
+    #node.set_controlled(true)
     controlledNode = node
+    game_progress.add_one()
     Utils.set_shader_param(controlledNode, "enable", true, 2)
 
 func update_controlled_node():

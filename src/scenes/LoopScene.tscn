@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=25 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="12_fcd1m"]
 [ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="18_tjx6c"]
+[ext_resource type="Script" path="res://src/components/GameProgress.gd" id="19_mtejl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -213,3 +214,7 @@ script = ExtResource("12_486y3")
 
 [node name="Config" type="Node" parent="."]
 script = ExtResource("18_tjx6c")
+
+[node name="GameProgress" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("19_mtejl")
