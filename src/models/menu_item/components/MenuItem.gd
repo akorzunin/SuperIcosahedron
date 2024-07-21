@@ -21,6 +21,7 @@ func _ready() -> void:
     self.add_to_group("menu_item")
     label.text = label_text
     var t = Quats.menu_quat_left()
+    var y = Quats.menu_quat_down().inverse()
     match pos:
         1:
             pass
@@ -33,7 +34,9 @@ func _ready() -> void:
         5:
             transform.basis = Basis(t * t * t * t)
         6:
-            transform.basis = Basis(Quats.menu_quat_down().inverse())
+            transform.basis = Basis(y)
+        7:
+            transform.basis = Basis(Quats.easter_egg_quat)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

@@ -64,6 +64,10 @@ func menu_back():
     menu_spawner.open_menu_section(menu_controls.controlledNode, menu_state.back())
     return
 
+func menu_easter_egg():
+    menu_state.toggle_easter_egg_state()
+    menu_spawner.open_menu_section(menu_controls.controlledNode, menu_state.state)
+
 
 func menu_open_controls_editor():
     push_warning("not implemented")
