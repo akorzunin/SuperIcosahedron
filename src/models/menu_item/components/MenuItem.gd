@@ -1,7 +1,7 @@
 extends Node3D
 class_name MenuItem
 
-@onready var label: Label = $Sprite3D/SubViewport/Label
+@onready var label_3d: Label3D = $Label3D
 
 var pos: int
 var label_text: String
@@ -19,7 +19,7 @@ func init(props: Dictionary):
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     self.add_to_group("menu_item")
-    label.text = label_text
+    label_3d.text = label_text
     var t = Quats.menu_quat_left()
     var y = Quats.menu_quat_down().inverse()
     match pos:
