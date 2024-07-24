@@ -1,11 +1,13 @@
-[gd_scene load_steps=25 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=27 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
 [ext_resource type="Script" path="res://src/components/controls/LoopControls.gd" id="2_ddung"]
 [ext_resource type="Script" path="res://src/components/spawners/FigureRoot.gd" id="3_qa50p"]
 [ext_resource type="Script" path="res://src/components/spawners/Anchor.gd" id="4_vihkp"]
+[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/spawn_point_v1.gdshader" id="5_ban2q"]
 [ext_resource type="Script" path="res://src/components/spawners/LoopSpawner.gd" id="5_r6722"]
+[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="5_wwg5g"]
 [ext_resource type="Script" path="res://src/components/gui/LoopGui.gd" id="7_q37nr"]
 [ext_resource type="PackedScene" uid="uid://derbnrboktp1g" path="res://src/components/gui/DebugStatsContainer.tscn" id="8_jh3v8"]
 [ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="8_tiwnl"]
@@ -31,7 +33,10 @@ sky_material = SubResource("ShaderMaterial_kgifq")
 background_mode = 2
 sky = SubResource("Sky_puicm")
 
-[sub_resource type="BoxMesh" id="BoxMesh_is403"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ir1am"]
+render_priority = 0
+shader = ExtResource("5_ban2q")
+shader_parameter/color = Color(0.937, 0.267, 0.267, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cw5a6"]
 
@@ -58,7 +63,9 @@ figureRoot = NodePath("../FigureRoot")
 script = ExtResource("3_qa50p")
 
 [node name="SpawnPoint" type="MeshInstance3D" parent="FigureRoot"]
-mesh = SubResource("BoxMesh_is403")
+transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_ir1am")
+mesh = ExtResource("5_wwg5g")
 
 [node name="Anchor" type="Node" parent="FigureRoot"]
 unique_name_in_owner = true
