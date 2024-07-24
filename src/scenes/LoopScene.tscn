@@ -1,13 +1,16 @@
-[gd_scene load_steps=27 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=31 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
 [ext_resource type="Script" path="res://src/components/controls/LoopControls.gd" id="2_ddung"]
+[ext_resource type="Shader" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="3_j2gvx"]
 [ext_resource type="Script" path="res://src/components/spawners/FigureRoot.gd" id="3_qa50p"]
+[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/skybox/icosahedron_Solid_Sky.res" id="4_1f6c4"]
 [ext_resource type="Script" path="res://src/components/spawners/Anchor.gd" id="4_vihkp"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/spawn_point_v1.gdshader" id="5_ban2q"]
 [ext_resource type="Script" path="res://src/components/spawners/LoopSpawner.gd" id="5_r6722"]
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="5_wwg5g"]
+[ext_resource type="Script" path="res://src/components/sky/SkyIcosahedron.gd" id="5_yiga3"]
 [ext_resource type="Script" path="res://src/components/gui/LoopGui.gd" id="7_q37nr"]
 [ext_resource type="PackedScene" uid="uid://derbnrboktp1g" path="res://src/components/gui/DebugStatsContainer.tscn" id="8_jh3v8"]
 [ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="8_tiwnl"]
@@ -33,6 +36,11 @@ sky_material = SubResource("ShaderMaterial_kgifq")
 background_mode = 2
 sky = SubResource("Sky_puicm")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1ojgr"]
+render_priority = 0
+shader = ExtResource("3_j2gvx")
+shader_parameter/bg_color = Color(0.729, 0.902, 0.992, 1)
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ir1am"]
 render_priority = 0
 shader = ExtResource("5_ban2q")
@@ -53,6 +61,13 @@ environment = SubResource("Environment_27kur")
 
 [node name="Camera3D" type="Camera3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 0.907777, 0.419452, 0, -0.419452, 0.907777, 0, 5.94938, 11.9444)
+
+[node name="SkyMeshIcosahedron" type="MeshInstance3D" parent="Environment"]
+transform = Transform3D(42.78, 0, 0, 0, 42.78, 0, 0, 0, 42.78, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_1ojgr")
+mesh = ExtResource("4_1f6c4")
+skeleton = NodePath("../..")
+script = ExtResource("5_yiga3")
 
 [node name="LoopControls" type="Node" parent="." node_paths=PackedStringArray("figureRoot")]
 process_mode = 3
