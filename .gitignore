@@ -3,10 +3,13 @@
 .godot/
 temp
 *.tmp
-assets/*
 build
 android
-# !assets/skybox
+# чисто дурка https://stackoverflow.com/a/16318111/14349118
+assets/*
+!assets/skybox
+assets/skybox/*
+!assets/skybox/*.res
 
 # Godot-specific ignores
 .import/
