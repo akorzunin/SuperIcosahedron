@@ -23,11 +23,17 @@ func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: Ga
     if old_state == gs.GAME_PAUSED:
         paused = false
 
-func get_elapsed_time() -> String:
+func get_raw_elapsed_time() -> int:
     var time_now := Time.get_ticks_msec()
     if is_stopped() or time_start > time_now:
+        return 0
+    return time_now - time_start
+
+func get_elapsed_time() -> String:
+    var raw_time := get_raw_elapsed_time()
+    if not raw_time:
         return "000:000"
-    return format_time(time_now - time_start)
+    return format_time(raw_time)
 
 func format_time(time: int) -> String:
     var ms := time % 1000

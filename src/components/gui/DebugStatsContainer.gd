@@ -3,6 +3,8 @@ class_name DebugStatsContainer
 
 @onready var figures_count: Label = $VBoxContainer/FiguresCount
 @onready var angle: Label = $VBoxContainer/Angle
+@onready var nodes_passed: DebugLabel = $VBoxContainer/NodesPassed
+@onready var time_passed: DebugLabel = $VBoxContainer/TimePassed
 
 var width_percent := 20
 

@@ -19,7 +19,7 @@ enum LabelType {
 }
 @export var type := LabelType.NONE
 @export var regular_update := false
-@onready var timer: Timer = $'../../Timer'
+@onready var timer: Timer = %DebugStatsTimer
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

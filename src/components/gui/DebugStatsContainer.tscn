@@ -58,5 +58,26 @@ label_text = "0"
 type = 5
 regular_update = true
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Stats" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = ": 0"
+script = ExtResource("3_ows3h")
+label_text = "_"
+
+[node name="NodesPassed" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = ": 0"
+script = ExtResource("3_ows3h")
+label_text = "0"
+regular_update = true
+
+[node name="TimePassed" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = ": 0"
+script = ExtResource("3_ows3h")
+label_text = "0"
+regular_update = true
+
+[node name="DebugStatsTimer" type="Timer" parent="."]
+unique_name_in_owner = true
 autostart = true
