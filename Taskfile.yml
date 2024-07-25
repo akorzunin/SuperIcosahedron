@@ -19,11 +19,11 @@ tasks:
     cmds:
       - |
         {{if eq OS "windows"}}
-          powershell -c
-            '$files=(git ls-files --exclude-standard); foreach ($file in $files) {
+          powershell -c '
+          $files=(git ls-files --exclude-standard); foreach ($file in $files) {
               if ((get-item $file).Extension -in ".gdshader", ".gdshaderinc", ".glsl", ".glslv", ".glslf")
               { clang-format -i -style=file $file }
-            }'
+          }'
         {{else}}
           git ls-files --exclude-standard |
           grep -E '\.(gdshader|gdshaderinc|glsl|glslv|glslf)$' |
