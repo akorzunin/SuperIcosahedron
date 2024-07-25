@@ -1,2 +1,2 @@
-extends Node
+extends Marker3D
 class_name Anchor

@@ -7,6 +7,9 @@ class_name GameProgress
 
 var figures_passed := 0
 var time_passed := 0.
+var time_passed_formated: String:
+    get:
+        return loop_timer.get_elapsed_time()
 
 func add_one():
     figures_passed += 1

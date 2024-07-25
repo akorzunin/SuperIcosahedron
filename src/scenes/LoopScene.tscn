@@ -82,7 +82,7 @@ transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_ir1am")
 mesh = ExtResource("5_wwg5g")
 
-[node name="Anchor" type="Node" parent="FigureRoot"]
+[node name="Anchor" type="Marker3D" parent="FigureRoot"]
 unique_name_in_owner = true
 script = ExtResource("4_vihkp")
 

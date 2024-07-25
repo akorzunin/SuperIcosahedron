@@ -4,6 +4,7 @@ class_name EndRay
 
 @onready var loop_controls: LoopControls = $'../../LoopControls'
 @onready var gui: LoopGui = $'../../Gui'
+@onready var game_state_manager: GameStateManager = %GameStateManager
 
 ## vactor that points at EndGame marker
 var pass_vec: Vector3
@@ -45,7 +46,10 @@ func check_angle(v: Vector3) -> AngleType:
     return a.ANGLE_WRONG
 
 func game_over():
+    var gs := GameStateManager.GameState
+    if game_state_manager.game_state == gs.GAME_END:
+        return
+    game_state_manager.game_state_changed.emit(game_state_manager.game_state, gs.GAME_END)
     if Utils.main_scene(self) == 'LoopScene':
         get_tree().paused = true
         return
-    Utils.set_scene(self, 'MenuScene')
