@@ -1,6 +1,5 @@
 ### Godot ###
 # Godot 4+ specific ignores
-.godot/
 temp
 *.tmp
 build
@@ -10,6 +9,9 @@ assets/*
 !assets/skybox
 assets/skybox/*
 !assets/skybox/*.res
+
+.godot/*
+!/.godot/uid_cache.bin
 
 # Godot-specific ignores
 .import/

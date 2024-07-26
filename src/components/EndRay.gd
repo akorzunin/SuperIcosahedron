@@ -5,13 +5,14 @@ class_name EndRay
 @onready var loop_controls: LoopControls = $'../../LoopControls'
 @onready var gui: LoopGui = $'../../Gui'
 @onready var game_state_manager: GameStateManager = %GameStateManager
-@onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
+@onready var sfx_player: SfxPlayer
 
 ## vactor that points at EndGame marker
 var pass_vec: Vector3
 var MIN_END_DISTANCE := 0.05
 
 func _ready():
+    sfx_player = get_node_or_null("/root/MainScene/SfxPlayer")
     target_position = -global_position
     pass_vec = Vector3(0, -target_position.y, -target_position.z).normalized()
     pass
