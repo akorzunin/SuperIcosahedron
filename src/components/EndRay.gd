@@ -5,6 +5,7 @@ class_name EndRay
 @onready var loop_controls: LoopControls = $'../../LoopControls'
 @onready var gui: LoopGui = $'../../Gui'
 @onready var game_state_manager: GameStateManager = %GameStateManager
+@onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
 
 ## vactor that points at EndGame marker
 var pass_vec: Vector3
@@ -50,6 +51,7 @@ func game_over():
     if game_state_manager.game_state == gs.GAME_END:
         return
     game_state_manager.game_state_changed.emit(game_state_manager.game_state, gs.GAME_END)
+    sfx_player.on_section_select.emit()
     if Utils.main_scene(self) == 'LoopScene':
         get_tree().paused = true
         return
