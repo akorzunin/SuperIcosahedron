@@ -1,12 +1,13 @@
 extends Node
 class_name MenuActions
 
-@onready var config: Config = $'../Config'
+@onready var config: Config = $"/root/MainScene/Config"
 @onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
 @onready var menu_spawner := $"../MenuSpawner"
 @onready var menu_selector: MenuSelector = %MenuSelector
 @onready var menu_controls: MenuControls = $'../MenuControls'
 @onready var menu_state: MenuState = %MenuState
+@onready var common_controls: CommonControls = %CommonControls
 
 func menu_start_game():
     if Utils.main_scene(self) == 'MenuScene':
@@ -21,10 +22,12 @@ func settings_fps_counter_off():
     config.set_fps_counter_state.emit(false)
 
 func settings_display_debug_stats_on():
-    pass
+    config._on_debug_stats_state(true)
+    common_controls.toggle_debug_stats.emit(true)
 
 func settings_display_debug_stats_off():
-    pass
+    config._on_debug_stats_state(false)
+    common_controls.toggle_debug_stats.emit(false)
 
 func settings_fullscreen():
     pass

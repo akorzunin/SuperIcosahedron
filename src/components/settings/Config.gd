@@ -31,3 +31,7 @@ func _on_fps_counter_state(state: bool):
     G.settings.FPS_COUNTER_ENABLED = state
     SettingsConfig.write_key(config, "user_settings", "FPS_COUNTER_ENABLED", state)
     pass
+
+func _on_debug_stats_state(state: bool):
+    G.settings.SHOW_DEBUG_STATS = state
+    SettingsConfig.write_key(config, "user_settings", "SHOW_DEBUG_STATS", state)
