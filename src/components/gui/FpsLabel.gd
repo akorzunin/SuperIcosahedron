@@ -2,7 +2,7 @@ extends Label
 
 @export var enabled := true
 var counter := 0.
-@onready var config: Config = $'../../Config'
+@onready var config: Config = $'/root/MainScene/Config'
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

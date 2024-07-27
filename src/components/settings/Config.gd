@@ -16,6 +16,7 @@ enum ConfigName {USER, LOCAL, LOOP_SCENE, MENU_SCENE}
 var config := user_config
 
 signal set_fps_counter_state(state: bool)
+signal set_debug_stats_state(state: bool)
 
 func _init() -> void:
     if not OS.has_feature("editor"):
@@ -26,11 +27,11 @@ func _init() -> void:
 
 func _ready() -> void:
     set_fps_counter_state.connect(_on_fps_counter_state)
+    set_debug_stats_state.connect(_on_debug_stats_state)
 
 func _on_fps_counter_state(state: bool):
     G.settings.FPS_COUNTER_ENABLED = state
     SettingsConfig.write_key(config, "user_settings", "FPS_COUNTER_ENABLED", state)
-    pass
 
 func _on_debug_stats_state(state: bool):
     G.settings.SHOW_DEBUG_STATS = state
