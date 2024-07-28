@@ -78,7 +78,7 @@ func _ready() -> void:
         Utils.set_shader_param(mesh_icosahedron, "enable", false, 2)
         Utils.set_shader_param(mesh_icosahedron, "enable", false, 3)
 
-    if Utils.get_render_method() == Utils.RenderMethods.GL_COMPATIBILITY:
+    if Utils.get_platform() == Utils.Platform.WEB:
         Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true)
         Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true, 1)
     set_color(G.theme.figure_variants.get(variant.name, G.theme.base_color))
@@ -95,6 +95,7 @@ func _on_scale_tick() -> void:
 
 func despawn():
     var tw = create_tween()
-    tw.tween_property(mesh_icosahedron, "transparency", 1, .5)
+    var s := 100.
+    tw.tween_property(mesh_icosahedron, "scale", Vector3(s, s, s), .3)
     tw.finished.connect(func(): queue_free())
     tw.play()

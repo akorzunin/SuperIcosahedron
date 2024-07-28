@@ -24,7 +24,6 @@ G="*res://src/globals.gd"
 
 [debug]
 
-settings/stdout/print_fps=true
 gdscript/warnings/unassigned_variable=0
 gdscript/warnings/unused_variable=0
 gdscript/warnings/unused_local_constant=0
@@ -103,5 +102,5 @@ pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
-renderer/rendering_method.web="mobile"
+renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
