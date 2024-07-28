@@ -16,6 +16,8 @@ enum LabelType {
     FIGURES_COUNT,
     ANGLE,
     WINDOW_MODE,
+    MIX_RATE,
+    RENDERER,
 }
 @export var type := LabelType.NONE
 @export var regular_update := false
@@ -40,6 +42,10 @@ func _on_update():
             label_text = str(0.0)
         LabelType.WINDOW_MODE:
             label_text = str(DisplayServer.window_get_mode())
+        LabelType.MIX_RATE:
+            label_text = str(AudioServer.get_mix_rate())
+        LabelType.RENDERER:
+            label_text = Utils.get_render_method_name()
         _:
             label_text = label_text
 
