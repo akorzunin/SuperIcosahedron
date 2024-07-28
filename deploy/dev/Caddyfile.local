@@ -1,12 +1,14 @@
 supericosahedron.localhost {
+    tls internal
+    redir /download /download/
     handle_path /download/* {
         root * build
         file_server browse
     }
-    root * build/web
-    file_server
+    reverse_proxy localhost:5173
     header {
         Cross-Origin-Opener-Policy same-origin
         Cross-Origin-Embedder-Policy require-corp
+        Cache-Control: no-cache, no-store, must-revalidate
     }
 }

@@ -155,7 +155,7 @@ tasks:
     desc: run reverce proxy to view web build and file server locally
     interactive: true
     cmds:
-      - caddy run --config ./deploy/dev/Caddyfile.local --watch
+      - caddy run --config ./deploy/dev/Caddyfile.local --watch --adapter caddyfile
 
   build-check:
     desc: run prebuild scripts
