@@ -46,3 +46,21 @@ NOTE: Export templates should be installed
 dev build
 
     task dev-build-all
+
+## Downloading assets
+
+Install rclone
+
+    winget install rclone
+
+Configure connection w/ GUI in Configs>Create
+
+    rclone rcd --rc-web-gui
+
+Get assets from cloud
+
+    rclone sync ico-sync:ico-sync/assets assets
+
+Upload new assets
+
+    rclone sync assets ico-sync:ico-sync/assets
