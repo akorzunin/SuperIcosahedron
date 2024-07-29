@@ -5,7 +5,7 @@ export const HomePage = () => {
   return (
     <>
       <div>HomePage</div>
-      <p className="bg-sky-200">Title</p>
+      <p className="bg-background">Title</p>
       <div className="card">
         <a href="/download/">dl link</a>
         <LinkCard />
