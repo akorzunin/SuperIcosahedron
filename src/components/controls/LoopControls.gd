@@ -23,15 +23,10 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
 
 func set_controlled_node(node: MeshIcosahedron):
     if controlledNode != null and controlledNode is MeshIcosahedron:
-        # TODO implemet comments in mesh node
-        #controlledNode.set_controlled(false)
-        Utils.set_shader_param(controlledNode, "enable", false, 2)
-        controlledNode.collider.set_collision_mask_value(1, false)
-        controlledNode.collider.set_collision_layer_value(1, false)
-    #node.set_controlled(true)
+        controlledNode.set_controlled(false)
+    node.set_controlled(true)
     controlledNode = node
     game_progress.add_one()
-    Utils.set_shader_param(controlledNode, "enable", true, 2)
 
 func update_controlled_node():
     var figures = figureRoot.get_node("Anchor").get_children() as Array[Icosahedron]

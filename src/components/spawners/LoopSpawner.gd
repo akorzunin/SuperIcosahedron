@@ -42,32 +42,10 @@ func add_menu_items(node: Marker3D, layer: Dictionary):
             })
         node.add_child(new_item)
 
-# R:TODO move to game progress node
-func get_score():
-    return "score\nnodes: %s\ntime: %s" % [
-        game_progress.figures_passed,
-        game_progress.time_passed_formated
-    ]
-
-# R:TODO move to menu struct mb or simplify
-func get_game_over_state():
-    return {
-        name = "game_over",
-        items = {
-            1: {
-                name = get_score(),
-            },
-            2: {
-                name = "restart",
-            },
-            5: {
-                name = "exit",
-            },
-            6: {
-                name = "game over",
-            },
-        }
-    }
+func get_game_over_state() -> Dictionary:
+    var m := MenuStruct.game_over
+    m.itmes[1].name = game_progress.get_score()
+    return m
 
 func spawn_game_over_scene():
     var anc := figureRoot.get_node("Anchor") as Anchor

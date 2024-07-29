@@ -33,3 +33,9 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
 func _physics_process(delta: float) -> void:
     debug_stats_container.nodes_passed.label_text = str(figures_passed)
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
+
+func get_score():
+    return "score\nnodes: %s\ntime: %s" % [
+        figures_passed,
+        time_passed_formated
+    ]

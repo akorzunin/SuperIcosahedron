@@ -13,6 +13,7 @@ func _ready() -> void:
         # wierd trick to not get errors when scaling and rotating mesh when its mounted in runtime
         transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-    pass
+func set_controlled(state: bool):
+    Utils.set_shader_param(self, "enable", state, 2)
+    collider.set_collision_mask_value(1, state)
+    collider.set_collision_layer_value(1, state)

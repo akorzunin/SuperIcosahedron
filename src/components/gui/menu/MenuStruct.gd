@@ -157,3 +157,21 @@ static var menu_items_emoji := {
         },
     }
 }
+
+static var game_over := {
+    name = "game_over",
+    items = {
+        1: {
+            name = "score",
+        },
+        2: {
+            name = "restart",
+        },
+        5: {
+            name = "exit",
+        },
+        6: {
+            name = "game over",
+        },
+    }
+}

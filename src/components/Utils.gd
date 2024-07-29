@@ -34,9 +34,8 @@ static func set_shader_param(node: MeshInstance3D, _name: String, value: Variant
 
 enum RenderMethods {GL_COMPATIBILITY, MOBILE, FORWARD_PLUS}
 
-# R:TODO refactor
 static func get_render_method() -> RenderMethods:
-    return RenderMethods.get(ProjectSettings.get_setting("rendering/renderer/rendering_method").to_upper())
+    return RenderMethods.get(get_render_method_name())
 
 static func get_render_method_name() -> String:
     return ProjectSettings.get_setting("rendering/renderer/rendering_method").to_upper()
