@@ -28,7 +28,7 @@ function hexToRgbNormalized(hex) {
   g = parseFloat(g.toFixed(3));
   b = parseFloat(b.toFixed(3));
 
-  return [ r, g, b ];
+  return [r, g, b];
 }
 for (const row of document.querySelector(".grid").children) {
   const hue = row.firstChild.innerText.toLowerCase();
