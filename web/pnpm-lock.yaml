@@ -10,6 +10,9 @@ importers:
       "@radix-ui/react-dropdown-menu":
         specifier: ^2.1.1
         version: 2.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      "@radix-ui/react-menubar":
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       "@radix-ui/react-slot":
         specifier: ^1.1.0
         version: 1.1.0(@types/react@18.3.3)(react@18.3.1)
@@ -19,6 +22,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      lucide-react:
+        specifier: ^0.417.0
+        version: 0.417.0(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -762,6 +768,22 @@ packages:
       "@types/react-dom":
         optional: true
 
+  "@radix-ui/react-menubar@1.1.1":
+    resolution:
+      {
+        integrity: sha512-V05Hryq/BE2m+rs8d5eLfrS0jmSWSDHEbG7jEyLA5D5J9jTvWj/o3v3xDN9YsOlH6QIkJgiaNDaP+S4T1rdykw==,
+      }
+    peerDependencies:
+      "@types/react": "*"
+      "@types/react-dom": "*"
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      "@types/react-dom":
+        optional: true
+
   "@radix-ui/react-popper@1.2.0":
     resolution:
       {
@@ -971,7 +993,6 @@ packages:
       }
     cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   "@rollup/rollup-linux-arm-musleabihf@4.19.1":
     resolution:
@@ -980,7 +1001,6 @@ packages:
       }
     cpu: [arm]
     os: [linux]
-    libc: [musl]
 
   "@rollup/rollup-linux-arm64-gnu@4.19.1":
     resolution:
@@ -989,7 +1009,6 @@ packages:
       }
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   "@rollup/rollup-linux-arm64-musl@4.19.1":
     resolution:
@@ -998,7 +1017,6 @@ packages:
       }
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   "@rollup/rollup-linux-powerpc64le-gnu@4.19.1":
     resolution:
@@ -1007,7 +1025,6 @@ packages:
       }
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   "@rollup/rollup-linux-riscv64-gnu@4.19.1":
     resolution:
@@ -1016,7 +1033,6 @@ packages:
       }
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   "@rollup/rollup-linux-s390x-gnu@4.19.1":
     resolution:
@@ -1025,7 +1041,6 @@ packages:
       }
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   "@rollup/rollup-linux-x64-gnu@4.19.1":
     resolution:
@@ -1034,7 +1049,6 @@ packages:
       }
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   "@rollup/rollup-linux-x64-musl@4.19.1":
     resolution:
@@ -1043,7 +1057,6 @@ packages:
       }
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   "@rollup/rollup-win32-arm64-msvc@4.19.1":
     resolution:
@@ -2070,6 +2083,14 @@ packages:
       {
         integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==,
       }
+
+  lucide-react@0.417.0:
+    resolution:
+      {
+        integrity: sha512-F/MDUHDter8YMZ7JKQpW/5/+v38tdaoShKX3e+opYsqfCnaHwn+5zz3+lBrMDFMNtSsvxtNpchLIaMpEfsi/4w==,
+      }
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   merge2@1.4.1:
     resolution:
@@ -3316,6 +3337,24 @@ snapshots:
       "@types/react": 18.3.3
       "@types/react-dom": 18.3.0
 
+  "@radix-ui/react-menubar@1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)":
+    dependencies:
+      "@radix-ui/primitive": 1.1.0
+      "@radix-ui/react-collection": 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      "@radix-ui/react-compose-refs": 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      "@radix-ui/react-context": 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      "@radix-ui/react-direction": 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      "@radix-ui/react-id": 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      "@radix-ui/react-menu": 2.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      "@radix-ui/react-primitive": 2.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      "@radix-ui/react-roving-focus": 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      "@radix-ui/react-use-controllable-state": 1.1.0(@types/react@18.3.3)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      "@types/react": 18.3.3
+      "@types/react-dom": 18.3.0
+
   "@radix-ui/react-popper@1.2.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)":
     dependencies:
       "@floating-ui/react-dom": 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4088,6 +4127,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-react@0.417.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   merge2@1.4.1: {}
 
