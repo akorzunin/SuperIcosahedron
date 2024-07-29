@@ -1,15 +1,13 @@
 import { Footer } from "../components/Footer";
 import { GodotFrame } from "../components/GodotFrame";
 import { Header } from "../components/Header";
-import { LinkCard } from "../components/LinkCard";
 
 export const HomePage = () => {
   return (
-    <>
+    <div className="flex-col justify-center">
       <Header />
-      <LinkCard />
       <GodotFrame />
       <Footer />
-    </>
+    </div>
   );
 };

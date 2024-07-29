@@ -3,7 +3,7 @@ import { ModeToggle } from "../shadcn/ui/mode-toggle";
 
 export const Header = () => {
   return (
-    <div className="flex justify-between p-4">
+    <div className="flex justify-between bg-secondary p-6">
       <h2 className="mt-10 scroll-m-20 justify-items-start pb-2 text-3xl font-semibold tracking-tight text-primary-foreground transition-colors first:mt-0">
         SuperIcosahedron
       </h2>
