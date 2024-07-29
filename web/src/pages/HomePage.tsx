@@ -1,4 +1,5 @@
 import { GodotFrame } from "../components/GodotFrame";
+import { LinkCard } from "../components/LinkCard";
 
 export const HomePage = () => {
   return (
@@ -7,6 +8,7 @@ export const HomePage = () => {
       <p className="bg-sky-200">Title</p>
       <div className="card">
         <a href="/download/">dl link</a>
+        <LinkCard />
         <GodotFrame />
       </div>
       <p className="read-the-docs">
