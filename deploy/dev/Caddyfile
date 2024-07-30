@@ -1,12 +1,14 @@
 :8282 {
+    redir /download /download/
     handle_path /download/* {
         root * /srv/build
         file_server browse
     }
-    root * /srv/build/web
+    root * /srv/build/frontend
     file_server
     header {
         Cross-Origin-Opener-Policy same-origin
         Cross-Origin-Embedder-Policy require-corp
+        Cache-Control: no-cache, no-store, must-revalidate
     }
 }
