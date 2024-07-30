@@ -9,7 +9,7 @@ export const Header = () => {
       </h2>
       <div className="flex gap-3">
         <Button asChild>
-          <a href="/download/">download</a>
+          <a href="/download/">download_6</a>
         </Button>
         <Button>source code</Button>
         <Button disabled>steam</Button>
