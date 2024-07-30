@@ -44,7 +44,7 @@ func add_menu_items(node: Marker3D, layer: Dictionary):
 
 func get_game_over_state() -> Dictionary:
     var m := MenuStruct.game_over
-    m.itmes[1].name = game_progress.get_score()
+    m.items[1].name = game_progress.get_score()
     return m
 
 func spawn_game_over_scene():
