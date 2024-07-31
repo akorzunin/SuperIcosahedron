@@ -1,0 +1,30 @@
+- name: Deploy dev
+  hosts: all
+  become: false
+  vars:
+    project_dir: ~/Documents/supericosahedron-dev/
+
+  tasks:
+    - name: Copy files to service directory
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ project_dir }}"
+        mode: "0755"
+        backup: false
+        remote_src: false
+      loop:
+        - Caddyfile
+        - compose.yaml
+
+    - name: Deploy new image
+      ansible.builtin.command:
+        cmd: docker compose up -d --force-recreate
+        chdir: "{{ project_dir }}"
+      register: out
+      changed_when: out.rc != 0
+
+    - name: Remove old version of image
+      ansible.builtin.command:
+        cmd: docker image prune --filter="dangling=true" --force
+      register: out
+      changed_when: out.rc != 0
