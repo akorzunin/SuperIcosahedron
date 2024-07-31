@@ -10,3 +10,14 @@ services:
       - ./caddy_config:/config:rw
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./build:/srv/build:ro
+      - frontend-dist-volume:/srv/dist:ro
+
+  frontend:
+    image: ghcr.io/akorzunin/supericosahedron-frontend:latest
+    container_name: sepericosahedron-frontend-dev
+    volumes:
+      - frontend-dist-volume:/src/web/dist:ro
+    command: ["tail", "-F", "aboba"]
+
+volumes:
+  frontend-dist-volume:

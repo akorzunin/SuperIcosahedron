@@ -4,7 +4,7 @@
         root * /srv/build
         file_server browse
     }
-    root * /srv/build/frontend
+    root * /srv/dist
     file_server
     header {
         Cross-Origin-Opener-Policy same-origin
