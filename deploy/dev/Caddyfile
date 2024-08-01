@@ -2,7 +2,11 @@
     redir /download /download/
     handle_path /download/* {
         root * /srv/build
-        file_server browse
+        file_server  {
+            browse ./template.html
+            hide web frontend
+        }
+
     }
     root * /srv/dist
     file_server

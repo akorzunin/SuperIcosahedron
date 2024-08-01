@@ -14,6 +14,7 @@
         - Caddyfile
         - compose.yaml
         - ./../../build
+        - ./../../web/caddy_template/template.html
 
     - name: Deploy file server
       ansible.builtin.command:

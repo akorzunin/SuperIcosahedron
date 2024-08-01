@@ -11,7 +11,10 @@ supericosahedron.localhost {
     redir /download /download/
     handle_path /download/* {
         root * build
-        file_server browse
+        file_server  {
+            browse ./web/caddy_template/template.html
+            hide web frontend
+        }
     }
     reverse_proxy localhost:5173
     header {
