@@ -1,3 +1,11 @@
+{
+    log {
+        format console {
+            level_format color
+        }
+    }
+}
+
 supericosahedron.localhost {
     tls internal
     redir /download /download/

@@ -153,7 +153,9 @@ tasks:
 
   caddy:
     desc: run reverce proxy to view web build and file server locally
-    interactive: true
+    preconditions:
+      - sh: type caddy
+        msg: caddy not found
     cmds:
       - caddy run --config ./deploy/dev/Caddyfile.local --watch --adapter caddyfile
 
@@ -166,3 +168,21 @@ tasks:
     desc: run afterbuild scripts
     cmds:
       - python ./scripts/on_build.py --cleanup
+
+  web-dev-server:
+    desc: start vite dev server
+    interactive: true
+    preconditions:
+      - sh: type pnpm
+        msg: pnpm not found
+    dir: web
+    cmds:
+      - pnpm run dev
+
+  debug-web:
+    desc: run dev server and local reverse proxy for web
+    deps:
+      - caddy
+      - web-dev-server
+    cmds:
+      - echo "debug session ended"
