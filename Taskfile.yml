@@ -7,6 +7,8 @@ output: "prefixed"
 vars:
   APP_NAME:
     sh: echo "SuperIcosahedron-$(./scripts/get_version.sh --short)-$(./scripts/get_version.sh --tag)"
+  BUILD_DIR:
+    sh: echo "./build/$(./scripts/get_version.sh --tag)-$(./scripts/get_version.sh --short)"
 
 tasks:
   default:
@@ -64,11 +66,11 @@ tasks:
   gd-dev-build-windows:
     internal: true
     cmds:
-      - rm -f ./build/pc/*.exe || true
-      - mkdir -p ./build/pc
+      - rm -f {{.BUILD_DIR}}/pc/*.exe || true
+      - mkdir -p {{.BUILD_DIR}}/pc
       - >-
         godot --headless --export-debug "Windows Desktop" --rendering-method forward_plus
-        ./build/pc/{{.APP_NAME}}-dev.exe
+        {{.BUILD_DIR}}/pc/{{.APP_NAME}}-dev.exe
 
   dev-build-windows:
     platforms: [linux]
@@ -83,11 +85,11 @@ tasks:
   gd-dev-build-linux:
     internal: true
     cmds:
-      - rm -f ./build/linux/*.x86_64 || true
-      - mkdir -p ./build/linux
+      - rm -f {{.BUILD_DIR}}/linux/*.x86_64 || true
+      - mkdir -p {{.BUILD_DIR}}/linux
       - >-
         godot --headless --export-debug "Linux/X11" --rendering-method forward_plus
-        ./build/linux/{{.APP_NAME}}-dev.x86_64
+        {{.BUILD_DIR}}/linux/{{.APP_NAME}}-dev.x86_64
 
   dev-build-linux:
     platforms: [linux]
@@ -103,11 +105,11 @@ tasks:
   gd-dev-build-android:
     internal: true
     cmds:
-      - rm -f ./build/android/*.apk || true
-      - mkdir -p ./build/android
+      - rm -f {{.BUILD_DIR}}/android/*.apk || true
+      - mkdir -p {{.BUILD_DIR}}/android
       - >-
         godot --headless --export-debug "Android"
-        ./build/android/{{.APP_NAME}}-dev.apk
+        {{.BUILD_DIR}}/android/{{.APP_NAME}}-dev.apk
 
   dev-build-android:
     platforms: [linux]
