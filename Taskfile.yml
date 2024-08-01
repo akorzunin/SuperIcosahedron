@@ -6,9 +6,15 @@ output: "prefixed"
 
 vars:
   APP_NAME:
-    sh: echo "SuperIcosahedron-$(./scripts/get_version.sh --short)-$(./scripts/get_version.sh --tag)"
+    sh: >-
+      {{if eq OS "linux"}}
+        echo "SuperIcosahedron-$(./scripts/get_version.sh --short)-$(./scripts/get_version.sh --tag)"
+      {{ end }}
   BUILD_DIR:
-    sh: echo "./build/$(./scripts/get_version.sh --tag)-$(./scripts/get_version.sh --short)"
+    sh: >-
+      {{if eq OS "linux"}}
+        echo "./build/$(./scripts/get_version.sh --tag)-$(./scripts/get_version.sh --short)"
+      {{ end }}
 
 tasks:
   default:
@@ -188,3 +194,15 @@ tasks:
       - web-dev-server
     cmds:
       - echo "debug session ended"
+
+  pull-assets:
+    desc: download assets from the cloud
+    prompt: This is command will replace your LOCAL assets Do you want to continue?
+    cmds:
+      - rclone sync remote:ico-sync/assets ./assets --progress
+
+  push-assets:
+    desc: download assets from the cloud
+    prompt: This is command will update CLOUD assets Do you want to continue?
+    cmds:
+      - rclone sync ./assets remote:ico-sync/assets --progress
