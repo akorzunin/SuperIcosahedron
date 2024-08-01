@@ -59,8 +59,8 @@ Configure connection w/ GUI in Configs>Create
 
 Get assets from cloud
 
-    rclone sync ico-sync:ico-sync/assets assets
+    task get-assets
 
 Upload new assets
 
-    rclone sync assets ico-sync:ico-sync/assets
+    task push-assets
