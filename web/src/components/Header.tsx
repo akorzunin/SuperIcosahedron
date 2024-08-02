@@ -1,3 +1,4 @@
+import { FaDownload, FaGithubAlt, FaItchIo, FaSteam } from "react-icons/fa";
 import { Button } from "../shadcn/ui/button";
 import { ModeToggle } from "../shadcn/ui/mode-toggle";
 
@@ -9,11 +10,28 @@ export const Header = () => {
       </h2>
       <div className="flex gap-3">
         <Button asChild>
-          <a href="/download/">download_6</a>
+          <a href="/download/">
+            <FaDownload />
+            &nbsp;Download
+          </a>
         </Button>
-        <Button>source code</Button>
-        <Button disabled>steam</Button>
-        <Button disabled>itch</Button>
+        <Button asChild>
+          <a
+            href="https://github.com/akorzunin/SuperIcosahedron"
+            target="_blank"
+          >
+            <FaGithubAlt />
+            &nbsp;Source code
+          </a>
+        </Button>
+        <Button disabled>
+          <FaSteam />
+          &nbsp;Steam
+        </Button>
+        <Button disabled>
+          <FaItchIo />
+          &nbsp;Itch
+        </Button>
         <ModeToggle />
       </div>
     </div>
