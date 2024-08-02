@@ -10,6 +10,7 @@ services:
       - ./caddy_config:/config:rw
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./build:/srv/build:ro
+      - ./template.html:/srv/template.html:ro
       - frontend-dist-volume:/srv/dist:ro
 
   frontend:
