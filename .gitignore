@@ -31,3 +31,4 @@ mono_crash.*.json
 .task
 *.import
 *.blend*
+.ansible_vault_password
