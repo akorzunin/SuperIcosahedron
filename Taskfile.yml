@@ -156,14 +156,14 @@ tasks:
       - >-
         ansible-playbook
         ./deploy/dev/deploy_local.yaml -l local_pi,
-        --verbose --vault-password-file .ansible_vault_password
+        --verbose --vault-password-file ~/.ansible_vault_password
 
   deploy-dev:
     platforms: [linux]
     desc: build for all platforms and upload files to file server
     interactive: true
     cmds:
-      - deploy-dev-internal
+      - { task: deploy-dev-internal }
 
   deploy-build-dev:
     platforms: [linux]
@@ -173,7 +173,7 @@ tasks:
     deps:
       - dev-build-all
     cmds:
-      - deploy-dev-internal
+      - { task: deploy-dev-internal }
 
   caddy:
     desc: run reverce proxy to view web build and file server locally
