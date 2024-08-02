@@ -13,7 +13,7 @@ supericosahedron.localhost {
         root * build
         file_server  {
             browse ./web/caddy_template/template.html
-            hide web frontend
+            hide frontend
         }
     }
     reverse_proxy localhost:5173
