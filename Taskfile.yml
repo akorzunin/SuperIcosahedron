@@ -204,6 +204,7 @@ tasks:
         msg: pnpm not found
     dir: web
     cmds:
+      - pnpm i
       - pnpm run dev
 
   debug-web:
