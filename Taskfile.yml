@@ -180,6 +180,9 @@ tasks:
   web-dev-server:
     desc: start vite dev server
     interactive: true
+    env:
+      VITE_GAME_VERSION: v0.0.0
+      VITE_GAME_COMMIT: ff7580e
     preconditions:
       - sh: type pnpm
         msg: pnpm not found
