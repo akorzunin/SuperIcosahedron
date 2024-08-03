@@ -187,6 +187,7 @@ tasks:
     desc: run prebuild scripts
     cmds:
       - python ./scripts/on_build.py
+      - { task: gen-version-file }
 
   build-cleanup:
     desc: run afterbuild scripts
@@ -229,3 +230,8 @@ tasks:
     prompt: This is command will update CLOUD assets Do you want to continue?
     cmds:
       - rclone copy ./assets remote:ico-sync/assets --progress --update
+
+  gen-version-file:
+    desc: ...
+    cmds:
+      - python ./scripts/generate_version.py
