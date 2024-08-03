@@ -200,7 +200,10 @@ tasks:
       VITE_GAME_VERSION: v0.0.0
       VITE_GAME_COMMIT: ff7580e
     preconditions:
-      - sh: type pnpm
+      - sh: >-
+          {{if eq OS "linux"}}
+            test pnpm
+          {{ end }}
         msg: pnpm not found
     dir: web
     cmds:
@@ -219,10 +222,10 @@ tasks:
     desc: download assets from the cloud
     prompt: This is command will replace your LOCAL assets Do you want to continue?
     cmds:
-      - rclone sync remote:ico-sync/assets ./assets --progress
+      - rclone copy remote:ico-sync/assets ./assets --progress --update
 
   push-assets:
     desc: download assets from the cloud
     prompt: This is command will update CLOUD assets Do you want to continue?
     cmds:
-      - rclone sync ./assets remote:ico-sync/assets --progress
+      - rclone copy ./assets remote:ico-sync/assets --progress --update
