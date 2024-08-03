@@ -199,7 +199,7 @@ tasks:
     interactive: true
     env:
       VITE_GAME_VERSION: v0.0.0
-      VITE_GAME_COMMIT: ff7580e
+      VITE_GAME_COMMIT: taskbld01
     preconditions:
       - sh: >-
           {{if eq OS "linux"}}

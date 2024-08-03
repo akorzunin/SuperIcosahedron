@@ -13,7 +13,7 @@ export const GodotFrame = () => {
   });
   return (
     <div className="grid justify-items-center px-6 pt-6">
-      <div className="w-screen-lg relative aspect-video min-w-[90vw]">
+      <div className="w-screen-lg relative aspect-video min-h-[70vh]">
         {!showIframe && (
           <div className="absolute inset-0 flex items-center justify-center bg-muted bg-opacity-75">
             <Button onClick={() => setShowIframe(true)}>
@@ -37,14 +37,7 @@ export const GodotFrame = () => {
           />
         )}
         <p className="absolute bottom-0 right-2 text-primary-foreground">
-          build:{" "}
-          {gameVersionData
-            ? gameVersionData.version
-            : import.meta.env.VITE_GAME_VERSION}{" "}
-          commit:{" "}
-          {gameVersionData
-            ? gameVersionData.commit
-            : import.meta.env.VITE_GAME_COMMIT}
+          build: {gameVersionData?.version} commit: {gameVersionData?.commit}
         </p>
       </div>
     </div>
