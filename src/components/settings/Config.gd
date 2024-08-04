@@ -36,3 +36,11 @@ func _on_fps_counter_state(state: bool):
 func _on_debug_stats_state(state: bool):
     G.settings.SHOW_DEBUG_STATS = state
     SettingsConfig.write_key(config, "user_settings", "SHOW_DEBUG_STATS", state)
+
+func set_sfx_state(state: bool):
+    G.settings.SFX_ENABLED = state
+    SettingsConfig.write_key(config, "user_settings", "SFX_ENABLED", state)
+
+func set_music_state(state: bool):
+    G.settings.MUSIC_ENABLED = state
+    SettingsConfig.write_key(config, "user_settings", "MUSIC_ENABLED", state)

@@ -42,10 +42,10 @@ func settings_vsync_off():
     pass
 
 func settings_music_on():
-    pass
+    sfx_player.toggle_music.emit(true)
 
 func settings_music_off():
-    pass
+    sfx_player.toggle_music.emit(false)
 
 func settings_sfx_on():
     sfx_player.toggle_sfx.emit(true)

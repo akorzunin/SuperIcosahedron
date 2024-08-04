@@ -19,7 +19,18 @@ static func load_config(file := config_path) -> ConfigFile:
         set_default_config_values(config)
         config.save(file)
         return config
+    update_keys(config, file)
     return config
+
+## If key exist in default config then we need to write in in user config
+static func update_keys(config: ConfigFile, file: String):
+    var given_d := config_to_kv(config)
+    var default_d: Dictionary = load("res://src/components/settings/DefaultConfig.gd").settings
+    for section in default_d.keys():
+        for key in default_d[section]:
+            if not given_d.has(key):
+                SettingsConfig.write_key(file, section, key, default_d[section][key])
+                config.set_value(section, key, default_d[section][key])
 
 static func set_default_config_values(config: ConfigFile) -> ConfigFile:
     var default_config = ConfigFile.new()
@@ -30,7 +41,14 @@ static func set_default_config_values(config: ConfigFile) -> ConfigFile:
                 config.set_value(section, key, settings[section][key])
     return config
 
-static func config_to_dict(config: ConfigFile):
+static func config_to_kv(config: ConfigFile) -> Dictionary:
+    var d = {}
+    for section in config.get_sections():
+        for key in config.get_section_keys(section):
+            d[key] = config.get_value(section, key)
+    return d
+
+static func config_to_dict(config: ConfigFile) -> Dictionary:
     var d = {}
     for section in config.get_sections():
         d[section] = {}

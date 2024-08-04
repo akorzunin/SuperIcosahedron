@@ -11,5 +11,7 @@ const settings = {
     user_settings = {
         FPS_COUNTER_ENABLED=true,
         SHOW_DEBUG_STATS=false,
+        MUSIC_ENABLED=true,
+        SFX_ENABLED=true,
     }
 }
