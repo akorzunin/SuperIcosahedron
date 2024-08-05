@@ -26,16 +26,16 @@ func _ready() -> void:
     if not G.settings.SFX_ENABLED:
         _on_toggle_sfx(false)
 
+static func enable_bus(bus_name: String, state: bool):
+    var bus_idx := AudioServer.get_bus_index(bus_name)
+    AudioServer.set_bus_mute(bus_idx, not state)
+
 func _on_toggle_sfx(state: bool):
-    #R:TODO write utils func for that
-    var i := AudioServer.get_bus_index("sfx")
-    AudioServer.set_bus_mute(i, not state)
+    SfxPlayer.enable_bus("sfx", state)
     config.set_sfx_state(state)
 
 func _on_toggle_music(state: bool):
-    #R:TODO write utils func for that
-    var i := AudioServer.get_bus_index("Music")
-    AudioServer.set_bus_mute(i, not state)
+    SfxPlayer.enable_bus("Music", state)
     config.set_music_state(state)
 
 func _play_section_chaged():
