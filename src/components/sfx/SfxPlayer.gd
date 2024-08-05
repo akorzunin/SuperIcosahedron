@@ -15,6 +15,10 @@ signal on_action_select
 signal toggle_sfx(state: bool)
 signal toggle_music(state: bool)
 
+func _init() -> void:
+    if Utils.get_platform() == Utils.Platform.WEB:
+        create_mute_callbac()
+
 func _ready() -> void:
     on_section_chaged.connect(_play_section_chaged)
     on_section_select.connect(_play_section_select)
@@ -48,3 +52,35 @@ func _play_section_select():
 
 func _play_action_select():
     action_select.play()
+
+var js_audio_callback: JavaScriptObject
+
+func create_mute_callbac() -> void:
+    js_audio_callback = JavaScriptBridge.create_callback(_set_audio_state)
+    JavaScriptBridge.eval("""
+var godotAudioBridge = {
+    callback: null,
+    setCallback: (cb) => this.callback = cb,
+    setAudioState: (data) => this.callback(JSON.stringify(data)),
+};
+    """, true)
+    var godot_bridge = JavaScriptBridge.get_interface("godotAudioBridge")
+    godot_bridge.setCallback(js_audio_callback)
+
+func _set_audio_state(data: Array) -> void:
+    var json := JSON.new()
+    var err := json.parse(data[0])
+    if err != OK:
+        push_error(error_string(err))
+        return
+    var args = json.data
+    var state: bool
+    var volume: float
+    if args.get("state") != null:
+        state = args.get("state")
+        print('set state: ', state)
+        _on_toggle_music(state)
+        _on_toggle_sfx(state)
+    if  args.get("volume") != null:
+        volume = args.get("volume")
+        print('set volume: ', volume)
