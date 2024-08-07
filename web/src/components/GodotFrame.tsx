@@ -3,6 +3,7 @@ import { Button } from "../shadcn/ui/button";
 import { FaPlay, FaExpand, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { getGameVersionInfo } from "../lib/versions";
+import { getGodotFile } from "../foreign/indexedDB";
 
 interface AudioBridge {
   state?: boolean;
@@ -15,6 +16,15 @@ interface WindowBridge extends Window {
   godotAudioBridge: GodotBridge;
 }
 
+async function aboba() {
+  const fileBlob = await getGodotFile();
+  if (!fileBlob) {
+    throw new Error("Settings not found");
+  }
+  const text = await fileBlob.text();
+  return text;
+}
+
 export const GodotFrame = () => {
   const [showIframe, setShowIframe] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -22,6 +32,10 @@ export const GodotFrame = () => {
   const { data: gameVersionData } = useQuery({
     queryKey: ["version-data"],
     queryFn: async () => await getGameVersionInfo(),
+  });
+  const { data: gameSettingsFile, isSuccess } = useQuery({
+    queryKey: ["game-settings-data"],
+    queryFn: async () => await aboba(),
   });
 
   const handleFullscreen = () => {
@@ -99,9 +113,15 @@ export const GodotFrame = () => {
             </Button>
           </>
         )}
-        <p className="absolute bottom-0 right-2 text-primary-foreground">
+        <p className="absolute bottom-0 right-2 text-primary-foreground outline-1">
           build: {gameVersionData?.version} commit: {gameVersionData?.commit}
         </p>
+        <Button
+          className="absolute bottom-10"
+          onClick={() => console.log(gameSettingsFile, isSuccess)}
+        >
+          &nbsp;Aboba
+        </Button>
       </div>
     </div>
   );
