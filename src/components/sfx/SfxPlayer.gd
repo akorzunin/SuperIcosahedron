@@ -18,6 +18,8 @@ signal toggle_music(state: bool)
 func _init() -> void:
     if Utils.get_platform() == Utils.Platform.WEB:
         create_mute_callbac()
+    if not G.settings.MUSIC_ENABLED:
+        SfxPlayer.enable_bus("Music", false)
 
 func _ready() -> void:
     on_section_chaged.connect(_play_section_chaged)
