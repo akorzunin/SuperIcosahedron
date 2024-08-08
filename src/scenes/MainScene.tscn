@@ -5,10 +5,10 @@
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="3_656kb"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="3_eruj2"]
 [ext_resource type="Script" path="res://src/components/sfx/SfxPlayer.gd" id="5_6wmow"]
-[ext_resource type="AudioStream" uid="uid://dbanyya1e6kde" path="res://assets/ost/build/section_change.wav" id="6_qd6xe"]
-[ext_resource type="AudioStream" uid="uid://d238csgqeoqiu" path="res://assets/ost/build/section_select.wav" id="7_66dvc"]
-[ext_resource type="AudioStream" uid="uid://dkhl2sdncv4gg" path="res://assets/ost/build/action_select.wav" id="8_kispc"]
-[ext_resource type="AudioStream" uid="uid://dfrpg15jmgpg4" path="res://assets/ost/build/main_menu_theme.wav" id="9_3482d"]
+[ext_resource type="AudioStream" uid="uid://dbanyya1e6kde" path="res://assets/build/ost/section_change.wav" id="6_qd6xe"]
+[ext_resource type="AudioStream" uid="uid://d238csgqeoqiu" path="res://assets/build/ost/section_select.wav" id="7_66dvc"]
+[ext_resource type="AudioStream" uid="uid://dkhl2sdncv4gg" path="res://assets/build/ost/action_select.wav" id="8_kispc"]
+[ext_resource type="AudioStream" uid="uid://dfrpg15jmgpg4" path="res://assets/build/ost/main_menu_theme.wav" id="9_3482d"]
 
 [node name="MainScene" type="Node"]
 script = ExtResource("1_7yre0")

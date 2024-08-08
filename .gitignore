@@ -4,11 +4,7 @@ temp
 *.tmp
 build
 android
-# чисто дурка https://stackoverflow.com/a/16318111/14349118
 assets/*
-!assets/skybox
-assets/skybox/*
-!assets/skybox/*.res
 
 .godot/*
 !/.godot/uid_cache.bin

@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://src/components/controls/LoopControls.gd" id="2_ddung"]
 [ext_resource type="Shader" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="3_j2gvx"]
 [ext_resource type="Script" path="res://src/components/spawners/FigureRoot.gd" id="3_qa50p"]
-[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/skybox/icosahedron_Solid_Sky.res" id="4_1f6c4"]
+[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/build/skybox/icosahedron_Solid_Sky.res" id="4_1f6c4"]
 [ext_resource type="Script" path="res://src/components/spawners/Anchor.gd" id="4_vihkp"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/spawn_point_v1.gdshader" id="5_ban2q"]
 [ext_resource type="Script" path="res://src/components/spawners/LoopSpawner.gd" id="5_r6722"]
