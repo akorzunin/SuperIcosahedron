@@ -4,6 +4,7 @@ import { FaPlay, FaExpand, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { getGameVersionInfo } from "../lib/versions";
 import { getGodotFile } from "../foreign/indexedDB";
+import { parseGodotSettings } from "../foreign/cfgParser";
 
 interface AudioBridge {
   state?: boolean;
@@ -22,7 +23,9 @@ async function aboba() {
     throw new Error("Settings not found");
   }
   const text = await fileBlob.text();
-  return text;
+  const res = await parseGodotSettings(text);
+  console.info("userSettings: ", res);
+  return res;
 }
 
 export const GodotFrame = () => {
@@ -33,7 +36,7 @@ export const GodotFrame = () => {
     queryKey: ["version-data"],
     queryFn: async () => await getGameVersionInfo(),
   });
-  const { data: gameSettingsFile, isSuccess } = useQuery({
+  const { data: gameSettings, isSuccess: isGameSettingsFetched } = useQuery({
     queryKey: ["game-settings-data"],
     queryFn: async () => await aboba(),
   });
@@ -69,6 +72,19 @@ export const GodotFrame = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  useEffect(() => {
+    if (
+      !gameSettings?.user_settings?.SFX_ENABLED &&
+      !gameSettings?.user_settings?.MUSIC_ENABLED
+    ) {
+      setMuted(true);
+    }
+  }, [
+    gameSettings?.user_settings?.MUSIC_ENABLED,
+    gameSettings?.user_settings?.SFX_ENABLED,
+    isGameSettingsFetched,
+  ]);
 
   return (
     <div className="grid justify-items-center px-6 pt-6">
@@ -116,12 +132,6 @@ export const GodotFrame = () => {
         <p className="absolute bottom-0 right-2 text-primary-foreground outline-1">
           build: {gameVersionData?.version} commit: {gameVersionData?.commit}
         </p>
-        <Button
-          className="absolute bottom-10"
-          onClick={() => console.log(gameSettingsFile, isSuccess)}
-        >
-          &nbsp;Aboba
-        </Button>
       </div>
     </div>
   );
