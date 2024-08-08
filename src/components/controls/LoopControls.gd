@@ -49,6 +49,8 @@ func _input(event: InputEvent) -> void:
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         handle_game_over_input(event)
         return
+    if event.is_action_pressed('ui_pause'):
+        get_tree().paused = !get_tree().paused
     if event.is_action_pressed('ui_accept'):
         if Utils.main_scene(self) == 'LoopScene':
             get_tree().paused = false
