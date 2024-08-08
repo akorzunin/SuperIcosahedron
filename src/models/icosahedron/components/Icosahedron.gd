@@ -94,8 +94,9 @@ func _on_scale_tick() -> void:
         scale_object_local(Vector3(sf, sf, sf))
 
 func despawn():
+    scaling_enabled = false
     var tw = create_tween()
     var s := 100.
-    tw.tween_property(mesh_icosahedron, "scale", Vector3(s, s, s), .3)
+    tw.tween_property(mesh_icosahedron, "transparency", 0, .8)
     tw.finished.connect(func(): queue_free())
     tw.play()
