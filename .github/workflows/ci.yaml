@@ -101,6 +101,8 @@ jobs:
             stdout_callback = yaml
             host_key_checking = false
             interpreter_python = /usr/bin/python
+            [ssh_connection]
+            retries=5
           vault_password: ${{ secrets.ANSIBLE_PASS }}
           inventory: ${{ vars.ANSIBLE_HOSTS }}
           options: |
