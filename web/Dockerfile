@@ -11,8 +11,10 @@ COPY ./web .
 RUN npm run build
 
 
-FROM alpine:latest AS frontend-final
-WORKDIR /src
+FROM caddy:2-alpine AS frontend-final
 
-# Copy the executable from the "build" stage.
-COPY --from=frontend /usr/src/app/dist ./web/dist
+EXPOSE 8282
+
+COPY --from=frontend /usr/src/app/dist /srv/dist
+
+COPY --from=frontend /usr/src/app/caddy_template/template.html /srv/template.html
