@@ -6,6 +6,7 @@ enum InputType {ACTION, EVENT}
 enum ActionType {UI_CANCEL, UI_ACCEPT, UI_LEFT, UI_RIGHT, UI_UP, UI_DOWN}
 @export var action := ActionType.UI_CANCEL
 @onready var scene: = $'../../..'
+@onready var game_state_manager: GameStateManager
 
 #const BASE = preload('res://src/themes/Base.theme')
 
@@ -25,18 +26,21 @@ func get_action_name(at: ActionType) -> StringName:
             return 'ui_cancel'
 
 func _gui_input(event: InputEvent) -> void:
-    if event is InputEventScreenTouch:
-        if event.is_pressed():
-            if input_type == InputType.EVENT:
-                InputEmit.new().emit({
-                    action = get_action_name(action),
-                    scene = scene,
-                })
-            elif input_type == InputType.ACTION:
-                Input.action_press(get_action_name(action))
-                #Input.action_release(get_action_name(action))
-        elif event.is_released():
-            Input.action_release(get_action_name(action))
+    if not event is InputEventScreenTouch:
+        return
+    if event.is_released():
+        Input.action_release(get_action_name(action))
+        return
+
+    if input_type == InputType.EVENT or \
+        (game_state_manager and game_state_manager.game_state == GameStateManager.GameState.GAME_END):
+        InputEmit.new().emit({
+            action = get_action_name(action),
+            scene = scene,
+        })
+    elif input_type == InputType.ACTION:
+        Input.action_press(get_action_name(action))
+        #Input.action_release(get_action_name(action))
 
 ## width of side panel
 const a := 20
@@ -64,6 +68,7 @@ func set_button_size():
             custom_minimum_size.y = int(screenSize.y * (d / 100.))
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    game_state_manager = get_node_or_null('%GameStateManager')
     process_mode = Node.PROCESS_MODE_ALWAYS
     set_button_size()
 
