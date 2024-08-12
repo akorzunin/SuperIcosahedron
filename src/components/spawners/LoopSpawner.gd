@@ -49,6 +49,8 @@ func get_game_over_state() -> Dictionary:
 
 func spawn_game_over_scene():
     var anc := figureRoot.get_node("Anchor") as Anchor
+    for ch in anc.get_children():
+        ch.queue_free()
     var new_figure = IcosahedronScene.instantiate() \
                 .init({type=0}, {quat=G.D.init_pos})
     figureRoot.add_figure(new_figure)
