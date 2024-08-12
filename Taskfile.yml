@@ -200,6 +200,8 @@ tasks:
     env:
       VITE_GAME_VERSION: v0.0.0
       VITE_GAME_COMMIT: taskbld01
+      VITE_HOST_URL: https://supericosahedron.localhost
+      VITE_OG_DESCRIPTION: Aboba
     preconditions:
       - sh: >-
           {{if eq OS "linux"}}

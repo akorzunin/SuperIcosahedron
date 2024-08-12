@@ -38,6 +38,7 @@ jobs:
     name: 🏗️ Run Frontend Build
     runs-on: ubuntu-latest
     if: needs.is-frontend-changed.outputs.frontend == 'true'
+    environment: dev
     permissions:
       contents: read
       packages: write
@@ -72,6 +73,9 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            VITE_HOST_URL=${{ vars.VITE_HOST_URL }}
+            VITE_OG_DESCRIPTION=${{ vars.VITE_OG_DESCRIPTION }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           file: ./web/Dockerfile
           tags: ${{ steps.meta.outputs.tags }}

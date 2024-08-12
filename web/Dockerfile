@@ -8,6 +8,10 @@ RUN --mount=type=bind,source=./web/package.json,target=package.json \
 
 COPY ./web .
 
+ARG VITE_HOST_URL
+
+ARG VITE_OG_DESCRIPTION
+
 RUN npm run build
 
 
