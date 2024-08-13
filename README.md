@@ -1,24 +1,28 @@
 # SuperIcosahedron
 
-Game written w/ Godot and inspired by Super Hexagon
+Indie arcade game made with Godot engine.
+Players navigate through a mesmerizing journey of rotating icosahedrons,
+aligning spots to progress to the next challenge. Its minimalist aesthetic
+complements the intricate gameplay, offering a unique blend of skill and strategy.
 
-# Utils
+Game mostly inspired by Super Hexagon
 
-## GdShader formatting
+## Formatting and code style
 
-Create config
-
-```sh
-clang-format -style='{UseTab : false, IndentWidth : 4, TabWidth : 4}' -dump-config > .clang-format
-```
-
-Format all .gdshader files
+Format all shader files
 
 ```sh
 task format-shaders
 ```
 
-## Installs
+Other checks run w/ pre-commit
+
+```sh
+pip install pre-commit
+pre-commit install
+```
+
+## Dev dependensies
 
 ### Ubuntu
 
