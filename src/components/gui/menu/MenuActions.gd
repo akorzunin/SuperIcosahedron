@@ -30,16 +30,25 @@ func settings_display_debug_stats_off():
     common_controls.toggle_debug_stats.emit(false)
 
 func settings_fullscreen():
-    pass
+    var state := DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
+    config.set_fullscreen_state(state)
+    # TODO: logic of this func a bit confusing
+    Utils.change_window_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 
 func settings_bordered():
-    pass
+    var state := DisplayServer.WINDOW_MODE_MAXIMIZED
+    config.set_fullscreen_state(state)
+    DisplayServer.window_set_mode(state)
 
 func settings_vsync_on():
-    pass
+    var state := DisplayServer.VSYNC_ADAPTIVE
+    config.set_vsync_state(state)
+    Utils.set_vsync(state)
 
 func settings_vsync_off():
-    pass
+    var state := DisplayServer.VSYNC_DISABLED
+    config.set_vsync_state(state)
+    Utils.set_vsync(state)
 
 func settings_music_on():
     sfx_player.toggle_music.emit(true)

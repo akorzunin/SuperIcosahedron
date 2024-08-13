@@ -18,6 +18,7 @@ enum LabelType {
     WINDOW_MODE,
     MIX_RATE,
     RENDERER,
+    VSYNC_MODE,
 }
 @export var type := LabelType.NONE
 @export var regular_update := false
@@ -46,6 +47,8 @@ func _on_update():
             label_text = str(AudioServer.get_mix_rate())
         LabelType.RENDERER:
             label_text = Utils.get_render_method_name()
+        LabelType.VSYNC_MODE:
+            label_text = get_vsync_str()
         _:
             label_text = label_text
 
@@ -60,3 +63,17 @@ func get_version():
     if not c:
         c = ''
     return "%s commit: %s" % [v, c]
+
+func get_vsync_str() -> String:
+    var vm := DisplayServer.window_get_vsync_mode()
+    match vm:
+        0:
+            return "VSYNC_DISABLED"
+        1:
+            return "VSYNC_ENABLED"
+        2:
+            return "VSYNC_ADAPTIVE"
+        3:
+            return "VSYNC_MAILBOX"
+        _:
+            return "KEY_UNKNOWN"

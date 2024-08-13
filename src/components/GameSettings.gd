@@ -2,9 +2,6 @@
 extends Node
 class_name GameSettings
 
-@export_group("window")
-@export var WINDOW_MODE := DisplayServer.WindowMode.WINDOW_MODE_WINDOWED
-
 var parent
 
 func init():
@@ -27,15 +24,18 @@ func set_window_settings():
 
     match Utils.get_platform():
         P.PC:
-            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+            if G.settings.FULLSCREEN_ENABLED:
+                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+            else:
+                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+            if G.settings.VSYNC_ENABLED:
+                Utils.set_vsync(DisplayServer.VSYNC_ADAPTIVE)
+            else:
+                Utils.set_vsync(DisplayServer.VSYNC_DISABLED)
         P.WEB:
             DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
         P.MOBILE:
             DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
-
-    if OS.has_feature('editor'):
-        DisplayServer.window_set_mode(WINDOW_MODE)
-
 
     V.use_debanding = true
 

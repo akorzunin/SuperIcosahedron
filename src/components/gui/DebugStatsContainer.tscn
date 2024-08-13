@@ -105,6 +105,14 @@ label_text = "0"
 type = 7
 regular_update = true
 
+[node name="VsyncMode" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = ": 0"
+script = ExtResource("3_ows3h")
+label_text = "0"
+type = 8
+regular_update = true
+
 [node name="DebugStatsTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 autostart = true

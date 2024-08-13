@@ -50,3 +50,25 @@ static func get_platform() -> Platform:
     if [ OS.has_feature("windows"), OS.has_feature("linux")].any(func(x): return x):
         return Platform.PC
     return Platform.WEB
+
+## swap win_mode with one that better fit
+static func change_window_mode(win_mode: DisplayServer.WindowMode, prev_wm := DisplayServer.window_get_mode()):
+    if Utils.get_platform() != Utils.Platform.PC:
+        return
+    var ds := DisplayServer
+    match win_mode:
+        ds.WINDOW_MODE_WINDOWED, ds.WINDOW_MODE_MINIMIZED, ds.WINDOW_MODE_MAXIMIZED:
+            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+        ds.WINDOW_MODE_FULLSCREEN:
+            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+        ds.WINDOW_MODE_EXCLUSIVE_FULLSCREEN:
+            if prev_wm == ds.WINDOW_MODE_MAXIMIZED:
+                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+            else:
+                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
+static func set_vsync(vm: DisplayServer.VSyncMode):
+    # TODO: check on different platforms
+    # if Utils.get_platform() != Utils.Platform.PC:
+    #     return
+    DisplayServer.window_set_vsync_mode(vm)

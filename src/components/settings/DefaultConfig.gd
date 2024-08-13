@@ -13,5 +13,7 @@ const settings = {
         SHOW_DEBUG_STATS=false,
         MUSIC_ENABLED=true,
         SFX_ENABLED=true,
+        FULLSCREEN_ENABLED=true,
+        VSYNC_ENABLED=true,
     }
 }

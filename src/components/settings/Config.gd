@@ -44,3 +44,13 @@ func set_sfx_state(state: bool):
 func set_music_state(state: bool):
     G.settings.MUSIC_ENABLED = state
     SettingsConfig.write_key(config, "user_settings", "MUSIC_ENABLED", state)
+
+func set_fullscreen_state(state: int):
+    G.settings.FULLSCREEN_ENABLED = state
+    SettingsConfig.write_key(config, "user_settings", "FULLSCREEN_ENABLED", \
+        true if state > 2 else false)
+
+func set_vsync_state(state: int):
+    G.settings.VSYNC_ENABLED = state
+    SettingsConfig.write_key(config, "user_settings", "VSYNC_ENABLED", \
+        true if state > 0 else false)
