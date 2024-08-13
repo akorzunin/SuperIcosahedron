@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=32 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -21,6 +21,7 @@
 [ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
 [ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="12_fcd1m"]
+[ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://src/fonts/plastic-bag/Plastic Bag.otf" id="13_kcvb1"]
 [ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="18_tjx6c"]
 [ext_resource type="Script" path="res://src/components/GameProgress.gd" id="19_mtejl"]
@@ -130,9 +131,9 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = 1736.0
+offset_left = 1691.0
 offset_right = 1880.0
-offset_bottom = 56.0
+offset_bottom = 83.0
 grow_horizontal = 0
 size_flags_horizontal = 4
 size_flags_vertical = 8
@@ -140,13 +141,13 @@ size_flags_vertical = 8
 [node name="CenterContainer" type="CenterContainer" parent="Gui/LoopUi/TimerPanel"]
 layout_mode = 2
 
-[node name="TimerRichTextLabel" type="RichTextLabel" parent="Gui/LoopUi/TimerPanel/CenterContainer"]
+[node name="TimerRichTextLabel" type="Label" parent="Gui/LoopUi/TimerPanel/CenterContainer"]
 custom_minimum_size = Vector2(86.765, 23.805)
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
-bbcode_enabled = true
-text = "[center]00:00:000[/center]
+theme_override_fonts/font = ExtResource("13_kcvb1")
+theme_override_font_sizes/font_size = 21
+text = "00:00:000
 "
 
 [node name="DebugStatsContainer" parent="Gui" instance=ExtResource("8_jh3v8")]
