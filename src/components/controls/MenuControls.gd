@@ -13,7 +13,7 @@ class_name MenuControls
 @export var MENU_ROTATION_SPEED: float
 
 var target = {
-    progress = 0,
+    progress = 1,
     quat = Quaternion(),
 }
 var initial_pos := Vector3()
@@ -68,7 +68,16 @@ func check_controlled_node():
         initial_pos = controlledNode.position
         target.prev_pos = controlledNode.quaternion
 
+func skip_menu_event(event: InputEvent) -> bool:
+    if event is InputEventKey:
+        return false
+    if event is InputEventAction:
+        return false
+    return true
+
 func _input(event: InputEvent):
+    if skip_menu_event(event):
+        return
     check_controlled_node()
     if event.is_action_pressed('ui_accept'):
         if event is InputEventKey and event.alt_pressed:
