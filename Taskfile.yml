@@ -160,7 +160,7 @@ tasks:
 
   deploy-dev:
     platforms: [linux]
-    desc: build for all platforms and upload files to file server
+    desc: upload build files to file server
     interactive: true
     cmds:
       - { task: deploy-dev-internal }
