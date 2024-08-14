@@ -1,0 +1,17 @@
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://bqb5wheue6nip"]
+
+[ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://src/fonts/plastic-bag/Plastic Bag.otf" id="1_0kl3p"]
+[ext_resource type="Texture2D" uid="uid://b8e111n2q73go" path="res://assets/build/textures/1x/LoopGuiTile.png" id="1_cweir"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7pdq7"]
+texture = ExtResource("1_cweir")
+expand_margin_left = 5.0
+expand_margin_bottom = 10.0
+
+[resource]
+default_font = ExtResource("1_0kl3p")
+default_font_size = 24
+PanelContainer/colors/base_col = Color(0, 0, 0, 1)
+PanelContainer/font_sizes/DefaultFontSize = 24
+PanelContainer/fonts/DefaultFont = ExtResource("1_0kl3p")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_7pdq7")

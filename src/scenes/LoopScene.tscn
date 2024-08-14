@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=34 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -21,8 +21,9 @@
 [ext_resource type="Script" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
 [ext_resource type="Script" path="res://src/components/EndRay.gd" id="12_486y3"]
 [ext_resource type="Script" path="res://src/components/controls/CommonControls.gd" id="12_fcd1m"]
-[ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://src/fonts/plastic-bag/Plastic Bag.otf" id="13_kcvb1"]
+[ext_resource type="Theme" uid="uid://bqb5wheue6nip" path="res://src/themes/LoopGuiTheme.tres" id="13_ryoi1"]
 [ext_resource type="Script" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
+[ext_resource type="Texture2D" uid="uid://dho54u5o0pgkt" path="res://assets/build/textures/1x/LoopGuiTileInv.png" id="14_xcs0c"]
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="18_tjx6c"]
 [ext_resource type="Script" path="res://src/components/GameProgress.gd" id="19_mtejl"]
 
@@ -46,6 +47,11 @@ shader_parameter/bg_color = Color(0.729, 0.902, 0.992, 1)
 render_priority = 0
 shader = ExtResource("5_ban2q")
 shader_parameter/color = Color(0.937, 0.267, 0.267, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6yuip"]
+texture = ExtResource("14_xcs0c")
+expand_margin_right = 25.0
+expand_margin_bottom = 15.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cw5a6"]
 
@@ -99,12 +105,13 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+theme = ExtResource("13_ryoi1")
 
 [node name="GameStatePanel" type="PanelContainer" parent="Gui/LoopUi"]
-visible = false
 layout_mode = 0
 offset_right = 264.0
 offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_6yuip")
 
 [node name="CenterContainer" type="VFlowContainer" parent="Gui/LoopUi/GameStatePanel"]
 layout_mode = 2
@@ -119,12 +126,12 @@ alignment = 1
 
 [node name="Label" type="Label" parent="Gui/LoopUi/GameStatePanel/VBoxContainer/HFlowContainer"]
 layout_mode = 2
-text = "GAME_STATE: "
+text = "Nodes: "
 horizontal_alignment = 1
 
 [node name="GameStateLabel" type="Label" parent="Gui/LoopUi/GameStatePanel/VBoxContainer/HFlowContainer"]
 layout_mode = 2
-text = "NULL"
+text = "0"
 
 [node name="TimerPanel" type="PanelContainer" parent="Gui/LoopUi"]
 layout_mode = 1
@@ -145,13 +152,12 @@ layout_mode = 2
 custom_minimum_size = Vector2(86.765, 23.805)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = ExtResource("13_kcvb1")
-theme_override_font_sizes/font_size = 21
 text = "00:00:000
 "
 
 [node name="DebugStatsContainer" parent="Gui" instance=ExtResource("8_jh3v8")]
 unique_name_in_owner = true
+visible = false
 
 [node name="ControlsContainer" type="PanelContainer" parent="Gui"]
 anchors_preset = 15
