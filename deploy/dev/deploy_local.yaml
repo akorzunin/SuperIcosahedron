@@ -1,12 +1,19 @@
 - name: Deploy dev
   hosts: all
   become: false
+  vars:
+    project_dir: ~/Documents/supericosahedron-dev
 
   tasks:
+    - name: Remove old web build
+      ansible.builtin.command:
+        cmd: rm -rf {{ project_dir }}/build/web
+        removes: "{{ project_dir }}/build/web"
+
     - name: Copy files to service directory
       ansible.builtin.copy:
         src: "{{ item }}"
-        dest: ~/Documents/supericosahedron-dev/
+        dest: "{{ project_dir }}/"
         mode: "0755"
         backup: false
         remote_src: false
@@ -19,6 +26,6 @@
     - name: Deploy file server
       ansible.builtin.command:
         cmd: docker compose up -d --force-recreate
-        chdir: ~/Documents/supericosahedron-dev
+        chdir: "{{ project_dir }}"
       register: out
       changed_when: out.rc != 0
