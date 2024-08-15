@@ -8,8 +8,6 @@ enum ActionType {UI_CANCEL, UI_ACCEPT, UI_LEFT, UI_RIGHT, UI_UP, UI_DOWN}
 @onready var scene: = $'../../..'
 @onready var game_state_manager: GameStateManager
 
-#const BASE = preload('res://src/themes/Base.theme')
-
 func get_action_name(at: ActionType) -> StringName:
     match at:
         ActionType.UI_RIGHT:

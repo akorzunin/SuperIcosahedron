@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://derbnrboktp1g"]
 
 [ext_resource type="Script" path="res://src/components/gui/DebugStatsContainer.gd" id="1_tmt6o"]
-[ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="2_lqb0r"]
+[ext_resource type="Theme" uid="uid://vqotqlxb6434" path="res://src/themes/BaseTheme.tres" id="2_lqb0r"]
 [ext_resource type="Script" path="res://src/components/gui/DebugStatLabel.gd" id="3_ows3h"]
 
 [node name="DebugStatsContainer" type="PanelContainer"]

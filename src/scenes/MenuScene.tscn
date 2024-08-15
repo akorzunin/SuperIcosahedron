@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://src/components/sky/SkyIcosahedron.gd" id="4_p8iyg"]
 [ext_resource type="Script" path="res://src/components/controls/MenuControls.gd" id="4_rh2oc"]
 [ext_resource type="Script" path="res://src/components/gui/menu/MenuSelector.gd" id="5_idm6q"]
-[ext_resource type="Theme" uid="uid://b2gmnph0w6d1k" path="res://src/themes/Base.theme" id="7_vbk8k"]
+[ext_resource type="Theme" uid="uid://vqotqlxb6434" path="res://src/themes/BaseTheme.tres" id="7_vbk8k"]
 [ext_resource type="Script" path="res://src/components/gui/ControlButton.gd" id="8_0medo"]
 [ext_resource type="Script" path="res://src/components/gui/MenuGui.gd" id="8_rgs6i"]
 [ext_resource type="PackedScene" uid="uid://derbnrboktp1g" path="res://src/components/gui/DebugStatsContainer.tscn" id="8_w8wvy"]
