@@ -87,7 +87,7 @@ export const GodotFrame = () => {
   ]);
 
   return (
-    <div className="grid justify-items-center px-6 pt-6">
+    <div className="flex justify-center px-6 pt-6">
       <div className="relative aspect-video w-[90vw] lg:w-[800px]">
         {!showIframe && (
           <div className="absolute inset-0 flex items-center justify-center bg-muted bg-opacity-75">
