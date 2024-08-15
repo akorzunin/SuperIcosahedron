@@ -102,9 +102,12 @@ script = ExtResource("7_q37nr")
 
 [node name="LoopUi" type="Control" parent="Gui"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchor_right = 1.0
+anchor_bottom = 0.139
+offset_bottom = -0.12001
+grow_horizontal = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
 theme = ExtResource("13_ryoi1")
 
 [node name="GameStatePanel" type="PanelContainer" parent="Gui/LoopUi"]
@@ -138,8 +141,7 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = 1691.0
-offset_right = 1880.0
+offset_left = -189.0
 offset_bottom = 83.0
 grow_horizontal = 0
 size_flags_horizontal = 4
