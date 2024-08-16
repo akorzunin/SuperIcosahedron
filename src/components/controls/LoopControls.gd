@@ -96,6 +96,62 @@ func _process(delta: float) -> void:
         return
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         return
+    # two control methods: FaceLock and FreeSpin
+    var cm := 1
+    if cm:
+        handle_face_lock_input()
+    elif not cm:
+        handle_free_spin_input(delta)
+
+
+func amogus(q: Quaternion, m: MeshInstance3D):
+    var tw := m.create_tween()
+    var rot := q * m.quaternion
+    tw.tween_property(m, 'quaternion', rot.normalized(), 0.3)
+    tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+    tw.play()
+
+var is_alt := false
+const alt_q := Quaternion(0.515479, 0.282345, -0.400652, 0.702881)
+
+func handle_face_lock_input():
+    var a := 0.301
+    var b := 0.504
+    var c := 0.808
+
+    var a1 := 0.488
+    var b1 := 0.873
+    var q: Quaternion
+    if Input.is_action_just_pressed("ui_up"):
+        print_debug("up")
+        q = Quaternion(0, 0, -a1, b1).normalized().inverse()
+        is_alt = false
+    if Input.is_action_just_pressed("ui_down"):
+        print_debug("down")
+        q = Quaternion(0, 0, -a1, b1).normalized()
+        is_alt = true
+    if Input.is_action_just_pressed('ui_left'):
+        if not is_alt:
+            q = Quaternion(-a, b, 0, c).normalized()
+            print_debug("left")
+        else:
+            q = alt_q * Quaternion(0, 0, -a1, b1).normalized().inverse()
+            print_debug("alt_left: ", q)
+
+    if Input.is_action_just_pressed('ui_right'):
+        if not is_alt:
+            q = Quaternion(-a, b, 0, c).normalized().inverse()
+            print_debug("right")
+        else:
+            q = (alt_q * Quaternion(0, 0, -a1, b1).normalized().inverse()).inverse()
+            print_debug("alt_right: ", q)
+
+    if q:
+        amogus(q, controlledNode)
+    pass
+
+
+func handle_free_spin_input(delta: float):
     var rotation: Quaternion
     var rs := ROTATION_SPEED / 10. * delta
 
@@ -110,4 +166,3 @@ func _process(delta: float) -> void:
     if controlledNode and rotation:
         var t = rotation.normalized() * controlledNode.quaternion
         controlledNode.transform.basis = Basis(t).orthonormalized()
-    pass
