@@ -68,6 +68,7 @@ func set_button_size():
 func _ready() -> void:
     game_state_manager = get_node_or_null('%GameStateManager')
     process_mode = Node.PROCESS_MODE_ALWAYS
+    focus_mode = FocusMode.FOCUS_NONE
     set_button_size()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
