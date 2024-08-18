@@ -6,6 +6,8 @@ class_name MeshIcosahedron
 @onready var collider: Collider = $'../Collider'
 
 var angle_good := false
+var is_alt := false
+var is_rotating := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
