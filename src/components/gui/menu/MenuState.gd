@@ -26,5 +26,7 @@ func toggle_easter_egg_state():
     is_easter_egged = !is_easter_egged
     if is_easter_egged:
         state = MenuStruct.menu_items_emoji
+        G.font_changed.emit(G.FontType.EMOJI)
         return
     state = init_state
+    G.font_changed.emit(G.FontType.HEX)

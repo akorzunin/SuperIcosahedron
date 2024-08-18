@@ -8,3 +8,7 @@ var D = {
 }
 var data := {}
 var settings := {}
+
+# global signals
+enum FontType {HEX, EMOJI}
+signal font_changed(new_font: FontType)

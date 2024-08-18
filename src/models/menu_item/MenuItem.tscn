@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dw00md0g08l33"]
 
 [ext_resource type="Script" path="res://src/models/menu_item/components/MenuItem.gd" id="1_kwmcp"]
-[ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://src/fonts/plastic-bag/Plastic Bag.otf" id="2_s00nv"]
+[ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://src/fonts/plastic-bag/Plastic Bag.otf" id="2_07kyu"]
 [ext_resource type="Script" path="res://src/models/menu_item/components/MenuCollider.gd" id="4_m8rgh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_s4lbh"]
@@ -13,8 +13,8 @@ script = ExtResource("1_kwmcp")
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(0.197, 0, 0, 0, 0.184635, 0.0686943, 0, -0.0686943, 0.184635, 0, 0.313, 0.772)
 rotation_edit_mode = 1
-text = "placeholder"
-font = ExtResource("2_s00nv")
+text = "placeholder😶‍🌫️"
+font = ExtResource("2_07kyu")
 font_size = 100
 outline_size = 5
 
