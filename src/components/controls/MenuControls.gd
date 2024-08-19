@@ -103,10 +103,16 @@ func _input(event: InputEvent):
     if event.is_action_pressed('ui_up'):
         change_selection(Quaternion(),)
     if event.is_action('ui_right'):
-        change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
+        if not G.settings.IS_CONTROL_INVERTED:
+            change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
+        else:
+            change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
+
     if event.is_action('ui_left'):
-        change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
-    pass
+        if not G.settings.IS_CONTROL_INVERTED:
+            change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
+        else:
+            change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventScreenTouch:

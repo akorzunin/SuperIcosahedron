@@ -15,5 +15,7 @@ const settings = {
         SFX_ENABLED=true,
         FULLSCREEN_ENABLED=true,
         VSYNC_ENABLED=true,
+        CONTROL_TYPE="FREE_SPIN",
+        IS_CONTROL_INVERTED=false,
     }
 }

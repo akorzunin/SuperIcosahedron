@@ -54,3 +54,13 @@ func set_vsync_state(state: int):
     G.settings.VSYNC_ENABLED = state
     SettingsConfig.write_key(config, "user_settings", "VSYNC_ENABLED", \
         true if state > 0 else false)
+
+func set_control_type(new_type: LoopControls.ControlType):
+    var str_type: String = LoopControls.ControlType.keys()[new_type]
+    G.settings.CONTROL_TYPE = str_type
+    SettingsConfig.write_key(config, "user_settings", "CONTROL_TYPE", \
+        str_type)
+
+func set_control_invert_x(state: bool):
+    G.settings.IS_CONTROL_INVERTED = state
+    SettingsConfig.write_key(config, "user_settings", "IS_CONTROL_INVERTED", state)

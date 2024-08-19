@@ -46,16 +46,28 @@ static func handle_face_lock_input(controlledNode: MeshIcosahedron):
         q = down_q.normalized()
         controlledNode.is_alt = true
     if Input.is_action_just_pressed('ui_left'):
-        if not controlledNode.is_alt:
-            q = left_q.normalized()
+        # R:TODO refactor later
+        if not G.settings.IS_CONTROL_INVERTED:
+            if not controlledNode.is_alt:
+                q = left_q.normalized()
+            else:
+                q = alt_q * down_q.normalized().inverse()
         else:
-            q = alt_q * down_q.normalized().inverse()
-
+            if not controlledNode.is_alt:
+                q = left_q.normalized().inverse()
+            else:
+                q = (alt_q * down_q.normalized().inverse()).inverse()
     if Input.is_action_just_pressed('ui_right'):
-        if not controlledNode.is_alt:
-            q = left_q.normalized().inverse()
+        if not G.settings.IS_CONTROL_INVERTED:
+            if not controlledNode.is_alt:
+                q = left_q.normalized().inverse()
+            else:
+                q = (alt_q * down_q.normalized().inverse()).inverse()
         else:
-            q = (alt_q * down_q.normalized().inverse()).inverse()
+            if not controlledNode.is_alt:
+                q = left_q.normalized()
+            else:
+                q = alt_q * down_q.normalized().inverse()
 
     if not q:
         return

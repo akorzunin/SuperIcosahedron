@@ -4,6 +4,38 @@ class_name MenuStruct
 
 static var settings_items := {
     1: {
+        name = "controls",
+        items = {
+            1: {
+                name = "control\ntype",
+                options = {
+                    1: {
+                        name = "FreeSpin",
+                        action = "settings_set_control_free_spin",
+                    },
+                    2: {
+                        name = "FaceLock",
+                        action = "settings_set_control_face_lock",
+                    },
+                },
+            },
+            2: {
+                name = "invert\nx-axis",
+                options = {
+                    1: {
+                        name = "on",
+                        action = "settings_invert_x",
+                    },
+                    2: {
+                        name = "off",
+                        action = "settings_not_invert_x",
+                    },
+                },
+            },
+        }
+
+    },
+    2: {
         name = "ui",
         items = {
             1: {
@@ -34,7 +66,7 @@ static var settings_items := {
             },
         }
     },
-    2: {
+    3: {
         name = "video",
         items = {
             1: {
@@ -65,7 +97,7 @@ static var settings_items := {
             }
         }
     },
-    3: {
+    4: {
         name = "audio",
         items = {
             1: {

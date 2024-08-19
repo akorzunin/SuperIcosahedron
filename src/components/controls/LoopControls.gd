@@ -8,6 +8,8 @@ class_name LoopControls
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
 
+enum ControlType {FREE_SPIN, FACE_LOCK}
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_manager.game_state_changed.connect(_on_game_state)
@@ -75,20 +77,36 @@ func handle_game_over_input(event: InputEvent):
         Utils.set_scene(self, 'LoopScene')
         sfx_player.on_action_select.emit()
     elif event.is_action_pressed('ui_left'):
-        var t := Quats.menu_quat_left()
-        var tw = create_tween()
-        tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
-        tw.tween_callback(func(): Utils.set_scene(self, 'MenuScene'))
-        tw.play()
-        sfx_player.on_action_select.emit()
+        # R:TODO
+        if not G.settings.IS_CONTROL_INVERTED:
+            var t := Quats.menu_quat_left()
+            var tw = create_tween()
+            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
+            tw.tween_callback(func(): Utils.set_scene(self, 'MenuScene'))
+            tw.play()
+            sfx_player.on_action_select.emit()
+        else:
+            var t := Quats.menu_quat_left().inverse()
+            var tw = create_tween()
+            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
+            tw.tween_callback(func(): Utils.set_scene(self, 'LoopScene'))
+            tw.play()
+            sfx_player.on_action_select.emit()
     elif event.is_action_pressed('ui_right'):
-        var t := Quats.menu_quat_left().inverse()
-        var tw = create_tween()
-        tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
-        tw.tween_callback(func(): Utils.set_scene(self, 'LoopScene'))
-        tw.play()
-        sfx_player.on_action_select.emit()
-
+        if not G.settings.IS_CONTROL_INVERTED:
+            var t := Quats.menu_quat_left().inverse()
+            var tw = create_tween()
+            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
+            tw.tween_callback(func(): Utils.set_scene(self, 'LoopScene'))
+            tw.play()
+            sfx_player.on_action_select.emit()
+        else:
+            var t := Quats.menu_quat_left()
+            var tw = create_tween()
+            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
+            tw.tween_callback(func(): Utils.set_scene(self, 'MenuScene'))
+            tw.play()
+            sfx_player.on_action_select.emit()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     if not controlledNode:
@@ -96,11 +114,9 @@ func _process(delta: float) -> void:
         return
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         return
-    # two control methods: FaceLock and FreeSpin
-    var cm := 1
-    if cm:
+    if G.settings.CONTROL_TYPE == "FACE_LOCK":
         FaceLock.handle_face_lock_input(controlledNode)
-    elif not cm:
+    else:
         handle_free_spin_input(delta)
 
 func handle_free_spin_input(delta: float):

@@ -17,7 +17,7 @@ func _ready():
     pass_vec = Vector3(0, -target_position.y, -target_position.z).normalized()
     pass
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
     var node = get_collider() as Collider
     if not node or not node is Collider:
         return

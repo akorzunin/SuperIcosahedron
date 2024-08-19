@@ -80,6 +80,14 @@ func menu_easter_egg():
     menu_state.toggle_easter_egg_state()
     menu_spawner.open_menu_section(menu_controls.controlledNode, menu_state.state)
 
+func settings_set_control_free_spin():
+    config.set_control_type(LoopControls.ControlType.FREE_SPIN)
 
-func menu_open_controls_editor():
-    push_warning("not implemented")
+func settings_set_control_face_lock():
+    config.set_control_type(LoopControls.ControlType.FACE_LOCK)
+
+func settings_invert_x():
+    config.set_control_invert_x(true)
+
+func settings_not_invert_x():
+    config.set_control_invert_x(false)
