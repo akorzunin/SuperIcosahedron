@@ -48,8 +48,9 @@ func pass_next_node(node: Collider):
     update_controlled_node()
 
 func _input(event: InputEvent) -> void:
+    var is_inverted = G.settings.IS_CONTROL_INVERTED
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
-        handle_game_over_input(event)
+        handle_game_over_input(event, is_inverted)
         return
     if event.is_action_pressed('ui_pause'):
         get_tree().paused = !get_tree().paused
@@ -72,41 +73,25 @@ func _input(event: InputEvent) -> void:
         sfx_player.on_section_select.emit()
         return
 
-func handle_game_over_input(event: InputEvent):
+func game_over_rot(scene: StringName, t: Quaternion):
+    const GAME_OVER_ROT := 0.3
+    const GAME_OVER_DELAY := 0.1
+    var tw = create_tween()
+    tw.tween_property(figureRoot.anchor, "quaternion", t, GAME_OVER_ROT)\
+        .set_delay(GAME_OVER_DELAY)
+    tw.tween_callback(func(): Utils.set_scene(self, scene))
+    tw.play()
+    sfx_player.on_action_select.emit()
+
+func handle_game_over_input(event: InputEvent, is_inverted: bool):
     if event.is_action_pressed('ui_accept'):
         Utils.set_scene(self, 'LoopScene')
         sfx_player.on_action_select.emit()
-    elif event.is_action_pressed('ui_left'):
-        # R:TODO
-        if not G.settings.IS_CONTROL_INVERTED:
-            var t := Quats.menu_quat_left()
-            var tw = create_tween()
-            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
-            tw.tween_callback(func(): Utils.set_scene(self, 'MenuScene'))
-            tw.play()
-            sfx_player.on_action_select.emit()
-        else:
-            var t := Quats.menu_quat_left().inverse()
-            var tw = create_tween()
-            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
-            tw.tween_callback(func(): Utils.set_scene(self, 'LoopScene'))
-            tw.play()
-            sfx_player.on_action_select.emit()
-    elif event.is_action_pressed('ui_right'):
-        if not G.settings.IS_CONTROL_INVERTED:
-            var t := Quats.menu_quat_left().inverse()
-            var tw = create_tween()
-            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
-            tw.tween_callback(func(): Utils.set_scene(self, 'LoopScene'))
-            tw.play()
-            sfx_player.on_action_select.emit()
-        else:
-            var t := Quats.menu_quat_left()
-            var tw = create_tween()
-            tw.tween_property(figureRoot.anchor, "quaternion", t, 0.3)
-            tw.tween_callback(func(): Utils.set_scene(self, 'MenuScene'))
-            tw.play()
-            sfx_player.on_action_select.emit()
+    elif Op.xor(is_inverted, event.is_action_pressed('ui_left')):
+        game_over_rot('MenuScene', Quats.menu_quat_left())
+    elif Op.xor(is_inverted, event.is_action_pressed('ui_right')):
+        game_over_rot('LoopScene', Quats.menu_quat_left().inverse())
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     if not controlledNode:
@@ -122,14 +107,15 @@ func _process(delta: float) -> void:
 func handle_free_spin_input(delta: float):
     var rotation: Quaternion
     var rs := ROTATION_SPEED / 10. * delta
+    var is_inverted = G.settings.IS_CONTROL_INVERTED
 
     if Input.is_action_pressed("ui_up"):
         rotation = rotation * Quaternion(0, 0, -rs, 1, )
     if Input.is_action_pressed("ui_down"):
         rotation = rotation * Quaternion(0, 0, rs, 1, )
-    if Input.is_action_pressed("ui_right"):
+    if Op.xor(is_inverted, Input.is_action_pressed("ui_right")):
         rotation = rotation * Quaternion(0, rs, 0, 1, )
-    if Input.is_action_pressed("ui_left"):
+    if Op.xor(is_inverted, Input.is_action_pressed("ui_left")):
         rotation = rotation * Quaternion(0, -rs, 0, 1, )
     if controlledNode and rotation:
         var t = rotation.normalized() * controlledNode.quaternion
