@@ -7,7 +7,6 @@ render_mode cull_disabled;
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
 uniform bool cutplate_visible = true;
-uniform bool use_web_colors = false;
 
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
 uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
@@ -27,11 +26,7 @@ void fragment() {
             discard;
         }
     }
-    if (use_web_colors) {
-        ALBEDO = linear_to_srgb(color.rgb);
-    } else {
-        ALBEDO = color.rgb;
-    }
+    ALBEDO = OUTPUT_IS_SRGB ? linear_to_srgb(color.rgb) : color.rgb;
 }
 
 // void light() {

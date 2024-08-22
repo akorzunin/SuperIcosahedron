@@ -78,9 +78,6 @@ func _ready() -> void:
         Utils.set_shader_param(mesh_icosahedron, "enable", false, 2)
         Utils.set_shader_param(mesh_icosahedron, "enable", false, 3)
 
-    if Utils.get_platform() == Utils.Platform.WEB:
-        Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true)
-        Utils.set_shader_param(mesh_icosahedron, "use_web_colors", true, 1)
     set_color(G.theme.figure_variants.get(variant.name, G.theme.base_color))
 
     if inital_transfrm:
