@@ -53,8 +53,7 @@ next_pass = SubResource("ShaderMaterial_c0lt3")
 shader = ExtResource("5_s1usq")
 shader_parameter/pulse_enabled = false
 shader_parameter/colorflow_enbled = false
-shader_parameter/cutplate_visible = true
-shader_parameter/use_web_colors = false
+shader_parameter/cutplane_visible = true
 shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
 shader_parameter/color = Vector3(0, 1, 0)
 

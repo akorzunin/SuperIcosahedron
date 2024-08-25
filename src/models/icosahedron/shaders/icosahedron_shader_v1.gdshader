@@ -6,7 +6,7 @@ render_mode cull_disabled;
 
 uniform bool pulse_enabled = false;
 uniform bool colorflow_enbled = false;
-uniform bool cutplate_visible = true;
+uniform bool cutplane_visible = true;
 
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
 uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
@@ -21,7 +21,7 @@ void vertex() {
 }
 
 void fragment() {
-    if (cutplate_visible) {
+    if (cutplane_visible) {
         if (!render_cutplane(cutplane, ver)) {
             discard;
         }
