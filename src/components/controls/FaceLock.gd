@@ -40,10 +40,9 @@ static func handle_rot_right(is_alt: bool) -> Quaternion:
         return left_q.normalized().inverse()
     return (alt_q * down_q.normalized().inverse()).inverse()
 
-static func handle_face_lock_input(controlledNode: MeshIcosahedron):
+static func handle_face_lock_input(controlledNode: MeshIcosahedron, is_inverted := false):
     if controlledNode.is_rotating:
         return
-    var is_inverted = G.settings.IS_CONTROL_INVERTED
     var q: Quaternion
     if Input.is_action_just_pressed("ui_up"):
         if not controlledNode.is_alt:

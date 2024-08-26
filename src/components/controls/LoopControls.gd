@@ -3,7 +3,6 @@ class_name LoopControls
 
 @export var figureRoot: FigureRoot
 @export var controlledNode: MeshIcosahedron
-@export var ROTATION_SPEED: float
 @onready var game_progress: GameProgress = %GameProgress
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
@@ -13,7 +12,6 @@ enum ControlType {FREE_SPIN, FACE_LOCK}
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_manager.game_state_changed.connect(_on_game_state)
-    ROTATION_SPEED = G.settings.ROTATION_SPEED
 
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs := GameStateManager.GameState
@@ -99,24 +97,9 @@ func _process(delta: float) -> void:
         return
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         return
-    if G.settings.CONTROL_TYPE == "FACE_LOCK":
-        FaceLock.handle_face_lock_input(controlledNode)
-    else:
-        handle_free_spin_input(delta)
-
-func handle_free_spin_input(delta: float):
-    var rotation: Quaternion
-    var rs := ROTATION_SPEED / 10. * delta
     var is_inverted = G.settings.IS_CONTROL_INVERTED
-
-    if Input.is_action_pressed("ui_up"):
-        rotation = rotation * Quaternion(0, 0, -rs, 1, )
-    if Input.is_action_pressed("ui_down"):
-        rotation = rotation * Quaternion(0, 0, rs, 1, )
-    if Op.xor(is_inverted, Input.is_action_pressed("ui_right")):
-        rotation = rotation * Quaternion(0, rs, 0, 1, )
-    if Op.xor(is_inverted, Input.is_action_pressed("ui_left")):
-        rotation = rotation * Quaternion(0, -rs, 0, 1, )
-    if controlledNode and rotation:
-        var t = rotation.normalized() * controlledNode.quaternion
-        controlledNode.transform.basis = Basis(t).orthonormalized()
+    if G.settings.CONTROL_TYPE == "FACE_LOCK":
+        FaceLock.handle_face_lock_input(controlledNode, is_inverted)
+    else:
+        var rot_speed: float = G.settings.ROTATION_SPEED / 10. * delta
+        FreeSpin.handle_free_spin_input(controlledNode, rot_speed, is_inverted)
