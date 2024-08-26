@@ -8,10 +8,8 @@ var D = {
     init_pos = Quaternion(0, 0.707, 0, 0.707).normalized(),
 }
 var data := {}
-var settings := {
-    SCALE_FACTOR = DafaultConfig.settings.game_settings.SCALE_FACTOR,
-    ROTATION_SPEED = DafaultConfig.settings.game_settings.ROTATION_SPEED,
-}
+## has to be empty
+var settings := {}
 
 # global signals
 enum FontType {HEX, EMOJI}

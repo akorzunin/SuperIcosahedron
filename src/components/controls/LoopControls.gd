@@ -32,7 +32,7 @@ func update_controlled_node():
     var figures = figureRoot.get_node("Anchor").get_children() as Array[Icosahedron]
     var unchecked_mesh: MeshIcosahedron
     for figure in figures:
-        if not figure.mesh_icosahedron.angle_good:
+        if figure is Icosahedron and not figure.mesh_icosahedron.angle_good:
             unchecked_mesh = figure.mesh_icosahedron
             break
     if unchecked_mesh and controlledNode != unchecked_mesh:
@@ -73,11 +73,10 @@ func _input(event: InputEvent) -> void:
 
 func game_over_rot(scene: StringName, t: Quaternion):
     const GAME_OVER_ROT := 0.3
-    const GAME_OVER_DELAY := 0.1
+    const GAME_OVER_DELAY := 0.05
     var tw = create_tween()
-    tw.tween_property(figureRoot.anchor, "quaternion", t, GAME_OVER_ROT)\
-        .set_delay(GAME_OVER_DELAY)
-    tw.tween_callback(func(): Utils.set_scene(self, scene))
+    tw.tween_property(figureRoot.anchor, "quaternion", t, GAME_OVER_ROT)
+    tw.tween_callback(func(): Utils.set_scene(self, scene)).set_delay(GAME_OVER_DELAY)
     tw.play()
     sfx_player.on_action_select.emit()
 

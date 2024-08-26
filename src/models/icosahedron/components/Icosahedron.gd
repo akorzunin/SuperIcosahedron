@@ -1,99 +1,45 @@
 extends Node3D
 class_name Icosahedron
 
-const ICOSAHEDRON_SHADER_V_1 = preload('res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
-const CUTPLANE_EFFECT_V_2 = preload("res://src/models/icosahedron/shaders/cutplane_effect_v2.gdshader")
-const OUTLINE_V_1 = preload('res://src/models/icosahedron/shaders/outline_v1.gdshader')
-const EDGE_HIGHLIGHT_V_1 = preload('res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader')
-const EDGE_NOISE = preload('res://src/models/icosahedron/resources/edge_noise.res')
-
-@export var DEBUG_VISUAL: bool
-@export var scaling_enabled = false
-@export var scale_factor: float
-@export var shader_type: int
-@export var inital_transfrm: Quaternion
 @onready var cut_plane: CutPlane = $CutPlane
 @onready var mesh_icosahedron: MeshIcosahedron = $MeshIcosahedron
 
-var cutplane_vector := Vector3(1,1,1).normalized()
+@export var inital_transform := Quaternion(0, 0.707, 0, 0.707).normalized()
+@export var DEBUG_VISUAL := false
+@export var scaling_enabled := true
+@export var show_face_numbers := false
+@export var shader_type: int
+
 var scale_timer: ScaleTimer
-var sf: float
 
-func init(shader_args: Dictionary, transform_args: Dictionary = {}) -> Icosahedron:
-    scale_factor = G.settings.SCALE_FACTOR
-    scaling_enabled = G.settings.get("SCALING_ENABLED", true)
-    DEBUG_VISUAL = G.settings.get("DEBUG_VISUAL", false)
-    shader_type = shader_args.get("type", 0)
-    inital_transfrm = transform_args.get("quat", Quaternion())
-    scale_timer = transform_args.get("scale_timer")
-
+func with_type(type: int):
+    shader_type = type
     return self
 
-func set_cutplane(v: Vector4):
-    Utils.set_shader_param(mesh_icosahedron, "cutplane", v)
-    Utils.set_shader_param(mesh_icosahedron, "cutplane", v, 1)
-    Utils.set_shader_param(mesh_icosahedron, "cutplane", v, 3)
-    Utils.set_shader_param(mesh_icosahedron, "noise_pattern", EDGE_NOISE, 3)
+func with_face_numbers(_show: bool):
+    show_face_numbers = _show
+    return self
 
-    cutplane_vector = Vector3(v.x, v.y, v.z).normalized()
-    if DEBUG_VISUAL:
-        var ray = RayCast3D.new()
-        ray.target_position = $Collider.get_cutplane_vector()
-        mesh_icosahedron.add_child(ray)
-
-func set_color(arr: Array):
-    var c = Vector3(arr[0], arr[1], arr[2])
-    Utils.set_shader_param(mesh_icosahedron, "color", c)
-    Utils.set_shader_param(mesh_icosahedron, "color", c, 1)
-    Utils.set_shader_param(mesh_icosahedron, "color", c, 3)
-
-const dst := IcosahedronVarints.dst
+func with_scale_timer(_scale_timer: ScaleTimer):
+    scale_timer = _scale_timer
+    return self
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    transform.basis = Basis(inital_transform).orthonormalized()
     if not DEBUG_VISUAL:
         cut_plane.hide()
     if scale_timer:
         scale_timer.timeout.connect(_on_scale_tick)
-    if scale_factor:
-        sf = (scale_factor + 1000.) / 1000.
-    var variant = IcosahedronVarints.figure_variants[shader_type]
-    var sm = ShaderMaterial.new()
-    sm.shader = ICOSAHEDRON_SHADER_V_1
-    var sm2 = ShaderMaterial.new()
-    sm2.shader = CUTPLANE_EFFECT_V_2
-    var sm3 = ShaderMaterial.new()
-    sm3.shader = OUTLINE_V_1
-    var sm4 = ShaderMaterial.new()
-    sm4.shader = EDGE_HIGHLIGHT_V_1
-    mesh_icosahedron.material_override = sm
-    mesh_icosahedron.material_override.next_pass = sm2
-    mesh_icosahedron.material_override.next_pass.next_pass = sm3
-    mesh_icosahedron.material_override.next_pass.next_pass.next_pass = sm4
-    if variant.get("cutplane"):
-        set_cutplane(variant.cutplane)
-    else:
-        Utils.set_shader_param(mesh_icosahedron, "cutplate_visible", false)
-        Utils.set_shader_param(mesh_icosahedron, "enable", false, 1)
-        Utils.set_shader_param(mesh_icosahedron, "enable", false, 2)
-        Utils.set_shader_param(mesh_icosahedron, "enable", false, 3)
 
-    set_color(G.theme.figure_variants.get(variant.name, G.theme.base_color))
-
-    if inital_transfrm:
-        transform.basis = Basis(inital_transfrm).orthonormalized()
-
-    pass
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _on_scale_tick() -> void:
     if scaling_enabled:
+        var sf: float = (G.settings.SCALE_FACTOR + 1000.) / 1000.
         scale_object_local(Vector3(sf, sf, sf))
 
 func despawn():
     scaling_enabled = false
     var tw = create_tween()
-    var s := 100.
-    tw.tween_property(mesh_icosahedron, "transparency", 0, .8)
+    tw.tween_callback(func():).set_delay(.8)
     tw.finished.connect(func(): queue_free())
     tw.play()

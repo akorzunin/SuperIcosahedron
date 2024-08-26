@@ -52,7 +52,7 @@ func spawn_game_over_scene():
     for ch in anc.get_children():
         ch.queue_free()
     var new_figure = IcosahedronScene.instantiate() \
-                .init({type=0}, {quat=G.D.init_pos})
+                .with_type(-1)
     figureRoot.add_figure(new_figure)
     add_menu_items(anc, get_game_over_state())
     var tw = anc.create_tween()
@@ -76,7 +76,7 @@ func get_spawn_type():
         s.SIDE: # 1
             return 1
         s.RANDOM: # 2
-            return randi_range(1, 8)
+            return randi_range(0, 19)
         s.QUEUE: # 3
             pass
 
@@ -85,18 +85,9 @@ func spawn_figure(figure: Figure) -> void:
     match figure.type:
         FigureType.ICOSAHEDRON:
             new_figure = IcosahedronScene.instantiate() \
-                .init(
-                    {type = get_spawn_type()},
-                    {
-                        quat = G.D.init_pos,
-                        scale_timer = scale_timer,
-                    },
-                )
+                .with_type(get_spawn_type())\
+                .with_scale_timer(scale_timer)
         FigureType.OCTAHEDRON:
-            #new_figure = OctahedronScene.instantiate() \
-                #.init(
-                    #settings,
-                #)
             pass
 
     figureRoot.add_figure(new_figure)

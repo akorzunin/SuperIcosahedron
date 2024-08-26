@@ -1,0 +1,50 @@
+[gd_scene load_steps=11 format=3 uid="uid://cd21bp42ng8gy"]
+
+[ext_resource type="Script" path="res://src/models/icosahedron/test/variant_test.gd" id="1_4av47"]
+[ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="2_78ays"]
+[ext_resource type="Shader" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="3_ty025"]
+[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/build/skybox/icosahedron_Solid_Sky.res" id="4_ayq7c"]
+[ext_resource type="Script" path="res://src/components/sky/SkyIcosahedron.gd" id="5_pg1rd"]
+[ext_resource type="Script" path="res://src/components/level_system/PatternGen.gd" id="6_d5fsa"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tb2j1"]
+shader = ExtResource("2_78ays")
+shader_parameter/bg_color = Vector3(0.729, 0.902, 0.992)
+
+[sub_resource type="Sky" id="Sky_puicm"]
+sky_material = SubResource("ShaderMaterial_tb2j1")
+
+[sub_resource type="Environment" id="Environment_37xli"]
+background_mode = 2
+sky = SubResource("Sky_puicm")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0smox"]
+render_priority = 0
+shader = ExtResource("3_ty025")
+shader_parameter/bg_color = Color(0.729, 0.902, 0.992, 1)
+
+[node name="VariantTest" type="Node3D"]
+script = ExtResource("1_4av47")
+spawn_type = 2
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.547242, 0.799069, 0.472056, 0.37236, 0.155482, 0.644891, 0.176892)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_37xli")
+
+[node name="Camera3D" type="Camera3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.907777, 0.419452, 0, -0.419452, 0.907777, 0, 1.5894, 2.81957)
+
+[node name="SkyMeshIcosahedron" type="MeshInstance3D" parent="Environment"]
+transform = Transform3D(42.78, 0, 0, 0, 42.78, 0, 0, 0, 42.78, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_0smox")
+mesh = ExtResource("4_ayq7c")
+skeleton = NodePath("../..")
+script = ExtResource("5_pg1rd")
+
+[node name="PatternGen" type="Node" parent="."]
+script = ExtResource("6_d5fsa")
+level = 1

@@ -66,6 +66,8 @@ func t(q: Quaternion, m: MeshInstance3D):
 
 @export var quat: Quaternion:
     set(val):
+        if not m:
+            return
         m.quaternion = val
     get:
         return m.quaternion

@@ -48,10 +48,7 @@ const b := 0.358
 const c := 0.934
 
 static var figure_variants_v2 := {
-    #0: Vector4( c, b, 0, dst),
-    0: Vector4( -b, 0, -c, dst),
-    15: Vector4( b, 0, -c, dst),
-
+    0: Vector4( c, b, 0, dst),
     1: Vector4( a, a, -a, dst),
     2: Vector4( 0, c, -b, dst),
     3: Vector4( 0, c, b, dst),
@@ -66,7 +63,8 @@ static var figure_variants_v2 := {
     12: Vector4( 0, -c, -b, dst),
     13: Vector4( -a, -a, -a, dst),
     14: Vector4( -c, -b, 0, dst),
-
+    15: Vector4( b, 0, -c, dst),
+    16: Vector4( -b, 0, -c, dst),
     17: Vector4( -a, a, -a, dst),
     18: Vector4( -c, b, 0, dst),
     19: Vector4( -a, a, a, dst),

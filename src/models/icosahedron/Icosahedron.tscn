@@ -59,6 +59,7 @@ shader_parameter/color = Vector3(0, 1, 0)
 
 [node name="Icosahedron" type="Node3D"]
 script = ExtResource("1_w7qn7")
+shader_type = -1
 
 [node name="CutPlane" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.761007, -0.570635, -0.308616, -0.107281, 0.579858, -0.807623, 0.639811, -0.581498, -0.502495, -0.843964, 0.0584427, -0.468957)

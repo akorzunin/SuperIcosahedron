@@ -76,10 +76,7 @@ func _ready():
     if anchor.get_node_or_null("Icosahedron"):
         return
     var new_figure = IcosahedronScene.instantiate() \
-                .init(
-                    {type=0},
-                    {quat=G.D.init_pos}
-                )
+                .with_type(-1)
     anchor.add_child(new_figure)
     call_deferred('set_figures_count', anchor.get_child_count())
     add_menu_items(anchor, menu_state.state)
