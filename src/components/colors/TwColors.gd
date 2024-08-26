@@ -1,3 +1,6 @@
+extends RefCounted
+class_name TwColors
+
 # scraped from https://tailwindcss.com/docs/customizing-colors
 
 const tw = {

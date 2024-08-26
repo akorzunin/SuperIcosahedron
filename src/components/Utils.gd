@@ -1,24 +1,30 @@
 extends RefCounted
 class_name Utils
 
+static var main_scene_name: String = ProjectSettings.get_setting("application/run/main_scene")
+
 ## Only works in scene level script
 static func is_main_scene(_self) -> bool:
     if _self.get_parent() == _self.get_tree().root \
-        and ProjectSettings.get_setting("application/run/main_scene") == _self.scene_file_path:
+        and main_scene_name == _self.scene_file_path:
         return true
     return false
 
+static func get_main_scene(_self: Node) -> Node:
+    for i in _self.get_tree().root.get_children():
+        if i.scene_file_path == main_scene_name:
+            return i
+    return
+
 ## Returns current main scene name
 static func main_scene(_self) -> String:
-    # Globals always loads first so index of main scene is 1
-    var node = _self.get_tree().root.get_child(1)
+    var node = get_main_scene(_self)
     if not node:
         return ''
     return node.name
 
 static func set_scene(_self: Node, scene_name: String):
-    _self.get_tree().root.get_child(1).change_scene(scene_name)
-    pass
+    get_main_scene(_self).change_scene(scene_name)
 
 static func set_shader_param(node: MeshInstance3D, _name: String, value: Variant, idx: int = 0):
     var m = node.get_active_material(0) as ShaderMaterial

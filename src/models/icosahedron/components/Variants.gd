@@ -5,78 +5,6 @@ class_name IcosahedronVarints
 const dst := 0.794
 const l := 0.577
 
-## 20 faces 12 vert 30 egdes
-# quad -> rect
-const figure_variants_v2 = {
-    '111' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '011' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '010' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '110' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '101' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '001' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '000' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-    '100' = {
-        '111' = Vector4( l, l, l, dst),
-        '110' = Vector4( l, l, l, dst),
-        '011' = Vector4( l, l, l, dst),
-        '101' = Vector4( l, l, l, dst),
-    },
-}
-# 3 golden rectangles
-# rect x
-# rect y
-# rect z
-# to define eash face we ned to know what cartesian quadrant it belongs
-# and what rectangle it touches (can be 2 or all)
-# RX have normal (1,0,0) and so on
-enum GoldenRect {RX, RY, RZ}
-# so each rect can be represented as vector
-# and we can use them in conmbinations also
-
-# RX + RY = (1,1,0)
-
-
-static func get_face( rects: Array[GoldenRect], quad: Vector3i):
-    if len(rects) == 3:
-        return figure_variants_v2[quad]['111']
-    pass
-
-
 const figure_variants = {
     8: {
         name = "top_left",
@@ -113,4 +41,33 @@ const figure_variants = {
     0: {
         name = "default",
     },
+}
+
+const a := 0.577
+const b := 0.358
+const c := 0.934
+
+static var figure_variants_v2 := {
+    #0: Vector4( c, b, 0, dst),
+    0: Vector4( -b, 0, -c, dst),
+    15: Vector4( b, 0, -c, dst),
+
+    1: Vector4( a, a, -a, dst),
+    2: Vector4( 0, c, -b, dst),
+    3: Vector4( 0, c, b, dst),
+    4: Vector4( a, a, a, dst),
+    5: Vector4( b, 0, c, dst),
+    6: Vector4( -b, 0, c, dst),
+    7: Vector4( -a, -a, a, dst),
+    8: Vector4( 0, -c, b, dst),
+    9: Vector4( a, -a, a, dst),
+    10: Vector4( c, -b, 0, dst),
+    11: Vector4( a, -a, -a, dst),
+    12: Vector4( 0, -c, -b, dst),
+    13: Vector4( -a, -a, -a, dst),
+    14: Vector4( -c, -b, 0, dst),
+
+    17: Vector4( -a, a, -a, dst),
+    18: Vector4( -c, b, 0, dst),
+    19: Vector4( -a, a, a, dst),
 }
