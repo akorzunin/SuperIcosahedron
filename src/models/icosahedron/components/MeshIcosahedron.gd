@@ -7,7 +7,7 @@ const OUTLINE_V_1 = preload('res://src/models/icosahedron/shaders/outline_v1.gds
 const EDGE_HIGHLIGHT_V_1 = preload('res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader')
 const EDGE_NOISE = preload('res://src/models/icosahedron/resources/edge_noise.res')
 
-const MATERIAL_002 = preload('res://src/models/icosahedron/test/Material.face_index.tres')
+var MATERIAL_002
 
 @export var applied_shaders := [
     ICOSAHEDRON_SHADER_V_1,
@@ -33,6 +33,8 @@ var cutplane: Vector3
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    if OS.has_feature('editor'):
+        MATERIAL_002 = load('res://src/models/icosahedron/test/Material.face_index.tres')
     currnt_type = icosahedron.shader_type
     show_face_numbers = icosahedron.show_face_numbers
     if currnt_type >= 0:
