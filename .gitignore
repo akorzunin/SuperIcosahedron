@@ -5,6 +5,7 @@ temp
 build
 android
 assets/*
+env.*
 
 .godot/*
 !/.godot/uid_cache.bin
