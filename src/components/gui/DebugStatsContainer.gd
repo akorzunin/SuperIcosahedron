@@ -5,6 +5,7 @@ class_name DebugStatsContainer
 @onready var angle: Label = $VBoxContainer/Angle
 @onready var nodes_passed: DebugLabel = $VBoxContainer/NodesPassed
 @onready var time_passed: DebugLabel = $VBoxContainer/TimePassed
+@onready var current_level: DebugLabel = $VBoxContainer/CurrentLevel
 
 var width_percent := 20
 

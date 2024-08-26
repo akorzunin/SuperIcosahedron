@@ -5,15 +5,25 @@ class_name GameProgress
 @onready var loop_timer: LoopTimer = %LoopTimer
 @onready var debug_stats_container: DebugStatsContainer = %DebugStatsContainer
 @onready var gui: LoopGui = $'../Gui'
+@onready var pattern_gen: PatternGen = %PatternGen
 
 var figures_passed := 0
 var time_passed := 0.
 var time_passed_formated: String:
     get:
         return loop_timer.get_elapsed_time()
+var max_reached_level := 0
+
+static func is_level_up(nodes: int, level: int) -> bool:
+    match level:
+        0: return nodes > 10
+        #1: return nodes > 20
+        _: return false
 
 func add_one():
     figures_passed += 1
+    if is_level_up(figures_passed, pattern_gen.level):
+        G.level_changed.emit(pattern_gen.level + 1)
 
 func reset():
     figures_passed = 0
@@ -39,6 +49,7 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
 func _physics_process(delta: float) -> void:
     debug_stats_container.nodes_passed.label_text = str(figures_passed)
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
+    debug_stats_container.current_level.label_text = str(pattern_gen.level)
     gui.game_state_label.set_text(str(figures_passed))
 
 func get_score():

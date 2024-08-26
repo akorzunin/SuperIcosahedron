@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=35 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -26,6 +26,7 @@
 [ext_resource type="Texture2D" uid="uid://dho54u5o0pgkt" path="res://assets/build/textures/1x/LoopGuiTileInv.png" id="14_xcs0c"]
 [ext_resource type="Script" path="res://src/components/settings/Config.gd" id="18_tjx6c"]
 [ext_resource type="Script" path="res://src/components/GameProgress.gd" id="19_mtejl"]
+[ext_resource type="Script" path="res://src/components/level_system/PatternGen.gd" id="27_sueui"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -258,3 +259,7 @@ script = ExtResource("18_tjx6c")
 [node name="GameProgress" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("19_mtejl")
+
+[node name="PatternGen" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("27_sueui")

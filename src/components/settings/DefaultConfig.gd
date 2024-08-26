@@ -7,6 +7,7 @@ const settings = {
         DESPAWNER_MODE=16633,
         SCALE_FACTOR=10,
         ROTATION_SPEED=12,
+        MAX_LEVEL=0,
     },
     user_settings = {
         FPS_COUNTER_ENABLED=true,
@@ -17,5 +18,6 @@ const settings = {
         VSYNC_ENABLED=true,
         CONTROL_TYPE="FREE_SPIN",
         IS_CONTROL_INVERTED=false,
+        DEFAULT_LEVEL=0,
     }
 }

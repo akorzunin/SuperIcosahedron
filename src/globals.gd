@@ -15,3 +15,6 @@ var settings := {}
 enum FontType {HEX, EMOJI}
 @warning_ignore("unused_signal")
 signal font_changed(new_font: FontType)
+
+@warning_ignore("unused_signal")
+signal level_changed(new_level: int)

@@ -5,6 +5,7 @@ class_name LoopSpawner
 @onready var loop_timer: LoopTimer = %LoopTimer
 @onready var scale_timer: ScaleTimer = %ScaleTimer
 @onready var game_progress: GameProgress = %GameProgress
+@onready var pattern_gen: PatternGen = %PatternGen
 
 @export var figureRoot: FigureRoot
 
@@ -69,16 +70,14 @@ enum FigureType {ICOSAHEDRON, OCTAHEDRON}
 enum SpawnMode {CENTER, SIDE, RANDOM, QUEUE}
 
 func get_spawn_type():
-    var s = SpawnMode
+    var s = PatternGen.SpawnMode
     match G.settings.SPAWN_MODE:
-        s.CENTER: # 0
+        s.TUTORIAL: # 0
             return 3
-        s.SIDE: # 1
+        s.DEBUG: # 1
             return 1
-        s.RANDOM: # 2
-            return randi_range(0, 19)
-        s.QUEUE: # 3
-            pass
+        s.QUEUE: # 2
+            return pattern_gen.next_pattern()
 
 func spawn_figure(figure: Figure) -> void:
     var new_figure
