@@ -34,7 +34,8 @@ func _ready() -> void:
 
 func _on_scale_tick() -> void:
     if scaling_enabled:
-        var sf: float = (G.settings.SCALE_FACTOR + 1000.) / 1000.
+        var sf: float = 1. + (G.settings.SCALE_FACTOR  / 1000. ) \
+            * (0.5 +  (G.settings.GAME_SPEED / (10. + G.settings.GAME_SPEED)))
         scale_object_local(Vector3(sf, sf, sf))
 
 func despawn():

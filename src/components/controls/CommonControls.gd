@@ -19,3 +19,14 @@ func _unhandled_input(event: InputEvent) -> void:
         toggle_debug_stats.emit(state)
         config._on_debug_stats_state(state)
         get_viewport().set_input_as_handled()
+    if event.is_action_pressed('ui_reload'):
+        G.reload_settings.emit()
+
+func _notification(what: int):
+    if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+        var p := Utils.get_platform()
+        if p == Utils.Platform.MOBILE:
+            # Back button on android
+            InputEmit.new().emit({
+                action = 'ui_cancel'
+            })

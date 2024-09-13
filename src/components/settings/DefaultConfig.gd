@@ -6,6 +6,8 @@ const settings = {
         SPAWN_MODE=2,
         DESPAWNER_MODE=16633,
         SCALE_FACTOR=10,
+        SPAWN_SPEED=10,
+        GAME_SPEED=10,
         ROTATION_SPEED=12,
         MAX_LEVEL=0,
     },
@@ -18,6 +20,5 @@ const settings = {
         VSYNC_ENABLED=true,
         CONTROL_TYPE="FREE_SPIN",
         IS_CONTROL_INVERTED=false,
-        DEFAULT_LEVEL=0,
     }
 }

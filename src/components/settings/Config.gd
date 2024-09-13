@@ -28,6 +28,11 @@ func _init() -> void:
 func _ready() -> void:
     set_fps_counter_state.connect(_on_fps_counter_state)
     set_debug_stats_state.connect(_on_debug_stats_state)
+    G.reload_settings.connect(_on_reload_settings)
+
+func _on_reload_settings():
+    var gs = SettingsConfig.load_gs(config)
+    G.settings = gs
 
 func _on_fps_counter_state(state: bool):
     G.settings.FPS_COUNTER_ENABLED = state
