@@ -135,7 +135,7 @@ static var menu_items := {
     items = {
         1: {
             name = "start",
-            action = "menu_start_game",
+            action = "menu_level_select",
         },
         2: {
             name = "settings",
@@ -165,7 +165,7 @@ static var menu_items_emoji := {
     items = {
         1: {
             'name': "🎮",
-            'action': "menu_start_game",
+            'action': "menu_level_select",
         },
         2: {
             'name': "⚙️",

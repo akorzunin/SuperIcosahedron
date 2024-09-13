@@ -29,6 +29,9 @@ func get_controlled_node() -> Node3D:
         return menuSpawner.get_node("Anchor")
     return null
 
+
+
+
 ## Get selected menu intem and execute action that item meant to do
 func call_menu_action():
     var selected = menu_selector.get_selected_item()
@@ -37,8 +40,16 @@ func call_menu_action():
     var action = selected.get("action")
     if action == "menu_start_game":
         sfx_player.on_action_select.emit()
+        G.data.level = selected.items.level
     else:
         sfx_player.on_section_select.emit()
+    if action == "menu_level_select":
+        menuSpawner.open_menu_section(
+            controlledNode,
+            {items = LevelPatterns.get_menu_levels(G.settings.MAX_LEVEL)}
+        )
+        return
+
     if action != "placeholder_action":
         actions.call(selected.action)
         return

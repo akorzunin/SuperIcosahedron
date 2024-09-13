@@ -14,15 +14,10 @@ var time_passed_formated: String:
         return loop_timer.get_elapsed_time()
 var max_reached_level := 0
 
-static func is_level_up(nodes: int, level: int) -> bool:
-    match level:
-        0: return nodes > 10
-        #1: return nodes > 20
-        _: return false
 
 func add_one():
     figures_passed += 1
-    if is_level_up(figures_passed, pattern_gen.level):
+    if LevelPatterns.is_level_up(figures_passed, pattern_gen.level):
         G.level_changed.emit(pattern_gen.level + 1)
 
 func reset():

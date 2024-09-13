@@ -15,6 +15,10 @@ func menu_start_game():
         return
     Utils.set_scene(self, 'LoopScene')
 
+func menu_level_select():
+    # handeled in MenuControls.call_menu_action
+    return
+
 func settings_fps_counter_on():
     config.set_fps_counter_state.emit(true)
 

@@ -41,7 +41,7 @@ enum AngleType {ANGLE_WRONG, ANGLE_OK, ANGLE_GOOD}
 
 func check_angle(v: Vector3) -> AngleType:
     var a = AngleType
-    if pass_vec.angle_to(v) < 0.2:
+    if pass_vec.angle_to(v) < 0.22:
         return a.ANGLE_GOOD
     if pass_vec.angle_to(v) < 0.5:
         return a.ANGLE_OK

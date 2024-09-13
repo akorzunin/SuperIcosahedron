@@ -4,7 +4,7 @@ class_name PatternGen
 const MAX_LEVEL := 10
 enum SpawnMode {TUTORIAL, DEBUG, QUEUE}
 
-@export var level: int = G.settings.DEFAULT_LEVEL:
+@export var level: int = 0:
     set(val):
         level = clamp(0, MAX_LEVEL, val)
 
@@ -12,9 +12,16 @@ var level_queue := LevelQueue.new()
 
 func _ready():
     G.level_changed.connect(_on_level_changed)
+    var l = G.data.get("level")
+    if l:
+        level = l
     add_patterns()
 
 func _on_level_changed(new_level: int):
+    var new_gs = LevelPatterns.levels[new_level].get("game_speed")
+    if new_gs:
+        G.settings.GAME_SPEED = new_gs
+        G.reload_settings.emit()
     level = new_level
 
 func next_pattern() -> int:
