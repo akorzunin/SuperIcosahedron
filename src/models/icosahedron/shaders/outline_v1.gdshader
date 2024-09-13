@@ -23,8 +23,9 @@ void vertex() {
 
 void fragment() {
     if (enable) {
-        ALBEDO = color.rgb;
-        ALPHA = 0.5;
+        //ALBEDO = color.rgb;
+        ALBEDO = vec3(0.);
+        ALPHA = 0.9;
     } else {
         ALPHA = 0.;
     }

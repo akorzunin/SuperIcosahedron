@@ -25,7 +25,7 @@ shader_parameter/bg_color = Color(0.729, 0.902, 0.992, 1)
 
 [node name="VariantTest" type="Node3D"]
 script = ExtResource("1_4av47")
-spawn_type = 2
+spawn_type = 1
 
 [node name="Environment" type="Node3D" parent="."]
 

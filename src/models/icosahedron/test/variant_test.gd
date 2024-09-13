@@ -5,7 +5,7 @@ var controlledNode
 
 @onready var pattern_gen: PatternGen = $PatternGen
 
-@export var ROTATION_SPEED: float = G.settings.ROTATION_SPEED
+@export var ROTATION_SPEED: float = 12
 
 @export_category("variant settings")
 @export var show_face_numbers: bool = true
@@ -23,9 +23,9 @@ func get_next():
     var next_type: int
     match spawn_type:
         0: next_type = pattern_gen.next_pattern()
-        1: next_type = randi_range(17, 19)
+        1: next_type = randi_range(0, 19)
         2: next_type = variant_type
-    print_debug("Spawinig next figure woth type: ", next_type)
+    print_debug("Spawinig next figure with type: ", next_type)
     spawn_next(next_type)
 
 func remove_current():
