@@ -51,4 +51,5 @@ autoplay = true
 bus = &"Music"
 
 [node name="DiscordStatus" type="Node" parent="."]
+unique_name_in_owner = true
 script = ExtResource("10_ndvlm")

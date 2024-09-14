@@ -1,6 +1,8 @@
 extends Node
 class_name GameProgress
 
+@onready var discord_status: DiscordStatus =  $"/root/MainScene/DiscordStatus"
+
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var loop_timer: LoopTimer = %LoopTimer
 @onready var debug_stats_container: DebugStatsContainer = %DebugStatsContainer
@@ -26,6 +28,7 @@ func reset():
 
 func _ready() -> void:
     game_state_manager.game_state_changed.connect(_on_game_state)
+    G.level_changed.connect(_on_level_changed)
 
 func start():
     gui.show_stats_panel(true)
@@ -37,9 +40,14 @@ func end():
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs := GameStateManager.GameState
     if new_state == gs.GAME_END:
+        discord_status.set_state("Game over", "Enjoying results")
         end()
     elif new_state == gs.GAME_ACTIVE:
+        discord_status.set_loop_state(pattern_gen.level)
         start()
+
+func _on_level_changed(new_level: int):
+    discord_status.set_loop_state(new_level)
 
 func _physics_process(delta: float) -> void:
     debug_stats_container.nodes_passed.label_text = str(figures_passed)
@@ -52,3 +60,8 @@ func get_score():
         figures_passed,
         time_passed_formated
     ]
+
+func log_tts(spawn_time: float, type: int):
+    var time_ms := int((Time.get_unix_time_from_system() - spawn_time) * 1000.)
+    debug_stats_container.time_to_solve.label_text = "ms: %s, type: %s" % [time_ms, type]
+    print_debug("time: ", time_ms, " type: ", type)

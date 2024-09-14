@@ -1,6 +1,8 @@
 extends Node3D
 class_name MenuSpawner
 
+@onready var discord_status: DiscordStatus =  $"/root/MainScene/DiscordStatus"
+
 @onready var anchor: Marker3D = %Anchor
 @onready var menu_scene: MenuSpawner = $'.'
 @onready var gui: MenuGui = $'../Gui'
@@ -80,6 +82,7 @@ func _ready():
     anchor.add_child(new_figure)
     call_deferred('set_figures_count', anchor.get_child_count())
     add_menu_items(anchor, menu_state.state)
+    discord_status.set_menu_state()
 
 func set_figures_count(v: int):
     gui.debug_stats_container.figures_count.label_text = str(v)

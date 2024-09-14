@@ -19,10 +19,12 @@ const loop_state := {
 }
 
 func set_state(details: String, desc: String, with_time: bool = false):
-    DiscordRPC.details = details
-    DiscordRPC.state = desc
     if with_time:
         DiscordRPC.start_timestamp = int(Time.get_unix_time_from_system()) # "02:46 elapsed"
+    else:
+        DiscordRPC.start_timestamp = 0
+    DiscordRPC.details = details
+    DiscordRPC.state = desc
     DiscordRPC.refresh()
 
 func set_menu_state():
@@ -34,3 +36,8 @@ func set_loop_state(level := 0):
         loop_state.desc % level if level else "tutorial",
         true
     )
+
+func _notification(what: int):
+    if what == NOTIFICATION_WM_CLOSE_REQUEST:
+        DiscordRPC.clear()
+        get_tree().quit() # default behavior
