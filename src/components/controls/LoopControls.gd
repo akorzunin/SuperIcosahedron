@@ -49,6 +49,7 @@ func _input(event: InputEvent) -> void:
     var is_inverted = G.settings.IS_CONTROL_INVERTED
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         handle_game_over_input(event, is_inverted)
+        G.reload_settings.emit()
         return
     if event.is_action_pressed('ui_pause'):
         get_tree().paused = !get_tree().paused
