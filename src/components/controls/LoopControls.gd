@@ -40,9 +40,11 @@ func update_controlled_node():
 
 func pass_next_node(node: Collider):
     if controlledNode != null \
+    and game_state_manager.game_state != GameStateManager.GameState.GAME_END \
     and not controlledNode.angle_good \
     and node.mesh_icosahedron == controlledNode:
         controlledNode.angle_good = true
+        game_progress.log_tts(controlledNode.icosahedron.spwan_time, controlledNode.currnt_type)
     update_controlled_node()
 
 func _input(event: InputEvent) -> void:
@@ -84,6 +86,8 @@ func game_over_rot(scene: StringName, t: Quaternion):
 func handle_game_over_input(event: InputEvent, is_inverted: bool):
     if event.is_action_pressed('ui_accept'):
         Utils.set_scene(self, 'LoopScene')
+    elif event.is_action_pressed('ui_cancel'):
+        game_over_rot('MenuScene', Quats.menu_quat_left())
         sfx_player.on_action_select.emit()
     elif Op.xor(is_inverted, event.is_action_pressed('ui_left')):
         game_over_rot('MenuScene', Quats.menu_quat_left())

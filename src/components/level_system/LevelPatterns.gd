@@ -13,6 +13,8 @@ const patterns: Dictionary = {
     6: [15, 1, 2],
     7: [12, 8],
     8: [6, 16],
+    # level 3
+
 }
 
 const levels: Dictionary = {
@@ -23,12 +25,18 @@ const levels: Dictionary = {
     1: {
         level_patterns = [3, 4, 5],
         random = true,
-        # game_speed = 20,
+        # game_speed_diff = 2,
     },
     2: {
         level_patterns = [6, 7, 8],
         random = true,
         # game_speed = 10,
+        # game_speed_diff = 2,
+
+    },
+    3: {
+        level_patterns = [],
+        random = true,
     }
 }
 
@@ -36,6 +44,7 @@ static func is_level_up(nodes: int, level: int) -> bool:
     match level:
         0: return nodes > 10
         1: return nodes > 20
+        2: return nodes > 40
         _: return false
 
 const tutorial_item := {

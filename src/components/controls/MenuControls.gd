@@ -48,7 +48,7 @@ func call_menu_action():
             controlledNode,
             {
                 items = LevelPatterns.get_menu_levels(
-                    clampi(G.settings.MAX_LEVEL, 0, LevelPatterns.levels.size - 1)
+                    clampi(G.settings.MAX_LEVEL, 0, LevelPatterns.levels.size() - 1)
                 )
             }
         )

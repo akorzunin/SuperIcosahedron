@@ -9,6 +9,7 @@ class_name Icosahedron
 @export var scaling_enabled := true
 @export var show_face_numbers := false
 @export var shader_type: int
+@export var spwan_time: float
 
 var scale_timer: ScaleTimer
 
@@ -31,6 +32,7 @@ func _ready() -> void:
         cut_plane.hide()
     if scale_timer:
         scale_timer.timeout.connect(_on_scale_tick)
+    spwan_time = Time.get_unix_time_from_system()
 
 func _on_scale_tick() -> void:
     if scaling_enabled:

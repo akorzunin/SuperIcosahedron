@@ -31,6 +31,9 @@ func next_pattern() -> int:
 
 func add_patterns():
     var current_level: Dictionary = LevelPatterns.levels[level]
+    if not current_level.get("level_patterns"):
+        queue_item(randi_range(0, 19))
+        return
     if current_level.get("random"):
         var random_pattern: int = current_level.level_patterns.pick_random()
         queue_pattern(random_pattern)
@@ -42,3 +45,6 @@ func add_patterns():
 func queue_pattern(pattern: int):
     for type in LevelPatterns.patterns[pattern]:
         level_queue.add_item(type)
+
+func queue_item(item: int):
+    level_queue.add_item(clampi(item, 0, 19))

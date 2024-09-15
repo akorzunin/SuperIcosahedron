@@ -6,6 +6,7 @@ class_name DebugStatsContainer
 @onready var nodes_passed: DebugLabel = $VBoxContainer/NodesPassed
 @onready var time_passed: DebugLabel = $VBoxContainer/TimePassed
 @onready var current_level: DebugLabel = $VBoxContainer/CurrentLevel
+@onready var time_to_solve: DebugLabel = $VBoxContainer/TimeToSolve
 
 var width_percent := 20
 
