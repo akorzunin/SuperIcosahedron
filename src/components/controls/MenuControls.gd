@@ -46,7 +46,11 @@ func call_menu_action():
     if action == "menu_level_select":
         menuSpawner.open_menu_section(
             controlledNode,
-            {items = LevelPatterns.get_menu_levels(G.settings.MAX_LEVEL)}
+            {
+                items = LevelPatterns.get_menu_levels(
+                    clampi(G.settings.MAX_LEVEL, 0, LevelPatterns.levels.size - 1)
+                )
+            }
         )
         return
 
