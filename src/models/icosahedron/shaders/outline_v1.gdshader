@@ -2,31 +2,33 @@ shader_type spatial;
 render_mode unshaded, cull_front;
 
 uniform bool enable = false;
+
+uniform sampler2D screen_texture : hint_screen_texture,
+                                   repeat_disable,
+                                   filter_nearest;
+
 // outline costumization
 uniform float outline_thickness = 0.05;
 uniform vec4 color : source_color = vec4(0.0);
 
+// pulse customization
+uniform float pulse_speed = 12.;
+uniform float pulse_amplitude = 2.;
+
 varying vec3 ver;
-varying vec3 old_ver;
-varying vec3 n;
-varying vec4 wrld_vertex;
 
 void vertex() {
     if (enable) {
-        old_ver = VERTEX;
-        VERTEX += VERTEX * outline_thickness;
-        ver = VERTEX;
-        // n = NORMAL;
-        // wrld_vertex = MODEL_MATRIX * vec4(VERTEX, 1.0);
+        float t = sin(TIME * pulse_speed) / pulse_amplitude + 1.;
+        VERTEX += VERTEX * (outline_thickness * t);
     }
 }
 
 void fragment() {
+    vec4 currentColor = textureLod(screen_texture, SCREEN_UV, 0.0);
     if (enable) {
-        //ALBEDO = color.rgb;
-        ALBEDO = vec3(0.);
-        ALPHA = 0.9;
+        ALBEDO = currentColor.rgb * color.rgb;
     } else {
-        ALPHA = 0.;
+        ALBEDO = currentColor.rgb;
     }
 }
