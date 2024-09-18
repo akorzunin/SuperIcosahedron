@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=20 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
@@ -11,6 +11,7 @@
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
 [ext_resource type="Texture2D" uid="uid://bpr01fnnfusau" path="res://src/models/icosahedron/resources/edge_noise.res" id="6_ai0t7"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
+[ext_resource type="Texture2D" uid="uid://cixi1rd0a28e4" path="res://assets/build/textures/texture-test-v1.png" id="8_h5ail"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
 render_priority = 0
@@ -34,9 +35,9 @@ shader_parameter/noise_pattern = ExtResource("6_ai0t7")
 render_priority = 2
 next_pass = SubResource("ShaderMaterial_4yeiy")
 shader = ExtResource("5_ucsrc1")
-shader_parameter/enable = true
-shader_parameter/outline_thickness = 0.05
-shader_parameter/color = Color(0.358796, 0.73469, 0.907072, 1)
+shader_parameter/enable = false
+shader_parameter/outline_thickness = 0.11
+shader_parameter/color = Color(0, 1, 0, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
 render_priority = 1
@@ -46,6 +47,14 @@ shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
 shader_parameter/color = Color(0, 1, 0, 1)
 shader_parameter/enable = true
 shader_parameter/outline_thickness = 0.0
+shader_parameter/uv_offset_x = 0.17
+shader_parameter/uv_offset_y = 2.71
+shader_parameter/ratio = 0.075
+shader_parameter/power = 2.775
+shader_parameter/time_speed = 3.61
+shader_parameter/max_speed = 90.0
+shader_parameter/uv_rot = Vector2(0.11, 0.375)
+shader_parameter/cutlane_tex = ExtResource("8_h5ail")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
 render_priority = 0
