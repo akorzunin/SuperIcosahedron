@@ -1,11 +1,10 @@
-[gd_scene load_steps=20 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=19 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
-[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/cut_plane_shader.gdshader" id="2_u8yhs"]
+[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader" id="2_3wk2e"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader" id="5_al5e2"]
-[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/cutplane_effect_v2.gdshader" id="5_cipg0"]
 [ext_resource type="Script" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
 [ext_resource type="Shader" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
@@ -15,7 +14,15 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
 render_priority = 0
-shader = ExtResource("2_u8yhs")
+shader = ExtResource("2_3wk2e")
+shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/enable = true
+shader_parameter/outline_thickness = 0.025
+shader_parameter/_center = Vector2(0.5, 0.5)
+shader_parameter/_zoom = 1.0
+shader_parameter/_repeat = 1.0
+shader_parameter/_speed = 1.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_8mu0u"]
 
@@ -36,25 +43,24 @@ render_priority = 2
 next_pass = SubResource("ShaderMaterial_4yeiy")
 shader = ExtResource("5_ucsrc1")
 shader_parameter/enable = false
-shader_parameter/outline_thickness = 0.11
-shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/outline_thickness = 0.05
+shader_parameter/color = Color(0.358796, 0.73469, 0.907072, 1)
+shader_parameter/pulse_speed = 12.0
+shader_parameter/pulse_amplitude = 2.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
 render_priority = 1
 next_pass = SubResource("ShaderMaterial_i83je")
-shader = ExtResource("5_cipg0")
+shader = ExtResource("2_3wk2e")
 shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
 shader_parameter/color = Color(0, 1, 0, 1)
 shader_parameter/enable = true
-shader_parameter/outline_thickness = 0.0
-shader_parameter/uv_offset_x = 0.17
-shader_parameter/uv_offset_y = 2.71
-shader_parameter/ratio = 0.075
-shader_parameter/power = 2.775
-shader_parameter/time_speed = 3.61
-shader_parameter/max_speed = 90.0
-shader_parameter/uv_rot = Vector2(0.11, 0.375)
-shader_parameter/cutlane_tex = ExtResource("8_h5ail")
+shader_parameter/outline_thickness = 0.04
+shader_parameter/_center = Vector2(0.11, 0.39)
+shader_parameter/_zoom = 2.85
+shader_parameter/_repeat = 6.0
+shader_parameter/_speed = 0.35
+shader_parameter/TEXTURE = ExtResource("8_h5ail")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
 render_priority = 0
