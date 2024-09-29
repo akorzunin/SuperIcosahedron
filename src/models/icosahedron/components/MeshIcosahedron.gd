@@ -2,10 +2,12 @@ extends MeshInstance3D
 class_name MeshIcosahedron
 
 const ICOSAHEDRON_SHADER_V_1 = preload('res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
-const CUTPLANE_EFFECT_V_2 = preload("res://src/models/icosahedron/shaders/cutplane_effect_v2.gdshader")
+const CUTPLANE_EFFECT_V_2 = preload("res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader")
 const OUTLINE_V_1 = preload('res://src/models/icosahedron/shaders/outline_v1.gdshader')
 const EDGE_HIGHLIGHT_V_1 = preload('res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader')
+
 const EDGE_NOISE = preload('res://src/models/icosahedron/resources/edge_noise.res')
+const TEXTURE_TEST_V_1 = preload('res://assets/build/textures/texture-test-v1.png')
 
 var MATERIAL_002
 
@@ -55,6 +57,7 @@ func set_cutplane(v: Vector4):
     for i in applied_shaders.size():
         ShaderUtils.set_shader_param(self, "cutplane", v, i)
         ShaderUtils.set_shader_param(self, "noise_pattern", EDGE_NOISE, i)
+        ShaderUtils.set_shader_param(self, "TEXTURE", TEXTURE_TEST_V_1, i)
 
 func set_color(c: Vector3):
     for i in applied_shaders.size():

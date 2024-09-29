@@ -1,21 +1,32 @@
 shader_type spatial;
-render_mode cull_front, depth_test_disabled, unshaded;
+render_mode cull_front, depth_test_disabled;
 
 #include "cutplane.gdshaderinc"
 #include "res://src/shaders/shader_utils.gdshaderinc"
 
 // to get vac coord a= sin^2(angle), b = sin(angle)*cos(angle)
-uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
-uniform vec3 color : source_color = vec3(0.0, 1., 0.);
+//uniform vec4 cutplane = vec4(-0.577, -0.577, 0.577, 0.794);
+uniform vec4 cutplane = vec4(-0.577, -0.577, -0.577, 0.794);
+uniform vec3 color : source_color = vec3(0., 1., 0.);
+uniform vec4 accent_color : source_color = vec4(0.26, 0.26, 0.26, 1.);
 
 uniform bool enable = true;
 // outline costumization
 uniform float outline_thickness = 0.0; // how thick is the outline?
 
-uniform vec2 _center = vec2(0.5);
-uniform float _zoom = 1.;
-uniform float _repeat = 1.;
-uniform float _speed = 1.;
+// for cutplane = vec4(-0.577, -0.577, -0.577, 0.794);
+//uniform vec2 _center = vec2(0.1, 0.15);
+
+// for cutplane = vec4(0.577, 0.577, 0.577, 0.794);
+//uniform vec2 _center = vec2(0.37, 0.89);
+
+uniform vec2 _center = vec2(0.11, 0.39);
+
+uniform float _zoom = 2.85;
+uniform float _repeat = 6.;
+uniform float _speed = .35;
+uniform float aaa = .35;
+uniform float bbb = .35;
 
 varying vec3 ver;
 
@@ -38,7 +49,9 @@ void vertex() {
         ver = VERTEX;
     }
 }
-
+vec4 screen(vec4 base, vec4 blend){
+    return 1.0 - (1.0 - base) * (1.0 - blend);
+}
 void fragment() {
     vec3 albedo_out;
     vec2 uv = UV;
@@ -52,14 +65,20 @@ void fragment() {
         float dist = cutplane_dist(cutplane, ver);
         bool a = dist > 0.;
         float c = length(ver);
-        float b = my_tex.a;
+        vec4 ac = accent_color;
+        //float b = 1. - my_tex.a;
+        float d = 1. - smoothstep(.81, .9, c);
+        float b = (1. - d * (1. - my_tex.a));
+        vec3 overlay_color = 1. - abs(color - b);
         //albedo_out = vec3(b);
         //albedo_out = vec3(fract(uv*10.), 0.);
         //albedo_out = min(currentColor.rgb + vec3(0, b, 0.));
-        albedo_out = currentColor.rgb + vec3(b, 0., 0.);
-        ALBEDO = a ? albedo_out : currentColor.rgb;
-        ALPHA = currentColor.a;
-        //ALPHA = a ? 1. : 0.01;
+        albedo_out = min(color, overlay_color).rgb;
+        //albedo_out = vec4(b).rgb;
+        ALBEDO = a ? albedo_out : color.rgb;
+        ALPHA = a ? currentColor.a : 0.0;
+        //ALBEDO = color.rgb;
+        //ALPHA = currentColor.a;
 
     } else {
         ALBEDO = currentColor.rgb;

@@ -17,12 +17,15 @@ render_priority = 0
 shader = ExtResource("2_3wk2e")
 shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
 shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
 shader_parameter/enable = true
 shader_parameter/outline_thickness = 0.025
 shader_parameter/_center = Vector2(0.5, 0.5)
 shader_parameter/_zoom = 1.0
 shader_parameter/_repeat = 1.0
 shader_parameter/_speed = 1.0
+shader_parameter/aaa = 0.35
+shader_parameter/bbb = 0.35
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_8mu0u"]
 
@@ -33,7 +36,7 @@ size = Vector3(1.66211, 1.56055, 1.42188)
 render_priority = 0
 shader = ExtResource("5_al5e2")
 shader_parameter/enable = true
-shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
 shader_parameter/color = Color(0, 0.5, 0, 1)
 shader_parameter/time_scale = 10.0
 shader_parameter/noise_pattern = ExtResource("6_ai0t7")
@@ -42,9 +45,10 @@ shader_parameter/noise_pattern = ExtResource("6_ai0t7")
 render_priority = 2
 next_pass = SubResource("ShaderMaterial_4yeiy")
 shader = ExtResource("5_ucsrc1")
-shader_parameter/enable = false
+shader_parameter/enable = true
 shader_parameter/outline_thickness = 0.05
-shader_parameter/color = Color(0.358796, 0.73469, 0.907072, 1)
+shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
 shader_parameter/pulse_speed = 12.0
 shader_parameter/pulse_amplitude = 2.0
 
@@ -52,14 +56,17 @@ shader_parameter/pulse_amplitude = 2.0
 render_priority = 1
 next_pass = SubResource("ShaderMaterial_i83je")
 shader = ExtResource("2_3wk2e")
-shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
 shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
 shader_parameter/enable = true
-shader_parameter/outline_thickness = 0.04
-shader_parameter/_center = Vector2(0.11, 0.39)
+shader_parameter/outline_thickness = 0.0
+shader_parameter/_center = Vector2(0.37, 0.89)
 shader_parameter/_zoom = 2.85
 shader_parameter/_repeat = 6.0
 shader_parameter/_speed = 0.35
+shader_parameter/aaa = 0.81
+shader_parameter/bbb = 0.905
 shader_parameter/TEXTURE = ExtResource("8_h5ail")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
@@ -69,7 +76,7 @@ shader = ExtResource("5_s1usq")
 shader_parameter/pulse_enabled = false
 shader_parameter/colorflow_enbled = false
 shader_parameter/cutplane_visible = true
-shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
+shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
 shader_parameter/color = Vector3(0, 1, 0)
 
 [node name="Icosahedron" type="Node3D"]
@@ -95,4 +102,13 @@ shape = SubResource("BoxShape3D_nvmtx")
 material_override = SubResource("ShaderMaterial_bjqtf")
 cast_shadow = 0
 mesh = ExtResource("1_kd7xu")
+script = ExtResource("5_q8b2e")
+
+[node name="MeshIcosahedron2" type="MeshInstance3D" parent="."]
+transform = Transform3D(30.115, 0, 0, 0, 30.115, 0, 0, 0, 30.115, 0, 0, -0.0479969)
+visible = false
+material_override = SubResource("ShaderMaterial_bjqtf")
+cast_shadow = 0
+mesh = ExtResource("1_kd7xu")
+skeleton = NodePath("../MeshIcosahedron")
 script = ExtResource("5_q8b2e")
