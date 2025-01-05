@@ -21,3 +21,7 @@ signal level_changed(new_level: int)
 
 @warning_ignore("unused_signal")
 signal reload_settings()
+
+# Ico Node Signals
+@warning_ignore("unused_signal")
+signal ico_node_spawn(ico_type: int)

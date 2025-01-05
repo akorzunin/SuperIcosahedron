@@ -1,0 +1,80 @@
+[gd_scene load_steps=13 format=3 uid="uid://blc02eaic3b1d"]
+
+[ext_resource type="Script" uid="uid://by3f1h75gdfva" path="res://src/models/icosahedron/test/variant_test.gd" id="1_swxrj"]
+[ext_resource type="Shader" uid="uid://m5sywmm0umxn" path="res://src/shaders/LoopSceneSky.gdshader" id="2_ea7da"]
+[ext_resource type="Shader" uid="uid://ckf53ww7vhw1l" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="3_l1x8y"]
+[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/skybox/icosahedron_Solid_Sky.res" id="4_ea76b"]
+[ext_resource type="Script" uid="uid://dfdmdsycrkygl" path="res://src/components/sky/SkyIcosahedron.gd" id="5_71o8q"]
+[ext_resource type="Script" uid="uid://ch0bxsxh2a1gg" path="res://src/components/level_system/PatternGen.gd" id="6_mf5bi"]
+[ext_resource type="Script" path="res://src/components/ico_node/test/debug_gui.gd" id="7_ea7da"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tb2j1"]
+shader = ExtResource("2_ea7da")
+shader_parameter/bg_color = Vector3(0.729, 0.902, 0.992)
+
+[sub_resource type="Sky" id="Sky_puicm"]
+sky_material = SubResource("ShaderMaterial_tb2j1")
+
+[sub_resource type="Environment" id="Environment_37xli"]
+background_mode = 2
+sky = SubResource("Sky_puicm")
+
+[sub_resource type="Compositor" id="Compositor_g6v2u"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0smox"]
+render_priority = 0
+shader = ExtResource("3_l1x8y")
+shader_parameter/bg_color = Color(0.729, 0.902, 0.992, 1)
+
+[node name="VariantTest" type="Node3D"]
+script = ExtResource("1_swxrj")
+ROTATION_SPEED = 9.0
+show_face_numbers = false
+variant_type = 17
+spawn_type = 2
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.547242, 0.799069, 0.472056, 0.37236, 0.155482, 0.644891, 0.176892)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_37xli")
+compositor = SubResource("Compositor_g6v2u")
+
+[node name="Camera3D" type="Camera3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 0.907777, 0.419452, 0, -0.419452, 0.907777, 0, 1.5894, 2.81957)
+
+[node name="SkyMeshIcosahedron" type="MeshInstance3D" parent="Environment"]
+transform = Transform3D(42.78, 0, 0, 0, 42.78, 0, 0, 0, 42.78, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_0smox")
+mesh = ExtResource("4_ea76b")
+skeleton = NodePath("../..")
+script = ExtResource("5_71o8q")
+
+[node name="PatternGen" type="Node" parent="."]
+script = ExtResource("6_mf5bi")
+level = 1
+
+[node name="debug_gui" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 528.0
+grow_vertical = 2
+size_flags_horizontal = 8
+script = ExtResource("7_ea7da")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="debug_gui"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SpawnButton" type="Button" parent="debug_gui/VBoxContainer"]
+layout_mode = 2
+text = "Spawn Node"
+
+[node name="NodeType" type="LineEdit" parent="debug_gui/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Node type"
+max_length = 2

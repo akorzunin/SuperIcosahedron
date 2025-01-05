@@ -38,6 +38,10 @@ npm install -g @go-task/cli
 choco install llvm
 choco install go-task
 ```
+or
+```
+winget install Task.Task
+```
 
 ## Build and deploy
 

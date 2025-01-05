@@ -1,0 +1,78 @@
+[gd_scene load_steps=16 format=3 uid="uid://c8odqx320dk7x"]
+
+[ext_resource type="Script" uid="uid://dldg0qkqhdfj5" path="res://src/components/ico_node/IcoNode.gd" id="1_4y4py"]
+[ext_resource type="Shader" uid="uid://rxrr52t7h1h5" path="res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader" id="2_ou1ir"]
+[ext_resource type="Texture2D" uid="uid://bpr01fnnfusau" path="res://src/models/icosahedron/resources/edge_noise.res" id="3_3x4nk"]
+[ext_resource type="Shader" uid="uid://coce5o37vi074" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="4_d4gxu"]
+[ext_resource type="Shader" uid="uid://b50ioimfcmduu" path="res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader" id="5_8uogj"]
+[ext_resource type="Texture2D" uid="uid://cixi1rd0a28e4" path="res://assets/build/textures/texture-test-v1.png" id="6_hh0x2"]
+[ext_resource type="Shader" uid="uid://q85ccblkosih" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="7_s6nnl"]
+[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="8_vra54"]
+[ext_resource type="Script" uid="uid://bmh6ontm6r5ar" path="res://src/components/ico_node/IcoMesh.gd" id="9_4y4py"]
+[ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://src/models/icosahedron/components/Collider.gd" id="10_ou1ir"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4yeiy"]
+render_priority = 0
+shader = ExtResource("2_ou1ir")
+shader_parameter/enable = true
+shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
+shader_parameter/color = Color(0, 0.5, 0, 1)
+shader_parameter/time_scale = 10.0
+shader_parameter/noise_pattern = ExtResource("3_3x4nk")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p7v5c"]
+render_priority = 2
+next_pass = SubResource("ShaderMaterial_4yeiy")
+shader = ExtResource("4_d4gxu")
+shader_parameter/enable = true
+shader_parameter/outline_thickness = 0.05
+shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
+shader_parameter/pulse_speed = 12.0
+shader_parameter/pulse_amplitude = 2.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
+render_priority = 1
+next_pass = SubResource("ShaderMaterial_p7v5c")
+shader = ExtResource("5_8uogj")
+shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
+shader_parameter/color = Color(0, 1, 0, 1)
+shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
+shader_parameter/enable = true
+shader_parameter/outline_thickness = 0.0
+shader_parameter/_center = Vector2(0.37, 0.89)
+shader_parameter/_zoom = 2.85
+shader_parameter/_repeat = 6.0
+shader_parameter/_speed = 0.35
+shader_parameter/aaa = 0.81
+shader_parameter/bbb = 0.905
+shader_parameter/TEXTURE = ExtResource("6_hh0x2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l0p4l"]
+render_priority = 0
+next_pass = SubResource("ShaderMaterial_c0lt3")
+shader = ExtResource("7_s6nnl")
+shader_parameter/pulse_enabled = false
+shader_parameter/colorflow_enbled = false
+shader_parameter/cutplane_visible = true
+shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
+shader_parameter/color = Vector3(0, 1, 0)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3x4nk"]
+points = PackedVector3Array(0.575, 0.86, 0, 0.815, -0.33, 0.525, 0, 0.5, 0.925)
+
+[node name="IcoNode" type="Node3D"]
+script = ExtResource("1_4y4py")
+
+[node name="IcoMesh" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_l0p4l")
+cast_shadow = 0
+mesh = ExtResource("8_vra54")
+script = ExtResource("9_4y4py")
+
+[node name="Colliders" type="Area3D" parent="."]
+script = ExtResource("10_ou1ir")
+metadata/_custom_type_script = ExtResource("10_ou1ir")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Colliders"]
+shape = SubResource("ConvexPolygonShape3D_3x4nk")

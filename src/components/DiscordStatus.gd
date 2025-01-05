@@ -2,7 +2,7 @@ extends Node
 class_name DiscordStatus
 
 func _ready():
-    DiscordRPC.app_id = ENV.DISCORD_APP_ID # Application ID
+    #DiscordRPC.app_id = ENV.DISCORD_APP_ID # Application ID
     DiscordRPC.details = init_state.details
     DiscordRPC.state = init_state.desc
     DiscordRPC.large_image = 'icon' # Image key from "Art Assets"

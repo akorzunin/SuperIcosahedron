@@ -1,15 +1,15 @@
 [gd_scene load_steps=19 format=3 uid="uid://c28nbcejwepp8"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
-[ext_resource type="Script" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
-[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader" id="2_3wk2e"]
-[ext_resource type="Script" path="res://src/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
-[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader" id="5_al5e2"]
-[ext_resource type="Script" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
-[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
-[ext_resource type="Shader" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
+[ext_resource type="Script" uid="uid://bumb7103wh6xa" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
+[ext_resource type="Shader" uid="uid://b50ioimfcmduu" path="res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader" id="2_3wk2e"]
+[ext_resource type="Script" uid="uid://niqphan04y10" path="res://src/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
+[ext_resource type="Shader" uid="uid://rxrr52t7h1h5" path="res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader" id="5_al5e2"]
+[ext_resource type="Script" uid="uid://wlr7fntalo8r" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
+[ext_resource type="Shader" uid="uid://q85ccblkosih" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
+[ext_resource type="Shader" uid="uid://coce5o37vi074" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
 [ext_resource type="Texture2D" uid="uid://bpr01fnnfusau" path="res://src/models/icosahedron/resources/edge_noise.res" id="6_ai0t7"]
-[ext_resource type="Script" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
+[ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
 [ext_resource type="Texture2D" uid="uid://cixi1rd0a28e4" path="res://assets/build/textures/texture-test-v1.png" id="8_h5ail"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
@@ -32,7 +32,7 @@ shader_parameter/bbb = 0.35
 [sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
 size = Vector3(1.66211, 1.56055, 1.42188)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4yeiy"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xynn0"]
 render_priority = 0
 shader = ExtResource("5_al5e2")
 shader_parameter/enable = true
@@ -43,7 +43,7 @@ shader_parameter/noise_pattern = ExtResource("6_ai0t7")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i83je"]
 render_priority = 2
-next_pass = SubResource("ShaderMaterial_4yeiy")
+next_pass = SubResource("ShaderMaterial_xynn0")
 shader = ExtResource("5_ucsrc1")
 shader_parameter/enable = true
 shader_parameter/outline_thickness = 0.05
@@ -52,7 +52,7 @@ shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
 shader_parameter/pulse_speed = 12.0
 shader_parameter/pulse_amplitude = 2.0
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fpwek"]
 render_priority = 1
 next_pass = SubResource("ShaderMaterial_i83je")
 shader = ExtResource("2_3wk2e")
@@ -71,7 +71,7 @@ shader_parameter/TEXTURE = ExtResource("8_h5ail")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
 render_priority = 0
-next_pass = SubResource("ShaderMaterial_c0lt3")
+next_pass = SubResource("ShaderMaterial_fpwek")
 shader = ExtResource("5_s1usq")
 shader_parameter/pulse_enabled = false
 shader_parameter/colorflow_enbled = false

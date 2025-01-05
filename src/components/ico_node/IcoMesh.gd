@@ -1,5 +1,5 @@
 extends MeshInstance3D
-class_name MeshIcosahedron
+class_name IcoMesh
 
 const ICOSAHEDRON_SHADER_V_1 = preload('res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
 const CUTPLANE_EFFECT_V_2 = preload("res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader")
@@ -24,41 +24,52 @@ var MATERIAL_002
     OUTLINE_V_1,
 ]
 
-@onready var icosahedron: Icosahedron = $".."
-@onready var collider: Collider = $'../Collider'
+@onready var ico_node: IcoNode = $".."
+@onready var colliders = $"../Colliders"
 
-var angle_good := false
-var is_alt := false
-var is_rotating := false
-var currnt_type : int
 var show_face_numbers := false
-var cutplane: Vector3
+#var angle_good := false
+#var is_alt := false
+#var is_rotating := false
+#var currnt_type : int
+#var cutplane: Vector3
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     if OS.has_feature('editor'):
         MATERIAL_002 = load('res://src/models/icosahedron/test/Material.face_index.tres')
-    currnt_type = icosahedron.shader_type
-    show_face_numbers = icosahedron.show_face_numbers
-    if currnt_type >= 0:
-        set_type(currnt_type)
-    else:
-        set_default_type()
-    if Utils.main_scene(self) in ['MainScene', 'LoopScene', 'MenuScene']:
-        # wierd trick to not get errors when scaling and rotating mesh when its mounted in runtime
-        transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
+    if colliders.get_child_count() < 1:
+        push_error("No colliders")
+        ico_node.queue_free()
+    set_edges(ico_node.edges.keys())
+    #currnt_type = icosahedron.shader_type
+    #show_face_numbers = icosahedron.show_face_numbers
+    #if currnt_type >= 0:
+        #set_type(currnt_type)
+    #else:
+        #set_default_type()
+    #if Utils.main_scene(self) in ['MainScene', 'LoopScene', 'MenuScene']:
+        ## wierd trick to not get errors when scaling and rotating mesh when its mounted in runtime
+        #transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
+
+func set_edges(edges: Array[Variant]):
+    for i in applied_shaders.size():
+        ShaderUtils.set_shader_param(self, "edges", edges, i)
+
 
 func set_controlled(state: bool):
-    ShaderUtils.set_shader_param(self, "enable", state, 2)
-    collider.set_collision_mask_value(1, state)
-    collider.set_collision_layer_value(1, state)
+    return
+    #ShaderUtils.set_shader_param(self, "enable", state, 2)
+    #collider.set_collision_mask_value(1, state)
+    #collider.set_collision_layer_value(1, state)
 
 func set_cutplane(v: Vector4):
-    cutplane = Vector3(v[0], v[1], v[2])
-    for i in applied_shaders.size():
-        ShaderUtils.set_shader_param(self, "cutplane", v, i)
-        ShaderUtils.set_shader_param(self, "noise_pattern", EDGE_NOISE, i)
-        ShaderUtils.set_shader_param(self, "TEXTURE", TEXTURE_TEST_V_1, i)
+    return
+    #cutplane = Vector3(v[0], v[1], v[2])
+    #for i in applied_shaders.size():
+        #ShaderUtils.set_shader_param(self, "cutplane", v, i)
+        #ShaderUtils.set_shader_param(self, "noise_pattern", EDGE_NOISE, i)
+        #ShaderUtils.set_shader_param(self, "TEXTURE", TEXTURE_TEST_V_1, i)
 
 func set_color(c: Vector3):
     for i in applied_shaders.size():

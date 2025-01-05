@@ -1,7 +1,9 @@
 extends Node3D
 
-const IcosahedronScene = preload('res://src/models/icosahedron/Icosahedron.tscn')
-var controlledNode
+#const IcosahedronScene = preload('res://src/models/icosahedron/Icosahedron.tscn')
+const ICO_NODE = preload("res://src/components/ico_node/IcoNode.tscn")
+
+var controlledNode: IcoMesh
 
 @onready var pattern_gen: PatternGen = $PatternGen
 
@@ -10,13 +12,22 @@ var controlledNode
 @export_category("variant settings")
 @export var show_face_numbers: bool = true
 #@export_range(0, 19) var variant_type: int = 0
-@export_enum("zero:0", "mid_left:17", "mid:18", "mid_right:19") var variant_type: int = 0
+@export_enum("zero:0", "mid_left:17", "mid:18", "mid_right:19") var variant_type: int = 19
 @export_enum("queue:0", "random:1", "custom:2",) var spawn_type: int = 0
 @export var use_default := false
+@export var cutplane_1: ShaderMaterial
+@export var outline_1: ShaderMaterial
+
+@export var aboba: Dictionary[String, ShaderMaterial]
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     get_next()
+    G.ico_node_spawn.connect(func(nt: int):
+        remove_current()
+        spawn_next(nt)
+    )
 
 func get_next():
     remove_current()
@@ -37,13 +48,26 @@ func remove_current():
 func spawn_next(_type: int):
     var new_figure
     if use_default:
-        new_figure = IcosahedronScene.instantiate()
+        new_figure = ICO_NODE.instantiate()
+
     else:
-        new_figure = IcosahedronScene.instantiate()\
-            .with_type(_type)\
+        new_figure = ICO_NODE.instantiate()\
+            .with_edges({17: {}, 19: {}})\
             .with_face_numbers(show_face_numbers)
     add_child(new_figure)
-    controlledNode = new_figure.mesh_icosahedron
+    controlledNode = new_figure.ico_mesh
+    cutplane_1 = controlledNode.material_override.next_pass
+    outline_1 = cutplane_1.next_pass
+    var count = 0
+    for k in controlledNode.applied_shaders_dict:
+        match count:
+            0: aboba[k] = controlledNode.material_override
+            1: aboba[k] = controlledNode.material_override.next_pass
+            2: aboba[k] = controlledNode.material_override.next_pass.next_pass
+            3: aboba[k] = controlledNode.material_override.next_pass.next_pass.next_pass
+            4: aboba[k] = controlledNode.material_override.next_pass.next_pass.next_pass.next_pass
+        count += 1
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

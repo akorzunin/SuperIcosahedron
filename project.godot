@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="SuperIcosahedron"
-run/main_scene="res://src/scenes/MainScene.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+run/main_scene="uid://blc02eaic3b1d"
+config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/image="res://icons/icon.png"
 boot_splash/fullsize=false
 config/icon="res://icons/icon.svg"
