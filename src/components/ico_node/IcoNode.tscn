@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://c8odqx320dk7x"]
+[gd_scene load_steps=15 format=3 uid="uid://c8odqx320dk7x"]
 
 [ext_resource type="Script" uid="uid://dldg0qkqhdfj5" path="res://src/components/ico_node/IcoNode.gd" id="1_4y4py"]
 [ext_resource type="Shader" uid="uid://rxrr52t7h1h5" path="res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader" id="2_ou1ir"]
@@ -9,7 +9,6 @@
 [ext_resource type="Shader" uid="uid://q85ccblkosih" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="7_s6nnl"]
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="8_vra54"]
 [ext_resource type="Script" uid="uid://bmh6ontm6r5ar" path="res://src/components/ico_node/IcoMesh.gd" id="9_4y4py"]
-[ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://src/models/icosahedron/components/Collider.gd" id="10_ou1ir"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4yeiy"]
 render_priority = 0
@@ -71,8 +70,6 @@ mesh = ExtResource("8_vra54")
 script = ExtResource("9_4y4py")
 
 [node name="Colliders" type="Area3D" parent="."]
-script = ExtResource("10_ou1ir")
-metadata/_custom_type_script = ExtResource("10_ou1ir")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Colliders"]
 shape = SubResource("ConvexPolygonShape3D_3x4nk")
