@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dw00md0g08l33"]
 
-[ext_resource type="Script" path="res://src/models/menu_item/components/MenuItem.gd" id="1_kwmcp"]
+[ext_resource type="Script" uid="uid://bs0q3kbui0eai" path="res://src/models/menu_item/components/MenuItem.gd" id="1_kwmcp"]
 [ext_resource type="FontFile" uid="uid://bbybk2vrrp4il" path="res://src/fonts/plastic-bag/Plastic Bag.otf" id="2_07kyu"]
-[ext_resource type="Script" path="res://src/models/menu_item/components/MenuCollider.gd" id="4_m8rgh"]
+[ext_resource type="Script" uid="uid://d1ld64c4qqd3k" path="res://src/models/menu_item/components/MenuCollider.gd" id="4_m8rgh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_s4lbh"]
 size = Vector3(3.57062, 1, 1)

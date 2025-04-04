@@ -1,11 +1,11 @@
 [gd_scene load_steps=11 format=3 uid="uid://cd21bp42ng8gy"]
 
-[ext_resource type="Script" path="res://src/models/icosahedron/test/variant_test.gd" id="1_4av47"]
-[ext_resource type="Shader" path="res://src/shaders/LoopSceneSky.gdshader" id="2_78ays"]
-[ext_resource type="Shader" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="3_ty025"]
+[ext_resource type="Script" uid="uid://by3f1h75gdfva" path="res://src/models/icosahedron/test/variant_test.gd" id="1_4av47"]
+[ext_resource type="Shader" uid="uid://m5sywmm0umxn" path="res://src/shaders/LoopSceneSky.gdshader" id="2_78ays"]
+[ext_resource type="Shader" uid="uid://ckf53ww7vhw1l" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="3_ty025"]
 [ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/build/skybox/icosahedron_Solid_Sky.res" id="4_ayq7c"]
-[ext_resource type="Script" path="res://src/components/sky/SkyIcosahedron.gd" id="5_pg1rd"]
-[ext_resource type="Script" path="res://src/components/level_system/PatternGen.gd" id="6_d5fsa"]
+[ext_resource type="Script" uid="uid://dfdmdsycrkygl" path="res://src/components/sky/SkyIcosahedron.gd" id="5_pg1rd"]
+[ext_resource type="Script" uid="uid://ch0bxsxh2a1gg" path="res://src/components/level_system/PatternGen.gd" id="6_d5fsa"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tb2j1"]
 shader = ExtResource("2_78ays")

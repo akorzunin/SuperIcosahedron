@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://derbnrboktp1g"]
 
-[ext_resource type="Script" path="res://src/components/gui/DebugStatsContainer.gd" id="1_tmt6o"]
+[ext_resource type="Script" uid="uid://b7q1qvpot7v2a" path="res://src/components/gui/DebugStatsContainer.gd" id="1_tmt6o"]
 [ext_resource type="Theme" uid="uid://vqotqlxb6434" path="res://src/themes/BaseTheme.tres" id="2_lqb0r"]
-[ext_resource type="Script" path="res://src/components/gui/DebugStatLabel.gd" id="3_ows3h"]
+[ext_resource type="Script" uid="uid://ck5rimm3uleas" path="res://src/components/gui/DebugStatLabel.gd" id="3_ows3h"]
 
 [node name="DebugStatsContainer" type="PanelContainer"]
 visibility_layer = 524289

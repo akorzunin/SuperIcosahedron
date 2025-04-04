@@ -26,13 +26,9 @@ void vertex() {
 }
 
 // TODO: move to inc file
-vec4 color_burn(vec4 base, vec4 blend){
-    return 1.0 - (1.0 - base) / blend;
-}
+vec4 color_burn(vec4 base, vec4 blend) { return 1.0 - (1.0 - base) / blend; }
 
-vec4 darken(vec4 base, vec4 blend){
-    return min(base, blend);
-}
+vec4 darken(vec4 base, vec4 blend) { return min(base, blend); }
 
 void fragment() {
     if (enable) {

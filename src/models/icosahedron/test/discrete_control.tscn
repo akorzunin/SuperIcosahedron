@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://dbqvjbi46cra0"]
 
-[ext_resource type="Script" path="res://src/models/icosahedron/test/discrete_control.gd" id="1_88ga4"]
+[ext_resource type="Script" uid="uid://b5t4stjjtyi74" path="res://src/models/icosahedron/test/discrete_control.gd" id="1_88ga4"]
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="2_e5ob3"]
 [ext_resource type="Texture2D" uid="uid://dplxjdemisp4h" path="res://src/models/icosahedron/test/UV_face_index.png" id="2_nfb2f"]
 
@@ -52,16 +52,16 @@ resource_name = "Material.002"
 render_priority = 0
 shader = SubResource("Shader_e0i2m")
 shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/texture_albedo = ExtResource("2_nfb2f")
 shader_parameter/point_size = 1.0
 shader_parameter/roughness = 0.5
-shader_parameter/metallic_texture_channel = null
+shader_parameter/metallic_texture_channel = Vector4(0, 0, 0, 0)
 shader_parameter/specular = 0.5
 shader_parameter/metallic = 0.0
 shader_parameter/uv1_scale = Vector3(1, 1, 1)
 shader_parameter/uv1_offset = Vector3(0, 0, 0)
 shader_parameter/uv2_scale = Vector3(1, 1, 1)
 shader_parameter/uv2_offset = Vector3(0, 0, 0)
-shader_parameter/texture_albedo = ExtResource("2_nfb2f")
 
 [node name="DiscreteControl" type="Node3D"]
 rotation_edit_mode = 1

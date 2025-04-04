@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://b00khg3mstn6t"]
 
-[ext_resource type="Script" path="res://src/components/gui/FpsLabel.gd" id="1_a8hv7"]
+[ext_resource type="Script" uid="uid://cmdxk6dlabsxx" path="res://src/components/gui/FpsLabel.gd" id="1_a8hv7"]
 
 [sub_resource type="Gradient" id="Gradient_ehij4"]
 offsets = PackedFloat32Array(0, 0.333, 0.667, 1)

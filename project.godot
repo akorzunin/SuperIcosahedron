@@ -12,9 +12,9 @@ config_version=5
 
 config/name="SuperIcosahedron"
 run/main_scene="res://src/scenes/MainScene.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
-boot_splash/image="res://icons/icon.png"
+config/features=PackedStringArray("4.4", "Forward Plus")
 boot_splash/fullsize=false
+boot_splash/image="res://icons/icon.png"
 config/icon="res://icons/icon.svg"
 config/windows_native_icon="res://icons/icon.ico"
 

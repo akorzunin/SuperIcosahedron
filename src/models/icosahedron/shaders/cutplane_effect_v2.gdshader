@@ -51,9 +51,10 @@ vec2 vortex(vec2 uv, vec2 _center, float _strength, float _speed) {
     float t = sin(TIME);
     vec2 dir = uv - _center;
     float dist = length(dir);
-    //float angle = atan(dir.y * (1. - abs(sin(TIME))), dir.x * abs(sin(TIME)));
+    // float angle = atan(dir.y * (1. - abs(sin(TIME))), dir.x *
+    // abs(sin(TIME)));
     float angle = atan(dir.y, dir.x) * 0.4;
-    //if (angle)
+    // if (angle)
     float radius = dist * _strength;
     float new_angle = angle + TIME * _speed;
 
@@ -75,17 +76,17 @@ void fragment() {
 
     vec4 tex = texture(cutlane_tex, new_uv);
 
-//
-    //uv *= 2.0;
-    //uv -= vec2(1.0);
-//
-    //float len = length(uv);
-//
-    //vec2 modified_uv = rotate(UV, uv_rot, TIME * time_speed);
-    //float t = sin(TIME);
-    //modified_uv.x += uv_offset_x;
-    //modified_uv.y += uv_offset_y;
-    //vec4 aaa = texture(cutlane_tex, modified_uv * 5.);
+    //
+    // uv *= 2.0;
+    // uv -= vec2(1.0);
+    //
+    // float len = length(uv);
+    //
+    // vec2 modified_uv = rotate(UV, uv_rot, TIME * time_speed);
+    // float t = sin(TIME);
+    // modified_uv.x += uv_offset_x;
+    // modified_uv.y += uv_offset_y;
+    // vec4 aaa = texture(cutlane_tex, modified_uv * 5.);
     if (enable) {
         float dist = cutplane_dist(cutplane, ver);
         bool a = dist > 0.;
@@ -100,8 +101,8 @@ void fragment() {
         // vec2 rotated_uv = rotate(UV, vec2(0.5), TIME);
         // ALBEDO = vec3(rotated_uv.g);
         ALBEDO = color * (1. - vec3(tex.a));
-        //ALBEDO = vec3(tex.a);
-        //ALPHA = a ? 0.7 : 0.;
+        // ALBEDO = vec3(tex.a);
+        // ALPHA = a ? 0.7 : 0.;
 
     } else {
         ALPHA = .0;

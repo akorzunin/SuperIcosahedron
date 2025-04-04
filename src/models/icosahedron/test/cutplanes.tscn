@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=4 uid="uid://dr612yxxuqkob"]
 
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_26764"]
-[ext_resource type="Script" path="res://src/models/icosahedron/test/cutplanes.gd" id="1_gtl60"]
-[ext_resource type="Script" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="2_32806"]
+[ext_resource type="Script" uid="uid://d34rngu45jti5" path="res://src/models/icosahedron/test/cutplanes.gd" id="1_gtl60"]
+[ext_resource type="Script" uid="uid://dsnfv57r65h60" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="2_32806"]
 [ext_resource type="Material" uid="uid://b6aokpwbpsi2l" path="res://src/models/icosahedron/test/Material.face_index.tres" id="2_tiql4"]
-[ext_resource type="Script" path="res://src/models/icosahedron/test/PointerSphere.gd" id="4_a7juu"]
+[ext_resource type="Script" uid="uid://t5j8k7i2eohv" path="res://src/models/icosahedron/test/PointerSphere.gd" id="4_a7juu"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_f5xtf"]
 resource_name = "icosahedron_Solid"

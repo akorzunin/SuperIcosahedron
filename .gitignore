@@ -8,7 +8,8 @@ assets/*
 env.*
 
 .godot/*
-!/.godot/uid_cache.bin
+# fixed in gd 4.4
+# !/.godot/uid_cache.bin
 
 # Godot-specific ignores
 .import/
