@@ -61,13 +61,23 @@ tasks:
   dev-build-web:
     platforms: [linux]
     desc: build project for web
-    interactive: true
     deps:
       - check
       - build-check
+      - disable-discord-rpc
     cmds:
       - defer: { task: build-cleanup }
+      - defer: { task: enable-discord-rpc }
       - task: gd-dev-build-web
+
+  preview-web-build:
+    desc: preview web build from ./build/web in browser
+    dir: ./build/web
+    cmds:
+      - >-
+        {{if eq OS "windows"}} powershell {{end}}
+        start http://localhost:8000
+      - caddy file-server --listen 0.0.0.0:8000 --browse
 
   gd-dev-build-windows:
     internal: true
@@ -84,6 +94,7 @@ tasks:
     deps:
       - check
       - build-check
+      - enable-discord-rpc
     cmds:
       - defer: { task: build-cleanup }
       - task: gd-dev-build-windows
@@ -104,6 +115,7 @@ tasks:
     deps:
       - check
       - build-check
+      - enable-discord-rpc
     cmds:
       - defer: { task: build-cleanup }
       - task: gd-dev-build-linux
@@ -124,18 +136,33 @@ tasks:
     deps:
       - check
       - build-check
+      - disable-discord-rpc
     cmds:
       - defer: { task: build-cleanup }
+      - defer: { task: enable-discord-rpc }
       - task: gd-dev-build-android
 
-  build-parallel:
+  gd-dev-build-with-discord-rpc:
+    internal: true
+    deps:
+      - gd-dev-build-windows
+      - gd-dev-build-linux
+    cmd: echo windows and linux Build for app {{.APP_NAME}} completed
+
+  gd-dev-build-no-discord-rpc:
     internal: true
     deps:
       - gd-dev-build-web
-      - gd-dev-build-windows
-      - gd-dev-build-linux
       - gd-dev-build-android
+    cmd: echo web  and android Build for app {{.APP_NAME}} completed
+
+  build-parallel:
+    internal: true
     cmds:
+      - task: enable-discord-rpc
+      - task: gd-dev-build-with-discord-rpc
+      - task: disable-discord-rpc
+      - task: gd-dev-build-no-discord-rpc
       - echo Build for app {{.APP_NAME}} completed
 
   dev-build-all:
@@ -237,3 +264,13 @@ tasks:
     desc: ...
     cmds:
       - python ./scripts/generate_version.py
+
+  enable-discord-rpc:
+    desc: enable discord-rpc-gd addon
+    cmd: >-
+      git apply ./scripts/no-discord-rpc-project.godot.diff --reverse || true
+
+  disable-discord-rpc:
+    desc: disable discord-rpc-gd addon
+    cmd: >-
+      git apply ./scripts/no-discord-rpc-project.godot.diff || true

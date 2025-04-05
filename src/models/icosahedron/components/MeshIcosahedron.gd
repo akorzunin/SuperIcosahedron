@@ -7,7 +7,10 @@ const OUTLINE_V_1 = preload('res://src/models/icosahedron/shaders/outline_v1.gds
 const EDGE_HIGHLIGHT_V_1 = preload('res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader')
 
 const EDGE_NOISE = preload('res://src/models/icosahedron/resources/edge_noise.res')
-const TEXTURE_TEST_V_1 = preload('res://assets/build/textures/texture-test-v1.png')
+#doesnt work in web build
+#const TEXTURE_TEST_V_1 = preload('res://assets/build/textures/texture-test-v1.png')
+#still dont works in web build but w/ a lot less errors
+const NEW_COMPRESSED_TEXTURE_2D = preload('res://src/models/icosahedron/resources/new_compressed_texture_2d.tres')
 
 var MATERIAL_002
 
@@ -57,7 +60,7 @@ func set_cutplane(v: Vector4):
     for i in applied_shaders.size():
         ShaderUtils.set_shader_param(self, "cutplane", v, i)
         ShaderUtils.set_shader_param(self, "noise_pattern", EDGE_NOISE, i)
-        ShaderUtils.set_shader_param(self, "TEXTURE", TEXTURE_TEST_V_1, i)
+        ShaderUtils.set_shader_param(self, "TEXTURE", NEW_COMPRESSED_TEXTURE_2D, i)
 
 func set_color(c: Vector3):
     for i in applied_shaders.size():
