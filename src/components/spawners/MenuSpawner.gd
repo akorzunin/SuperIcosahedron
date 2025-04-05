@@ -1,7 +1,7 @@
 extends Node3D
 class_name MenuSpawner
 
-@onready var discord_status: DiscordStatus =  $"/root/MainScene/DiscordStatus"
+@onready var discord_status: DummyDiscordStatus = $"/root/MainScene/DiscordStatus"
 
 @onready var anchor: Marker3D = %Anchor
 @onready var menu_scene: MenuSpawner = $'.'

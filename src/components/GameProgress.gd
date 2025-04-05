@@ -1,7 +1,7 @@
 extends Node
 class_name GameProgress
 
-@onready var discord_status: DiscordStatus =  $"/root/MainScene/DiscordStatus"
+@onready var discord_status: DummyDiscordStatus = $"/root/MainScene/DiscordStatus"
 
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var loop_timer: LoopTimer = %LoopTimer

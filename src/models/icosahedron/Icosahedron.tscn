@@ -10,7 +10,7 @@
 [ext_resource type="Shader" uid="uid://5fjhuosvxbf" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
 [ext_resource type="Texture2D" uid="uid://bpr01fnnfusau" path="res://src/models/icosahedron/resources/edge_noise.res" id="6_ai0t7"]
 [ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
-[ext_resource type="Texture2D" uid="uid://cixi1rd0a28e4" path="res://assets/build/textures/texture-test-v1.png" id="8_h5ail"]
+[ext_resource type="Texture2D" uid="uid://04mt0kux8ref" path="res://src/models/icosahedron/resources/new_compressed_texture_2d.tres" id="8_xynn0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
 render_priority = 0
@@ -67,7 +67,7 @@ shader_parameter/_repeat = 6.0
 shader_parameter/_speed = 0.35
 shader_parameter/aaa = 0.81
 shader_parameter/bbb = 0.905
-shader_parameter/TEXTURE = ExtResource("8_h5ail")
+shader_parameter/TEXTURE = ExtResource("8_xynn0")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
 render_priority = 0

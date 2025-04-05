@@ -5,9 +5,16 @@ const MENU_SCENE = preload('res://src/scenes/MenuScene.tscn')
 
 @export var start_fullscreen := false
 var current_scene
-
+var discord_status: DummyDiscordStatus
 # Called when the node enters the scene tree for the first time.
 func _ready():
+    if OS.has_feature('web') or OS.has_feature('mobile'):
+        discord_status = DummyDiscordStatus.new()
+    else:
+        var DiscordStatus = load('res://src/components/DiscordStatus.gd')
+        discord_status = DiscordStatus.new()
+    discord_status.name = 'DiscordStatus'
+    add_child(discord_status)
     change_scene('MenuScene')
 
 

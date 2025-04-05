@@ -1,4 +1,4 @@
-extends Node
+extends DummyDiscordStatus
 class_name DiscordStatus
 
 func _ready():
