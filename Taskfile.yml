@@ -159,6 +159,7 @@ tasks:
   build-parallel:
     internal: true
     cmds:
+      - defer: { task: enable-discord-rpc }
       - task: enable-discord-rpc
       - task: gd-dev-build-with-discord-rpc
       - task: disable-discord-rpc
