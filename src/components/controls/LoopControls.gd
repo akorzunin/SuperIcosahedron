@@ -36,6 +36,8 @@ func update_controlled_node():
             unchecked_mesh = figure.mesh_icosahedron
             break
     if unchecked_mesh and controlledNode != unchecked_mesh:
+        if game_state_manager.game_state != GameStateManager.GameState.GAME_END:
+            sfx_player.on_node_passed.emit()
         set_controlled_node(unchecked_mesh)
 
 func pass_next_node(node: Collider):
@@ -96,10 +98,10 @@ func handle_game_over_input(event: InputEvent, is_inverted: bool):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+    if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
+        return
     if not controlledNode:
         update_controlled_node()
-        return
-    if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         return
     var is_inverted = G.settings.IS_CONTROL_INVERTED
     if G.settings.CONTROL_TYPE == "FACE_LOCK":

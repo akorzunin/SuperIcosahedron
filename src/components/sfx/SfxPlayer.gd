@@ -12,6 +12,9 @@ signal on_section_select
 @onready var action_select: AudioStreamPlayer = $ActionSelect
 signal on_action_select
 
+@onready var node_passed: AudioStreamPlayer = $NodePassed
+signal on_node_passed
+
 signal toggle_sfx(state: bool)
 signal toggle_music(state: bool)
 
@@ -25,6 +28,7 @@ func _ready() -> void:
     on_section_chaged.connect(_play_section_chaged)
     on_section_select.connect(_play_section_select)
     on_action_select.connect(_play_action_select)
+    on_node_passed.connect(_play_node_passed)
     toggle_sfx.connect(_on_toggle_sfx)
     toggle_music.connect(_on_toggle_music)
     if not G.settings.MUSIC_ENABLED:
@@ -55,6 +59,11 @@ func _play_section_select():
 func _play_action_select():
     action_select.play()
 
+func _play_node_passed():
+    if node_passed.playing:
+        node_passed.stop()
+    node_passed.play()
+
 var js_audio_callback: JavaScriptObject
 
 func create_mute_callbac() -> void:
@@ -83,6 +92,6 @@ func _set_audio_state(data: Array) -> void:
         print('set state: ', state)
         _on_toggle_music(state)
         _on_toggle_sfx(state)
-    if  args.get("volume") != null:
+    if args.get("volume") != null:
         volume = args.get("volume")
         print('set volume: ', volume)

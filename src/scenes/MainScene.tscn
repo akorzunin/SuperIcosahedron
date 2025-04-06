@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bl2xm774sjmm6"]
+[gd_scene load_steps=11 format=3 uid="uid://bl2xm774sjmm6"]
 
 [ext_resource type="Script" uid="uid://c2vxxyif2t6by" path="res://src/scenes/init/MainScene.gd" id="1_7yre0"]
 [ext_resource type="Script" uid="uid://b4kg63fjgn3rl" path="res://src/components/GameSettings.gd" id="2_mjoy8"]
@@ -9,6 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://d238csgqeoqiu" path="res://assets/build/ost/section_select.wav" id="7_66dvc"]
 [ext_resource type="AudioStream" uid="uid://dkhl2sdncv4gg" path="res://assets/build/ost/action_select.wav" id="8_kispc"]
 [ext_resource type="AudioStream" uid="uid://dfrpg15jmgpg4" path="res://assets/build/ost/main_menu_theme.wav" id="9_3482d"]
+[ext_resource type="AudioStream" uid="uid://csjbiucesnwxb" path="res://assets/build/ost/node_pass.wav" id="10_oebtq"]
 
 [node name="MainScene" type="Node"]
 script = ExtResource("1_7yre0")
@@ -48,3 +49,7 @@ bus = &"sfx"
 stream = ExtResource("9_3482d")
 autoplay = true
 bus = &"Music"
+
+[node name="NodePassed" type="AudioStreamPlayer" parent="SfxPlayer"]
+stream = ExtResource("10_oebtq")
+bus = &"sfx"
