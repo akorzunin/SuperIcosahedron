@@ -11,8 +11,7 @@ func _ready():
     if OS.has_feature('web') or OS.has_feature('mobile'):
         discord_status = DummyDiscordStatus.new()
     else:
-        var DiscordStatus = load('res://src/components/DiscordStatus.gd')
-        discord_status = DiscordStatus.new()
+        discord_status = load('res://src/components/DiscordStatus.gd').new()
     discord_status.name = 'DiscordStatus'
     add_child(discord_status)
     change_scene('MenuScene')
