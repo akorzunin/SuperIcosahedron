@@ -6,7 +6,7 @@ export const MenuButtons = () => {
   return (
     <>
       <Button asChild>
-        <a href="/download/">
+        <a href="/download/?sort=name&order=desc">
           <FaDownload />
           &nbsp;Download
         </a>

@@ -90,7 +90,7 @@ export const GodotFrame = () => {
     <div className="flex justify-center px-6 pt-6">
       <div className="relative aspect-video w-[90vw] lg:w-[800px]">
         {!showIframe && (
-          <div className="absolute inset-0 flex items-center justify-center bg-muted bg-opacity-75">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted bg-opacity-75 dark:bg-muted-foreground/10">
             <Button onClick={() => setShowIframe(true)}>
               <FaPlay />
               &nbsp;Run
@@ -126,7 +126,7 @@ export const GodotFrame = () => {
             </Button>
           </>
         )}
-        <p className="absolute bottom-0 right-2 text-primary-foreground outline-1">
+        <p className="absolute bottom-0 right-2 text-primary-foreground outline-1 dark:text-primary">
           build: {gameVersionData?.version} commit: {gameVersionData?.commit}
         </p>
       </div>

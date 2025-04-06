@@ -252,7 +252,7 @@ tasks:
       - pnpm run dev
 
   debug-web:
-    desc: run dev server and local reverse proxy for web
+    desc: run dev server and local reverse proxy for web at https://supericosahedron.localhost/
     deps:
       - caddy
       - web-dev-server
