@@ -10,10 +10,15 @@ vars:
       {{if eq OS "linux"}}
         echo "SuperIcosahedron-$(./scripts/get_version.sh --short)-$(./scripts/get_version.sh --tag)"
       {{ end }}
+  BUILD_TAG:
+    sh: >-
+      {{if eq OS "linux"}}
+        echo "$(./scripts/get_version.sh --tag)-$(./scripts/get_version.sh --short)"
+      {{ end }}
   BUILD_DIR:
     sh: >-
       {{if eq OS "linux"}}
-        echo "./build/$(./scripts/get_version.sh --tag)-$(./scripts/get_version.sh --short)"
+        echo "./build/{{ .BUILD_TAG }}"
       {{ end }}
 
 tasks:
@@ -49,14 +54,18 @@ tasks:
     cmds:
       - pre-commit run --all-files --color always
     sources:
-      - ./*
+      - ./src/*
+      - ./assets/*
+      - ./web/*
 
   gd-dev-build-web:
     internal: true
     cmds:
       - rm -f ./build/web/* || true
-      - mkdir -p ./build/web
-      - godot --headless --export-debug "Web" ./build/web/index.html
+      - rm -rf {{ .BUILD_DIR }}/web || true
+      - mkdir -p {{ .BUILD_DIR }}/web
+      - godot --headless --export-debug "Web" {{ .BUILD_DIR }}/web/index.html
+      - cp -r {{ .BUILD_DIR }}/web ./build/
 
   dev-build-web:
     platforms: [linux]
@@ -185,6 +194,7 @@ tasks:
         ansible-playbook
         ./deploy/dev/deploy_local.yaml -l local_pi,
         --verbose --vault-password-file ~/.ansible_vault_password
+        --e "BUILD_TAG={{ .BUILD_TAG }}"
 
   deploy-dev:
     platforms: [linux]

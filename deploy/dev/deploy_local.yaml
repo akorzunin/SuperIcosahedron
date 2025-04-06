@@ -12,16 +12,22 @@
 
     - name: Copy files to service directory
       ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: "{{ project_dir }}/"
+        src: "{{ item.src }}"
+        dest: "{{ project_dir }}/{{ item.dest }}"
         mode: "0755"
-        backup: false
-        remote_src: false
       loop:
-        - Caddyfile
-        - compose.yaml
-        - ./../../build
-        - ./../../web/caddy_template/template.html
+        - src: Caddyfile
+          dest: Caddyfile
+        - src: compose.yaml
+          dest: compose.yaml
+        - src: "./../../build/{{ BUILD_TAG }}"
+          dest: build
+        - src: ./../../build/web
+          dest: build
+        - src: ./../../build/latest_version.json
+          dest: ./build/latest_version.json
+        - src: ./../../web/caddy_template/template.html
+          dest: temlate.html
 
     - name: Deploy file server
       ansible.builtin.command:
