@@ -2,6 +2,7 @@ extends MeshInstance3D
 class_name MeshIcosahedron
 
 const ICOSAHEDRON_SHADER_V_1 = preload('res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader')
+const ICOSAHEDRON_SHADER_V_2_DEFAULT = preload('res://src/models/icosahedron/shaders/icosahedron_shader_v2_default.gdshader')
 const CUTPLANE_EFFECT_V_2 = preload("res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader")
 const OUTLINE_V_1 = preload('res://src/models/icosahedron/shaders/outline_v1.gdshader')
 const EDGE_HIGHLIGHT_V_1 = preload('res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader')
@@ -22,8 +23,8 @@ var MATERIAL_002
 ]
 
 @export var default_shaders := [
-    ICOSAHEDRON_SHADER_V_1,
-    OUTLINE_V_1,
+    ICOSAHEDRON_SHADER_V_2_DEFAULT,
+    #OUTLINE_V_1,
 ]
 
 @onready var icosahedron: Icosahedron = $".."
@@ -52,23 +53,30 @@ func _ready() -> void:
 
 func set_controlled(state: bool):
     ShaderUtils.set_shader_param(self, "enable", state, 2)
+    ShaderUtils.set_shader_param(self, "enable", state, 3)
     collider.set_collision_mask_value(1, state)
     collider.set_collision_layer_value(1, state)
 
-func set_cutplane(v: Vector4):
+func set_shader_params(v: Vector4, t: Dictionary):
     cutplane = Vector3(v[0], v[1], v[2])
     for i in applied_shaders.size():
         ShaderUtils.set_shader_param(self, "cutplane", v, i)
         ShaderUtils.set_shader_param(self, "noise_pattern", EDGE_NOISE, i)
+        ShaderUtils.set_shader_param(self, "PULSE_TEXTURE", EDGE_NOISE, i)
         ShaderUtils.set_shader_param(self, "TEXTURE", NEW_COMPRESSED_TEXTURE_2D, i)
+        ShaderUtils.set_shader_param(self, "center", t.center, i)
+        ShaderUtils.set_shader_param(self, "_center", t.center, i)
+        ShaderUtils.set_shader_param(self, "accent_color", t.accent_color.duplicate(), i)
+        ShaderUtils.set_shader_param(self, "glow_color", t.glow_color.duplicate(), i)
 
 func set_color(c: Vector3):
     for i in applied_shaders.size():
         ShaderUtils.set_shader_param(self, "color", c, i)
 
 func set_type(type: int):
-    var variant: Vector4 = IcosahedronVarints.figure_variants_v2.get(type, Vector4())
-    var variant_color: Array = TwTheme.figure_variants_v2.get(type, [])
+    var t: Dictionary = IcosahedronVarints.figure_variants_v3.get(type, {})
+    var variant: Vector4 = t.cutplane if t else Vector4()
+    var variant_color: Array = t.color if t else []
     if not variant or not variant_color:
         push_warning("type ", type, " not found")
         set_default_type()
@@ -76,7 +84,7 @@ func set_type(type: int):
     ShaderUtils.apply_shaders(applied_shaders, self)
     if show_face_numbers:
         self.material_overlay = MATERIAL_002
-    set_cutplane(variant)
+    set_shader_params(variant, t)
     set_color(Op.v3(variant_color))
 
 func set_default_type():

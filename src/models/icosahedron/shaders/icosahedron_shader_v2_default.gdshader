@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_front;
+render_mode cull_back;
 
 #include "res://src/shaders/shader_utils.gdshaderinc"
 

@@ -77,7 +77,8 @@ void fragment() {
         // albedo_out = min(currentColor.rgb + vec3(0, b, 0.));
         albedo_out = min(color, overlay_color).rgb;
         // albedo_out = vec4(b).rgb;
-        ALBEDO = a ? albedo_out : color.rgb;
+        //ALBEDO = a ? albedo_out : color.rgb;
+        ALBEDO = albedo_out;
         ALPHA = a ? currentColor.a : 0.0;
         // ALBEDO = color.rgb;
         // ALPHA = currentColor.a;
