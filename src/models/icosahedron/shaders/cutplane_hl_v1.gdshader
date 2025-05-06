@@ -35,9 +35,9 @@ void fragment() {
 
     // Precise distance calculation in fragment shader
     float actual_dist = -cutplane_dist(cutplane, ver);
-    if (actual_dist < 0.0) {
-        discard;
-    }
+    //if (actual_dist > 0.0) {
+        //discard;
+    //}
     float distance_from_edge = actual_dist;
 
     // Calculate wave position
@@ -60,7 +60,9 @@ void fragment() {
 
     // Set final color
     ALBEDO = color;
+    ALBEDO = vec3(0.);
     EMISSION = emission;
+    //ALPHA = .0;
 }
 
 
