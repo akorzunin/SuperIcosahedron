@@ -17,6 +17,7 @@ uniform float wave_width : hint_range(0, 1) = 0.1;
 uniform float fade_factor : hint_range(0, 5) = 1.0;
 uniform float rim_width : hint_range(0, 0.2) = 0.05;
 uniform float pulse_width : hint_range(0, 10.) = 0.5;
+uniform int num_pulses : hint_range(1, 10) = 3;
 
 varying vec3 ver;
 varying float dist;
@@ -44,19 +45,21 @@ void fragment() {
     float pulse_progress = mod(TIME * speed, 1.0);
     float pulse_position = pulse_progress * cutplane.w;
 
-    // Wave pulse effect
-    float delta = distance_from_edge - pulse_position;
-    float pulse = exp(-pow(abs(delta), pulse_width + 1.) / (wave_width * wave_width));
-    pulse *= exp(-distance_from_edge * fade_factor);
+    // Initialize total pulse effect
+    float total_pulse = 0.0;
 
+    // Calculate multiple pulses
+    for(int i = 0; i < num_pulses; i++) {
+        float offset = float(i) / float(num_pulses);
+        float current_pulse = exp(-pow(abs(distance_from_edge + (pulse_progress - offset) * cutplane.w), pulse_width + 1.) / (wave_width * wave_width));
+        total_pulse += current_pulse;
+    }
 
-    float another_pulse = exp(-pow(abs(distance_from_edge + (pulse_progress - .5) * cutplane.w), pulse_width + 1.) / (wave_width * wave_width));
-    pulse += another_pulse;
     // Rim highlight at the edge
     float rim = 1.0 - smoothstep(0.0, rim_width, distance_from_edge);
 
     // Combine effects
-    vec3 emission = (pulse + rim) * glow_color.rgb * glow_color.a;
+    vec3 emission = (total_pulse + rim) * glow_color.rgb * glow_color.a;
 
     // Set final color
     ALBEDO = color;

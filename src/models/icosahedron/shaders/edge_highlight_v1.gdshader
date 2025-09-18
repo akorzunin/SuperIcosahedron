@@ -62,39 +62,31 @@ uniform float hl1_wave_width : hint_range(0, 1) = 0.1;
 uniform float hl1_fade_factor : hint_range(0, 5) = 1.0;
 uniform float hl1_rim_width : hint_range(0, 0.2) = 0.05;
 uniform float hl1_pulse_width : hint_range(0, 10.) = 0.5;
-
+uniform int hl1_num_pulses : hint_range(1, 10) = 3;
+uniform float hl1_max_progress : hint_range(0, 10) = 1.0;
  void fragment() {
 
 // HL1
-
-    // Precise distance calculation in fragment shader
-    float actual_dist = -cutplane_dist(cutplane, ver);
-    //if (actual_dist > 0.0) {
-        //discard;
-    //}
-    float distance_from_edge = actual_dist;
+    float distance_from_edge = -dist;
 
     // Calculate wave position
-    float pulse_progress = mod(TIME * hl1_speed, 1.0);
-    float pulse_position = pulse_progress * cutplane.w;
+    float pulse_progress = clamp(fract(TIME * hl1_speed), 0.0, 1.0);
 
     // Wave pulse effect
-    float delta = distance_from_edge - pulse_position;
-    float pulse = exp(-pow(abs(delta), hl1_pulse_width + 1.) / (hl1_wave_width * hl1_wave_width));
+    float pulse = exp(1. / (hl1_wave_width * hl1_wave_width));
     pulse *= exp(-distance_from_edge * hl1_fade_factor);
 
- 
-    float another_pulse = exp(-pow(abs(distance_from_edge + (pulse_progress - .5) * cutplane.w), 
-        pulse_width + 1.) / (hl1_wave_width * hl1_wave_width));
-    pulse += another_pulse;
+    // Initialize total pulse effect
+    float total_pulse = 0.0;
     // Rim highlight at the edge
     float rim = 1.0 - smoothstep(0.0, hl1_rim_width, distance_from_edge);
-
+    for(int i = 0; i < hl1_num_pulses; i++) {
+        float offset = float(i) / float(hl1_num_pulses);
+        float current_pulse = exp(-pow(abs(distance_from_edge + (pulse_progress - offset) * cutplane.w), hl1_pulse_width + 1.) / (hl1_wave_width * hl1_wave_width));
+        total_pulse += current_pulse;
+    }
     // Combine effects
-    vec3 hl1_emission = (pulse + rim) * glow_color.rgb * glow_color.a;
-
-
-
+    vec3 hl1_emission = (total_pulse + rim) * glow_color.rgb * glow_color.a;
 
      vec2 uv = UV;
 
@@ -137,11 +129,12 @@ uniform float hl1_pulse_width : hint_range(0, 10.) = 0.5;
         //intensity *= mix(0.0, 1.2, noise);
 
         // Create final emission effect
-        EMISSION += glow_color.rgb * intensity * smoothstep(0.1, 0.5, intensity);
-        EMISSION += hl1_emission;
+        // EMISSION = max(EMISSION, glow_color.rgb * intensity * smoothstep(0.1, 0.5, intensity));
+        EMISSION = max(EMISSION, hl1_emission);
         // Optional: Add surface glow
         cc = mix(color, glow_color.rgb, intensity * 0.5);
-        ALBEDO = cc;
+        // ALBEDO = cc;
+        ALBEDO = color;
         ALPHA = a ? 0. : 1.;
      } else {
          ALPHA = 0.;

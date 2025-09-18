@@ -50,13 +50,15 @@ shader_parameter/A = 1.0
 shader_parameter/F = 1.0
 shader_parameter/pulse_speed = 1.0
 shader_parameter/max_distance = 3.0
-shader_parameter/pulse_width = 1.045
-shader_parameter/falloff = 1.63
-shader_parameter/hl1_speed = 1.0
-shader_parameter/hl1_wave_width = 0.1
-shader_parameter/hl1_fade_factor = 1.0
-shader_parameter/hl1_rim_width = 0.05
+shader_parameter/pulse_width = 1.0
+shader_parameter/falloff = 1.4
+shader_parameter/hl1_speed = 2.862
+shader_parameter/hl1_wave_width = 0.055
+shader_parameter/hl1_fade_factor = 0.445
+shader_parameter/hl1_rim_width = 0.07
 shader_parameter/hl1_pulse_width = 0.5
+shader_parameter/hl1_num_pulses = 3
+shader_parameter/hl1_max_progress = 5.552
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i83je"]
 render_priority = 2
