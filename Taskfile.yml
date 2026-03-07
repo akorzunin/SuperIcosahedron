@@ -259,17 +259,37 @@ tasks:
     cmds:
       - echo "debug session ended"
 
+  setup-rclone:*:*:
+    desc: setup rclone
+    vars:
+      USERMAIL: "{{index .MATCH 0}}"
+      PASSWORD: "{{index .MATCH 1}}"
+    cmds:
+      - rclone config create ico-sync mega user={{.USERMAIL}} pass={{.PASSWORD}} --non-interactive
+      - task: check-rclone
+
+  check-rclone:
+    preconditions:
+      - sh: rclone lsd ico-sync:ico-sync
+        msg: "WARNING: rclone cant find remote ico-sync: run \u001b[1;32mtask setup-rclone:USERMAIL:PASSWORD\u001b[0m"
+    cmds:
+      - rclone version
+
   pull-assets:
     desc: download assets from the cloud
+    deps:
+      - check-rclone
     prompt: This is command will replace your LOCAL assets Do you want to continue?
     cmds:
-      - rclone copy remote:ico-sync/assets ./assets --progress --update
+      - rclone copy ico-sync:ico-sync/assets ./assets --progress --update
 
   push-assets:
     desc: download assets from the cloud
+    deps:
+      - check-rclone
     prompt: This is command will update CLOUD assets Do you want to continue?
     cmds:
-      - rclone copy ./assets remote:ico-sync/assets --progress --update
+      - rclone copy ./assets ico-sync:ico-sync/assets --progress --update
 
   gen-version-file:
     desc: ...

@@ -41,7 +41,9 @@ choco install go-task
 
 ## Build and deploy
 
+```sh
     task deploy-build-dev
+```
 
 ### Build from linux(WSL)
 
@@ -49,22 +51,34 @@ NOTE: Export templates should be installed
 
 dev build
 
+```sh
     task dev-build-all
+```
 
 ## Downloading assets
 
 Install rclone
 
-    winget install rclone
+```sh
+winget install rclone
+yay -S rclone
+sudo apt install rclone
+```
 
-Configure connection w/ GUI in Configs>Create
+Setup remote
 
-    rclone rcd --rc-web-gui
+```sh
+task setup-rclone:USERMAIL:PASSWORD
+```
 
 Get assets from cloud
 
-    task get-assets
+```sh
+task pull-assets
+```
 
-Upload new assets
+Upload assets to cloud
 
-    task push-assets
+```sh
+task push-assets
+```
