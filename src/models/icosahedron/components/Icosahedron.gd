@@ -43,6 +43,6 @@ func _on_scale_tick() -> void:
 func despawn():
     scaling_enabled = false
     var tw = create_tween()
-    tw.tween_callback(func():).set_delay(.8)
+    tw.tween_callback(func(): return).set_delay(.8)
     tw.finished.connect(func(): queue_free())
     tw.play()
