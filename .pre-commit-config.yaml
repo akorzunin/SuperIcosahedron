@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -11,11 +11,11 @@ repos:
       - id: forbid-tabs
       - id: remove-tabs
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.3.3
+    rev: v3.7.4
     hooks:
       - id: prettier
         additional_dependencies:
-          - "prettier@^3.3.3"
+          - "prettier@^3.7.4"
           - "prettier-plugin-tailwindcss@^0.6.5"
           - "tailwindcss-animate@^1.0.7"
         types_or: [javascript, ts, tsx, css, yaml]
