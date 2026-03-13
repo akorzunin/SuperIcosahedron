@@ -6,6 +6,7 @@ build
 android
 assets/*
 env.*
+!env.gd.example
 
 .godot/*
 # fixed in gd 4.4
