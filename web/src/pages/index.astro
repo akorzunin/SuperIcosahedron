@@ -1,0 +1,61 @@
+---
+import "../index.css";
+import Description from "../components/Description.astro";
+import Footer from "../components/Footer.astro";
+import { GodotFrame } from "../components/GodotFrame";
+import { Header } from "../components/Header";
+import { ThemeProvider } from "../shadcn/ui/theme-provider";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SuperIcosahedron</title>
+    <meta
+      name="description"
+      content="Indie arcade game made with Godot engine"
+    />
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="https://supericosahedron.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SuperIcosahedron" />
+    <meta
+      property="og:description"
+      content="Indie arcade game made with Godot engine"
+    />
+    <meta property="og:image" content="https://supericosahedron.com/icon.png" />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="800" />
+
+    <!-- Twitter Meta Tags -->
+    <meta property="twitter:url" content="https://supericosahedron.com" />
+    <meta name="twitter:title" content="SuperIcosahedron" />
+    <meta
+      name="twitter:description"
+      content="Indie arcade game made with Godot engine"
+    />
+    <meta
+      name="twitter:image"
+      content="https://supericosahedron.com/icon.png"
+    />
+  </head>
+
+  <body class="bg-background">
+    <ThemeProvider
+      defaultTheme="system"
+      storageKey="vite-ui-theme"
+      client:only="react"
+    >
+      <div class="h-screen">
+        <Header client:load />
+        <GodotFrame client:load />
+        <Description />
+        <Footer />
+      </div>
+    </ThemeProvider>
+  </body>
+</html>

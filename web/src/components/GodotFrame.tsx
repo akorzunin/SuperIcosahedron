@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getGameVersionInfo } from "../lib/versions";
 import { getGodotFile } from "../foreign/indexedDB";
 import { parseGodotSettings } from "../foreign/cfgParser";
+import { queryClient } from "../stores/query";
+import { useStore } from "@nanostores/react";
 
 interface AudioBridge {
   state?: boolean;
@@ -32,14 +34,21 @@ export const GodotFrame = () => {
   const [showIframe, setShowIframe] = useState(false);
   const [muted, setMuted] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { data: gameVersionData } = useQuery({
-    queryKey: ["version-data"],
-    queryFn: async () => await getGameVersionInfo(),
-  });
-  const { data: gameSettings, isSuccess: isGameSettingsFetched } = useQuery({
-    queryKey: ["game-settings-data"],
-    queryFn: async () => await aboba(),
-  });
+  const client = useStore(queryClient);
+  const { data: gameVersionData } = useQuery(
+    {
+      queryKey: ["version-data"],
+      queryFn: async () => await getGameVersionInfo(),
+    },
+    client,
+  );
+  const { data: gameSettings, isSuccess: isGameSettingsFetched } = useQuery(
+    {
+      queryKey: ["game-settings-data"],
+      queryFn: async () => await aboba(),
+    },
+    client,
+  );
 
   const handleFullscreen = () => {
     if (iframeRef.current) {
@@ -127,7 +136,8 @@ export const GodotFrame = () => {
           </>
         )}
         <p className="absolute bottom-0 right-2 text-primary-foreground outline-1 dark:text-primary">
-          build: {gameVersionData?.version} commit: {gameVersionData?.commit}
+          build: {gameVersionData?.version ?? "v0.0.0"} commit:{" "}
+          {gameVersionData?.commit ?? "devbld01"}
         </p>
       </div>
     </div>

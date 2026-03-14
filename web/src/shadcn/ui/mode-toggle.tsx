@@ -6,11 +6,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./dropdown-menu";
-import { useTheme } from "./theme-provider";
 import { Button } from "./button";
+import { themeAtom, type Theme } from "../../stores/theme";
 
 export function ModeToggle() {
-  const { setTheme } = useTheme();
+  const setTheme = (theme: Theme) => {
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
+        .matches
+        ? "dark"
+        : "light";
+      root.classList.add(systemTheme);
+      return;
+    }
+    root.classList.add(theme);
+    themeAtom.set(theme);
+  };
 
   return (
     <DropdownMenu>
@@ -21,16 +34,20 @@ export function ModeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
-          Light
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
-          Dark
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          System
-        </DropdownMenuItem>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={5}
+        className="border border-input bg-background"
+      >
+        {(["light", "dark", "system"] as const).map((theme) => (
+          <DropdownMenuItem
+            key={theme}
+            className="cursor-pointer capitalize"
+            onClick={() => setTheme(theme)}
+          >
+            {theme}
+          </DropdownMenuItem>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
