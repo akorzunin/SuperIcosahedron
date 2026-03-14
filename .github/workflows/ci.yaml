@@ -12,22 +12,22 @@ on:
 jobs:
   check:
     name: 🛠️ Run Pre-commit Hooks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4.1.7
-      - uses: pre-commit/action@v3.0.1
+      - uses: actions/checkout@v6
+      - uses: j178/prek-action@v1
 
   is-frontend-changed:
     name: 👁️‍🗨️ Check Frontend Changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - check
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v6
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -36,7 +36,7 @@ jobs:
 
   build-frontend:
     name: 🏗️ Run Frontend Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: needs.is-frontend-changed.outputs.frontend == 'true'
     environment: dev
     permissions:
@@ -45,7 +45,7 @@ jobs:
     needs:
       - is-frontend-changed
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v6
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3.3.0
@@ -83,7 +83,7 @@ jobs:
 
   deploy-frontend:
     name: 🚢 Deploy Frontend Docker Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: dev
     needs:
       - build-frontend
@@ -92,24 +92,22 @@ jobs:
         working-directory: deploy/dev
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6
 
       - name: Run playbook
-        uses: dawidd6/action-ansible-playbook@v2.8.0
+        uses: dawidd6/action-ansible-playbook@v5
         with:
           playbook: deploy_frontend.yaml
           directory: deploy/dev
           configuration: |
             [defaults]
             callbacks_enabled = ansible.posix.profile_tasks, ansible.posix.timer
-            stdout_callback = yaml
-            host_key_checking = false
+            callback_result_format = yaml
             interpreter_python = /usr/bin/python
             [ssh_connection]
             retries=5
           vault_password: ${{ secrets.ANSIBLE_PASS }}
-          inventory: ${{ vars.ANSIBLE_HOSTS }}
+          inventory: ${{ secrets.ANSIBLE_HOSTS }}
           options: |
-            --inventory .hosts
             --limit ${{ vars.DEV_SERVER }}
             --verbose
