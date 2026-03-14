@@ -84,7 +84,9 @@ jobs:
   deploy-frontend:
     name: 🚢 Deploy Frontend Docker Image
     runs-on: ubuntu-24.04
-    environment: dev
+    environment:
+      name: dev
+      url: https://supericosahedron.akorz.duckdns.org
     needs:
       - build-frontend
     defaults:

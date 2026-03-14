@@ -5,6 +5,10 @@ import Footer from "../components/Footer.astro";
 import { GodotFrame } from "../components/GodotFrame";
 import { Header } from "../components/Header";
 import { ThemeProvider } from "../shadcn/ui/theme-provider";
+const BASE_URL = "https://supericosahedron.akorz.duckdns.org";
+const OG_TITLE = "SuperIcosahedron";
+const OG_DESCRIPTION =
+  "Indie arcade game where you have to navigate through a mesmerizing journey of rotating icosahedrons.";
 ---
 
 <!doctype html>
@@ -14,34 +18,22 @@ import { ThemeProvider } from "../shadcn/ui/theme-provider";
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SuperIcosahedron</title>
-    <meta
-      name="description"
-      content="Indie arcade game made with Godot engine"
-    />
+    <meta name="description" content={OG_DESCRIPTION} />
 
     <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://supericosahedron.com" />
+    <meta property="og:url" content={BASE_URL} />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="SuperIcosahedron" />
-    <meta
-      property="og:description"
-      content="Indie arcade game made with Godot engine"
-    />
-    <meta property="og:image" content="https://supericosahedron.com/icon.png" />
+    <meta property="og:title" content={OG_TITLE} />
+    <meta property="og:description" content={OG_DESCRIPTION} />
+    <meta property="og:image" content={`${BASE_URL}/icon.png`} />
     <meta property="og:image:width" content="800" />
     <meta property="og:image:height" content="800" />
 
     <!-- Twitter Meta Tags -->
-    <meta property="twitter:url" content="https://supericosahedron.com" />
-    <meta name="twitter:title" content="SuperIcosahedron" />
-    <meta
-      name="twitter:description"
-      content="Indie arcade game made with Godot engine"
-    />
-    <meta
-      name="twitter:image"
-      content="https://supericosahedron.com/icon.png"
-    />
+    <meta property="twitter:url" content={BASE_URL} />
+    <meta name="twitter:title" content={OG_TITLE} />
+    <meta name="twitter:description" content={OG_DESCRIPTION} />
+    <meta name="twitter:image" content={`${BASE_URL}/icon.png`} />
   </head>
 
   <body class="bg-background">
