@@ -306,3 +306,77 @@ tasks:
     desc: disable discord-rpc-gd addon
     cmd: >-
       git apply ./scripts/no-discord-rpc-project.godot.diff || true
+
+  docker-image:
+    desc: build the godot builder docker image
+    cmds:
+      - docker build -t supericosahedron-godot-builder .
+
+  docker-build:
+    desc: build a specific platform via docker
+    summary: |
+      Usage: task docker-build -- <platform> [build_type]
+      Platforms: all  linux  windows  web  android
+      Build type: debug (default)  release
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder {{.CLI_ARGS}}
+
+  docker-build-all:
+    desc: build all platforms via docker (debug)
+    aliases: [da]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder all debug
+
+  docker-build-linux:
+    desc: build linux via docker (debug)
+    aliases: [dl]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder linux debug
+
+  docker-build-windows:
+    desc: build windows via docker (debug)
+    aliases: [dw]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder windows debug
+
+  docker-build-web:
+    desc: build web via docker (debug)
+    aliases: [dweb]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder web debug
+
+  docker-build-android:
+    desc: build android apk via docker (debug)
+    aliases: [dapk]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder android debug
+
+  docker-release-all:
+    desc: build all platforms via docker (release)
+    aliases: [dra]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder all release
+
+  docker-release-linux:
+    desc: build linux via docker (release)
+    aliases: [drl]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder linux release
+
+  docker-release-windows:
+    desc: build windows via docker (release)
+    aliases: [drw]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder windows release
+
+  docker-release-web:
+    desc: build web via docker (release)
+    aliases: [drweb]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder web release
+
+  docker-release-android:
+    desc: build android apk via docker (release)
+    aliases: [drapk]
+    cmds:
+      - docker run --rm -e HOST_UID=$(id -u) -e HOST_GID=$(id -g) -v ${PWD}:/project supericosahedron-godot-builder android release
