@@ -22,20 +22,23 @@ func set_window_settings():
     var P = Utils.Platform
     var R = Utils.RenderMethods
 
-    match Utils.get_platform():
-        P.PC:
-            if G.settings.FULLSCREEN_ENABLED:
-                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
-            else:
+    if OS.has_feature("editor"):
+        DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+    else:
+        match Utils.get_platform():
+            P.PC:
+                if G.settings.FULLSCREEN_ENABLED:
+                    DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN)
+                else:
+                    DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+                if G.settings.VSYNC_ENABLED:
+                    Utils.set_vsync(DisplayServer.VSYNC_ADAPTIVE)
+                else:
+                    Utils.set_vsync(DisplayServer.VSYNC_DISABLED)
+            P.WEB:
                 DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-            if G.settings.VSYNC_ENABLED:
-                Utils.set_vsync(DisplayServer.VSYNC_ADAPTIVE)
-            else:
-                Utils.set_vsync(DisplayServer.VSYNC_DISABLED)
-        P.WEB:
-            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-        P.MOBILE:
-            DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+            P.MOBILE:
+                DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
     V.use_debanding = true
 
