@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://cb5c5tcycst1v"]
+[gd_scene format=3 uid="uid://cb5c5tcycst1v"]
 
 [ext_resource type="Script" uid="uid://ks4n2udaofem" path="res://src/scenes/init/MenuScene.gd" id="1_75ovp"]
 [ext_resource type="Script" uid="uid://g4b26j4a05um" path="res://src/components/spawners/MenuSpawner.gd" id="1_83tbr"]
@@ -17,7 +17,7 @@
 [ext_resource type="Script" uid="uid://dx7so8radmvwc" path="res://src/components/gui/menu/MenuActions.gd" id="14_ywwly"]
 [ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="15_4x34a"]
 [ext_resource type="Shader" uid="uid://ckf53ww7vhw1l" path="res://src/shaders/MenuSceneSky_v2.gdshader" id="15_isf56"]
-[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/build/skybox/icosahedron_Solid_Sky.res" id="16_ef36i"]
+[ext_resource type="ArrayMesh" uid="uid://o7rlauuvnfp6" path="res://assets/skybox/icosahedron_Solid_Sky.res" id="16_ef36i"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3hc0b"]
 render_priority = 0
@@ -45,69 +45,69 @@ size = Vector2(2, 2)
 
 [sub_resource type="GDScript" id="GDScript_ptf72"]
 script/source = "extends PanelContainer
-class_name GamePanelContainer
+#class_name GamePanelContainer
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     pass
 "
 
-[node name="MenuScene" type="Node3D"]
+[node name="MenuScene" type="Node3D" unique_id=1538598658]
 script = ExtResource("1_75ovp")
 
-[node name="Environment" type="Node3D" parent="."]
+[node name="Environment" type="Node3D" parent="." unique_id=1971482833]
 
-[node name="SkyMeshIcosahedron" type="MeshInstance3D" parent="Environment"]
+[node name="SkyMeshIcosahedron" type="MeshInstance3D" parent="Environment" unique_id=897622617]
 transform = Transform3D(-1.12596, -1.83421, -0.718005, -1.68823, 1.32493, -0.736003, 1.01416, 0.168981, -2.02215, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_3hc0b")
 mesh = ExtResource("16_ef36i")
 skeleton = NodePath("../..")
 script = ExtResource("4_p8iyg")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=264322075]
 transform = Transform3D(-0.238764, 0.626019, -0.742356, -0.554774, 0.539494, 0.633381, 0.797005, 0.563068, 0.218487, 0.155482, 0.644891, 0.176892)
 directional_shadow_mode = 0
 sky_mode = 1
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=1204569343]
 environment = SubResource("Environment_dki5q")
 
-[node name="Camera3D" type="Camera3D" parent="Environment"]
+[node name="Camera3D" type="Camera3D" parent="Environment" unique_id=1361449596]
 transform = Transform3D(1, 0, 0, 0, 0.966957, 0.25494, 0, -0.25494, 0.966957, 0, 0.626921, 1.89439)
 
-[node name="PostProcessingQuad" type="MeshInstance3D" parent="Environment/Camera3D"]
+[node name="PostProcessingQuad" type="MeshInstance3D" parent="Environment/Camera3D" unique_id=1747586933]
 transform = Transform3D(1, 0, 0, 0, 0.998777, 0.049442, 0, -0.049442, 0.998777, 0, 0.0635505, -0.720649)
 visible = false
 material_override = SubResource("ShaderMaterial_uppoo")
 mesh = SubResource("QuadMesh_jl0os")
 skeleton = NodePath("../../..")
 
-[node name="MenuSpawner" type="Marker3D" parent="."]
+[node name="MenuSpawner" type="Marker3D" parent="." unique_id=1400656088]
 script = ExtResource("1_83tbr")
 
-[node name="Anchor" type="Marker3D" parent="MenuSpawner"]
+[node name="Anchor" type="Marker3D" parent="MenuSpawner" unique_id=892317065]
 unique_name_in_owner = true
 
-[node name="MenuControls" type="Control" parent="."]
+[node name="MenuControls" type="Control" parent="." unique_id=389033535]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("4_rh2oc")
 
-[node name="MenuSelector" type="Area3D" parent="."]
+[node name="MenuSelector" type="Area3D" parent="." unique_id=2052494221]
 unique_name_in_owner = true
 script = ExtResource("5_idm6q")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MenuSelector"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MenuSelector" unique_id=820234365]
 transform = Transform3D(1, 0, 0, 0, 0.9282, 0.372081, 0, -0.372081, 0.9282, 0, 0.788826, 1.42193)
 shape = SubResource("BoxShape3D_51eil")
 
-[node name="Gui" type="CanvasLayer" parent="."]
+[node name="Gui" type="CanvasLayer" parent="." unique_id=979116471]
 script = ExtResource("8_rgs6i")
 
-[node name="DebugStatsContainer" parent="Gui" instance=ExtResource("8_w8wvy")]
+[node name="DebugStatsContainer" parent="Gui" unique_id=1311977284 instance=ExtResource("8_w8wvy")]
 unique_name_in_owner = true
 
-[node name="ControlsContainer" type="PanelContainer" parent="Gui"]
+[node name="ControlsContainer" type="PanelContainer" parent="Gui" unique_id=1317685477]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -116,14 +116,14 @@ grow_vertical = 2
 theme = ExtResource("7_vbk8k")
 script = SubResource("GDScript_ptf72")
 
-[node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer"]
+[node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer" unique_id=714423989]
 custom_minimum_size = Vector2(437.78, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 script = ExtResource("8_0medo")
 action = 2
 
-[node name="RightGameButton" type="Button" parent="Gui/ControlsContainer"]
+[node name="RightGameButton" type="Button" parent="Gui/ControlsContainer" unique_id=538000760]
 custom_minimum_size = Vector2(437.39, 151.48)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -132,7 +132,7 @@ theme_type_variation = &"FlatButton"
 script = ExtResource("8_0medo")
 action = 3
 
-[node name="UpGameButton" type="Button" parent="Gui/ControlsContainer"]
+[node name="UpGameButton" type="Button" parent="Gui/ControlsContainer" unique_id=109443544]
 custom_minimum_size = Vector2(966.735, 341.23)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -140,7 +140,7 @@ size_flags_vertical = 0
 script = ExtResource("8_0medo")
 action = 4
 
-[node name="BotGameButton" type="Button" parent="Gui/ControlsContainer"]
+[node name="BotGameButton" type="Button" parent="Gui/ControlsContainer" unique_id=345025853]
 custom_minimum_size = Vector2(1011.59, 290.225)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -148,7 +148,7 @@ size_flags_vertical = 8
 script = ExtResource("8_0medo")
 action = 5
 
-[node name="CenterGameButton" type="Button" parent="Gui/ControlsContainer"]
+[node name="CenterGameButton" type="Button" parent="Gui/ControlsContainer" unique_id=516689666]
 custom_minimum_size = Vector2(1011.59, 290.225)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -156,9 +156,9 @@ size_flags_vertical = 4
 script = ExtResource("8_0medo")
 action = 1
 
-[node name="FPSLabel" parent="Gui" instance=ExtResource("10_djqxo")]
+[node name="FPSLabel" parent="Gui" unique_id=1168364112 instance=ExtResource("10_djqxo")]
 
-[node name="CommonControls" type="Control" parent="Gui"]
+[node name="CommonControls" type="Control" parent="Gui" unique_id=499810637]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
@@ -166,24 +166,24 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("13_cfv8o")
 
-[node name="Config" type="Node" parent="."]
+[node name="Config" type="Node" parent="." unique_id=1668583668]
 script = ExtResource("12_qaxtt")
 config_name = 1
 
-[node name="MenuState" type="Node" parent="."]
+[node name="MenuState" type="Node" parent="." unique_id=656834010]
 unique_name_in_owner = true
 script = ExtResource("13_416wy")
 
-[node name="MenuActions" type="Node" parent="."]
+[node name="MenuActions" type="Node" parent="." unique_id=1869360929]
 unique_name_in_owner = true
 script = ExtResource("14_ywwly")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=759988093]
 transform = Transform3D(0.622057, 0, 0.664187, 0, 0.91, 0, -0.664187, 0, 0.622057, 0, 0, 0)
 visible = false
 mesh = ExtResource("15_4x34a")
 skeleton = NodePath("../MenuSpawner")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1521213825]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.526165, 0.462514, 0.982888)
 visible = false
