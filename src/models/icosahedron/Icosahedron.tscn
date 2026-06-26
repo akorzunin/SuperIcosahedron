@@ -1,114 +1,26 @@
-[gd_scene load_steps=19 format=3 uid="uid://c28nbcejwepp8"]
+[gd_scene load_steps=6 format=3 uid="uid://c28nbcejwepp8"]
 
-[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_kd7xu"]
-[ext_resource type="Script" uid="uid://bumb7103wh6xa" path="res://src/models/icosahedron/components/Icosahedron.gd" id="1_w7qn7"]
-[ext_resource type="Shader" uid="uid://ctnqb5c0no481" path="res://src/models/icosahedron/shaders/cutplane_effect_v4.gdshader" id="2_3wk2e"]
-[ext_resource type="Script" uid="uid://niqphan04y10" path="res://src/models/icosahedron/components/CutPlane.gd" id="2_yg3qy"]
-[ext_resource type="Shader" uid="uid://y4ey6x7ic2m3" path="res://src/models/icosahedron/shaders/edge_highlight_v1.gdshader" id="5_al5e2"]
-[ext_resource type="Script" uid="uid://dsnfv57r65h60" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="5_q8b2e"]
-[ext_resource type="Shader" uid="uid://dkgsdd0qqtomo" path="res://src/models/icosahedron/shaders/icosahedron_shader_v1.gdshader" id="5_s1usq"]
-[ext_resource type="Shader" uid="uid://5fjhuosvxbf" path="res://src/models/icosahedron/shaders/outline_v1.gdshader" id="5_ucsrc1"]
-[ext_resource type="Texture2D" uid="uid://bpr01fnnfusau" path="res://src/models/icosahedron/resources/edge_noise.res" id="6_ai0t7"]
-[ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://src/models/icosahedron/components/Collider.gd" id="7_6oydw"]
-[ext_resource type="Texture2D" uid="uid://04mt0kux8ref" path="res://src/models/icosahedron/resources/new_compressed_texture_2d.tres" id="8_xynn0"]
+[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://src/models/icosahedron/assets/icosahedron_Solid.res" id="1_mesh"]
+[ext_resource type="Script" uid="uid://bumb7103wh6xa" path="res://src/models/icosahedron/components/Icosahedron.gd" id="2_ico"]
+[ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://src/models/icosahedron/components/Collider.gd" id="3_col"]
+[ext_resource type="Script" uid="uid://dsnfv57r65h60" path="res://src/models/icosahedron/components/MeshIcosahedron.gd" id="4_meshscript"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_rdyh1"]
-render_priority = 0
-shader = ExtResource("2_3wk2e")
-shader_parameter/cutplane = Vector4(-0.577, -0.577, 0.577, 0.794)
-shader_parameter/color = Color(0, 1, 0, 1)
-shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
-shader_parameter/enable = true
-shader_parameter/outline_thickness = 0.025
-shader_parameter/_center = Vector2(0.5, 0.5)
-shader_parameter/_zoom = 1.0
-shader_parameter/_repeat = 1.0
-shader_parameter/_speed = 1.0
-shader_parameter/aaa = 0.35
-shader_parameter/bbb = 0.35
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_8mu0u"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_nvmtx"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(1.66211, 1.56055, 1.42188)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4yeiy"]
-render_priority = 0
-shader = ExtResource("5_al5e2")
-shader_parameter/enable = true
-shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
-shader_parameter/color = Color(0, 0.5, 0, 1)
-shader_parameter/time_scale = 10.0
-shader_parameter/noise_pattern = ExtResource("6_ai0t7")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_i83je"]
-render_priority = 2
-next_pass = SubResource("ShaderMaterial_4yeiy")
-shader = ExtResource("5_ucsrc1")
-shader_parameter/enable = true
-shader_parameter/outline_thickness = 0.05
-shader_parameter/color = Color(0, 1, 0, 1)
-shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
-shader_parameter/pulse_speed = 12.0
-shader_parameter/pulse_amplitude = 2.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_c0lt3"]
-render_priority = 1
-next_pass = SubResource("ShaderMaterial_i83je")
-shader = ExtResource("2_3wk2e")
-shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
-shader_parameter/color = Color(0, 1, 0, 1)
-shader_parameter/accent_color = Color(0.26, 0.26, 0.26, 1)
-shader_parameter/enable = true
-shader_parameter/outline_thickness = 0.0
-shader_parameter/_center = Vector2(0.37, 0.89)
-shader_parameter/_zoom = 2.85
-shader_parameter/_repeat = 6.0
-shader_parameter/_speed = 0.35
-shader_parameter/aaa = 0.81
-shader_parameter/bbb = 0.905
-shader_parameter/TEXTURE = ExtResource("8_xynn0")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_bjqtf"]
-render_priority = 0
-next_pass = SubResource("ShaderMaterial_c0lt3")
-shader = ExtResource("5_s1usq")
-shader_parameter/pulse_enabled = false
-shader_parameter/colorflow_enbled = false
-shader_parameter/cutplane_visible = true
-shader_parameter/cutplane = Vector4(0.577, 0.577, 0.577, 0.794)
-shader_parameter/color = Vector3(0, 1, 0)
-
 [node name="Icosahedron" type="Node3D"]
-script = ExtResource("1_w7qn7")
+script = ExtResource("2_ico")
 shader_type = -1
-
-[node name="CutPlane" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.761007, -0.570635, -0.308616, -0.107281, 0.579858, -0.807623, 0.639811, -0.581498, -0.502495, -0.843964, 0.0584427, -0.468957)
-visible = false
-material_override = SubResource("ShaderMaterial_rdyh1")
-mesh = SubResource("PlaneMesh_8mu0u")
-script = ExtResource("2_yg3qy")
 
 [node name="Collider" type="Area3D" parent="."]
 collision_layer = 3
 collision_mask = 3
-script = ExtResource("7_6oydw")
+script = ExtResource("3_col")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
-shape = SubResource("BoxShape3D_nvmtx")
+shape = SubResource("BoxShape3D_body")
 
 [node name="MeshIcosahedron" type="MeshInstance3D" parent="."]
-material_override = SubResource("ShaderMaterial_bjqtf")
 cast_shadow = 0
-mesh = ExtResource("1_kd7xu")
-script = ExtResource("5_q8b2e")
-
-[node name="MeshIcosahedron2" type="MeshInstance3D" parent="."]
-transform = Transform3D(30.115, 0, 0, 0, 30.115, 0, 0, 0, 30.115, 0, 0, -0.0479969)
-visible = false
-material_override = SubResource("ShaderMaterial_bjqtf")
-cast_shadow = 0
-mesh = ExtResource("1_kd7xu")
-skeleton = NodePath("../MeshIcosahedron")
-script = ExtResource("5_q8b2e")
+mesh = ExtResource("1_mesh")
+script = ExtResource("4_meshscript")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=36 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" uid="uid://c8l7bdj6xnlwh" path="res://src/scenes/init/LoopScene.gd" id="1_rcesrc"]
 [ext_resource type="Shader" uid="uid://m5sywmm0umxn" path="res://src/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -19,7 +19,6 @@
 [ext_resource type="PackedScene" uid="uid://b00khg3mstn6t" path="res://src/components/gui/fps_label.tscn" id="10_20kj1"]
 [ext_resource type="Script" uid="uid://dmcg7lk672e1s" path="res://src/components/GameStateManager.gd" id="10_v8l0a"]
 [ext_resource type="Script" uid="uid://t8c43idgnk2o" path="res://src/components/spawners/Despawner.gd" id="11_wkoqb"]
-[ext_resource type="Script" uid="uid://bqcdmj1ljevwl" path="res://src/components/EndRay.gd" id="12_486y3"]
 [ext_resource type="Script" uid="uid://dsu0ca715t718" path="res://src/components/controls/CommonControls.gd" id="12_fcd1m"]
 [ext_resource type="Theme" uid="uid://bqb5wheue6nip" path="res://src/themes/LoopGuiTheme.tres" id="13_ryoi1"]
 [ext_resource type="Script" uid="uid://bsvhkgp7d2thh" path="res://src/components/timers/ScaleTimer.gd" id="14_3258y"]
@@ -27,6 +26,7 @@
 [ext_resource type="Script" uid="uid://fww6xwyeqiue" path="res://src/components/settings/Config.gd" id="18_tjx6c"]
 [ext_resource type="Script" uid="uid://cevmogy450i5a" path="res://src/components/GameProgress.gd" id="19_mtejl"]
 [ext_resource type="Script" uid="uid://ch0bxsxh2a1gg" path="res://src/components/level_system/PatternGen.gd" id="27_sueui"]
+[ext_resource type="Script" path="res://src/side/EndDetector.gd" id="28_end"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -56,6 +56,9 @@ expand_margin_bottom = 15.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cw5a6"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_end"]
+size = Vector3(4, 4, 4)
+
 [node name="LoopScene" type="Node3D"]
 script = ExtResource("1_rcesrc")
 
@@ -78,6 +81,7 @@ skeleton = NodePath("../..")
 script = ExtResource("5_yiga3")
 
 [node name="LoopControls" type="Node" parent="." node_paths=PackedStringArray("figureRoot")]
+unique_name_in_owner = true
 process_mode = 3
 script = ExtResource("2_ddung")
 figureRoot = NodePath("../FigureRoot")
@@ -95,6 +99,7 @@ unique_name_in_owner = true
 script = ExtResource("4_vihkp")
 
 [node name="LoopSpawner" type="Marker3D" parent="." node_paths=PackedStringArray("figureRoot")]
+unique_name_in_owner = true
 script = ExtResource("5_r6722")
 figureRoot = NodePath("../FigureRoot")
 
@@ -243,15 +248,14 @@ script = ExtResource("11_wkoqb")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5666, 0, 0)
 shape = SubResource("BoxShape3D_cw5a6")
 
-[node name="EndDetector" type="Marker3D" parent="."]
+[node name="EndDetector" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.38583, 10.9777)
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("28_end")
 
-[node name="EndRay" type="RayCast3D" parent="EndDetector"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.432071, 0.596067)
-target_position = Vector3(0, -5.8179, -11.5738)
-collide_with_areas = true
-debug_shape_thickness = 5
-script = ExtResource("12_486y3")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EndDetector"]
+shape = SubResource("BoxShape3D_end")
 
 [node name="Config" type="Node" parent="."]
 script = ExtResource("18_tjx6c")

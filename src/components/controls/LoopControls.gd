@@ -6,6 +6,7 @@ class_name LoopControls
 @onready var game_progress: GameProgress = %GameProgress
 @onready var game_state_manager: GameStateManager = %GameStateManager
 @onready var sfx_player: SfxPlayer = $"/root/MainScene/SfxPlayer"
+@onready var loop_spawner: LoopSpawner = %LoopSpawner
 
 enum ControlType {FREE_SPIN, FACE_LOCK}
 
@@ -21,24 +22,33 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
         await get_tree().create_timer(1.0).timeout
         set_process_input(true)
 
+func restart_run() -> void:
+    figureRoot.clean_all(true)
+    game_progress.reset()
+    controlledNode = null
+    game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
+    loop_spawner.spawn_icosahedron()
+
 func set_controlled_node(node: MeshIcosahedron):
-    if controlledNode != null and controlledNode is MeshIcosahedron:
+    if controlledNode != null and is_instance_valid(controlledNode) and controlledNode is MeshIcosahedron:
         controlledNode.set_controlled(false)
     node.set_controlled(true)
     controlledNode = node
-    game_progress.add_one()
 
 func update_controlled_node():
-    var figures = figureRoot.get_node("Anchor").get_children() as Array[Icosahedron]
+    if controlledNode and not is_instance_valid(controlledNode):
+        controlledNode = null
     var unchecked_mesh: MeshIcosahedron
-    for figure in figures:
-        if figure is Icosahedron and not figure.mesh_icosahedron.angle_good:
+    for figure in figureRoot.get_live_figures():
+        if not figure.mesh_icosahedron.angle_good:
             unchecked_mesh = figure.mesh_icosahedron
             break
     if unchecked_mesh and controlledNode != unchecked_mesh:
         if game_state_manager.game_state != GameStateManager.GameState.GAME_END:
             sfx_player.on_node_passed.emit()
         set_controlled_node(unchecked_mesh)
+    elif not unchecked_mesh:
+        controlledNode = null
 
 func pass_next_node(node: Collider):
     if controlledNode != null \
@@ -55,52 +65,24 @@ func _input(event: InputEvent) -> void:
         handle_game_over_input(event, is_inverted)
         G.reload_settings.emit()
         return
-    if event.is_action_pressed('ui_pause'):
-        get_tree().paused = !get_tree().paused
-    if event.is_action_pressed('ui_accept'):
-        if Utils.main_scene(self) == 'LoopScene':
-            get_tree().paused = false
-            get_tree().reload_current_scene()
-            return
-    if get_tree().paused and event.is_action_pressed('ui_cancel'):
-        if Utils.main_scene(self) == 'LoopScene':
-            get_tree().paused = false
-            get_tree().reload_current_scene()
-            return
-        Utils.set_scene(self, 'LoopScene')
-        return
-    if event.is_action_pressed('ui_cancel'):
-        if Utils.main_scene(self) == 'LoopScene':
-            return
-        Utils.set_scene(self, 'MenuScene')
+    if event.is_action_pressed('ui_pause') or event.is_action_pressed('ui_cancel'):
+        game_state_manager.toggle_pause()
         sfx_player.on_section_select.emit()
+        get_viewport().set_input_as_handled()
         return
-
-func game_over_rot(scene: StringName, t: Quaternion):
-    const GAME_OVER_ROT := 0.3
-    const GAME_OVER_DELAY := 0.05
-    var tw = create_tween()
-    tw.tween_property(figureRoot.anchor, "quaternion", t, GAME_OVER_ROT)
-    tw.tween_callback(func(): Utils.set_scene(self, scene)).set_delay(GAME_OVER_DELAY)
-    tw.play()
-    sfx_player.on_action_select.emit()
 
 func handle_game_over_input(event: InputEvent, is_inverted: bool):
-    if event.is_action_pressed('ui_accept'):
-        Utils.set_scene(self, 'LoopScene')
-    elif event.is_action_pressed('ui_cancel'):
-        game_over_rot('MenuScene', Quats.menu_quat_left())
+    if event.is_action_pressed('ui_accept') or Op.xor(is_inverted, event.is_action_pressed('ui_right')):
+        restart_run()
+    elif event.is_action_pressed('ui_cancel') or Op.xor(is_inverted, event.is_action_pressed('ui_left')):
         sfx_player.on_action_select.emit()
-    elif Op.xor(is_inverted, event.is_action_pressed('ui_left')):
-        game_over_rot('MenuScene', Quats.menu_quat_left())
-    elif Op.xor(is_inverted, event.is_action_pressed('ui_right')):
-        game_over_rot('LoopScene', Quats.menu_quat_left().inverse())
+        Utils.set_scene(self, 'MenuScene')
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-    if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
+    if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
         return
-    if not controlledNode:
+    if not controlledNode or not is_instance_valid(controlledNode):
         update_controlled_node()
         return
     var is_inverted = G.settings.IS_CONTROL_INVERTED

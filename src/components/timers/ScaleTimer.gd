@@ -14,5 +14,11 @@ func _ready() -> void:
 
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs = GameStateManager.GameState
-    if new_state == gs.GAME_END:
+    if new_state == gs.GAME_PAUSED:
+        paused = true
+    elif new_state == gs.GAME_ACTIVE:
+        paused = false
+        if is_stopped():
+            start(tick_dur)
+    elif new_state == gs.GAME_END:
         stop()

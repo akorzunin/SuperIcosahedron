@@ -53,7 +53,8 @@ func spawn_game_over_scene():
     for ch in anc.get_children():
         ch.queue_free()
     var new_figure = IcosahedronScene.instantiate() \
-                .with_type(-1)
+                .with_type(-1)\
+                .with_data(FigureData.new())
     figureRoot.add_figure(new_figure)
     add_menu_items(anc, get_game_over_state())
     var tw = anc.create_tween()
@@ -79,12 +80,19 @@ func get_spawn_type():
         s.QUEUE: # 2
             return pattern_gen.next_pattern()
 
+func spawn_icosahedron() -> void:
+    spawn_figure(Figure.new(FigureType.ICOSAHEDRON))
+
 func spawn_figure(figure: Figure) -> void:
     var new_figure
     match figure.type:
         FigureType.ICOSAHEDRON:
+            var spawn_type: int = get_spawn_type()
+            var figure_data := StageGenerator.create_figure(spawn_type)
+            game_progress.register_figure(figure_data)
             new_figure = IcosahedronScene.instantiate() \
-                .with_type(get_spawn_type())\
+                .with_type(spawn_type)\
+                .with_data(figure_data)\
                 .with_scale_timer(scale_timer)
         FigureType.OCTAHEDRON:
             pass
