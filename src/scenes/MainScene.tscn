@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bl2xm774sjmm6"]
+[gd_scene format=3 uid="uid://bl2xm774sjmm6"]
 
 [ext_resource type="Script" uid="uid://c2vxxyif2t6by" path="res://src/scenes/init/MainScene.gd" id="1_7yre0"]
 [ext_resource type="Script" uid="uid://b4kg63fjgn3rl" path="res://src/components/GameSettings.gd" id="2_mjoy8"]
@@ -11,10 +11,10 @@
 [ext_resource type="AudioStream" uid="uid://dfrpg15jmgpg4" path="res://assets/build/ost/main_menu_theme.wav" id="9_3482d"]
 [ext_resource type="AudioStream" uid="uid://csjbiucesnwxb" path="res://assets/build/ost/node_pass.wav" id="10_oebtq"]
 
-[node name="MainScene" type="Node"]
+[node name="MainScene" type="Node" unique_id=1041737374]
 script = ExtResource("1_7yre0")
 
-[node name="CommonControls" type="Control" parent="."]
+[node name="CommonControls" type="Control" parent="." unique_id=1032555987]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
@@ -22,34 +22,34 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("3_eruj2")
 
-[node name="Config" type="Node" parent="."]
+[node name="Config" type="Node" parent="." unique_id=1886848507]
 unique_name_in_owner = true
 script = ExtResource("3_656kb")
 
-[node name="GameSettings" type="Node" parent="."]
+[node name="GameSettings" type="Node" parent="." unique_id=1519084247]
 script = ExtResource("2_mjoy8")
 
-[node name="SfxPlayer" type="Node" parent="."]
+[node name="SfxPlayer" type="Node" parent="." unique_id=1363904721]
 unique_name_in_owner = true
 script = ExtResource("5_6wmow")
 
-[node name="SectionChanged" type="AudioStreamPlayer" parent="SfxPlayer"]
+[node name="SectionChanged" type="AudioStreamPlayer" parent="SfxPlayer" unique_id=795619536]
 stream = ExtResource("6_fue6j")
 bus = &"sfx"
 
-[node name="SectionSelect" type="AudioStreamPlayer" parent="SfxPlayer"]
+[node name="SectionSelect" type="AudioStreamPlayer" parent="SfxPlayer" unique_id=806166179]
 stream = ExtResource("7_66dvc")
 bus = &"sfx"
 
-[node name="ActionSelect" type="AudioStreamPlayer" parent="SfxPlayer"]
+[node name="ActionSelect" type="AudioStreamPlayer" parent="SfxPlayer" unique_id=1567691263]
 stream = ExtResource("8_kispc")
 bus = &"sfx"
 
-[node name="MenuTheme" type="AudioStreamPlayer" parent="SfxPlayer"]
+[node name="MenuTheme" type="AudioStreamPlayer" parent="SfxPlayer" unique_id=536942095]
 stream = ExtResource("9_3482d")
 autoplay = true
 bus = &"Music"
 
-[node name="NodePassed" type="AudioStreamPlayer" parent="SfxPlayer"]
+[node name="NodePassed" type="AudioStreamPlayer" parent="SfxPlayer" unique_id=781833034]
 stream = ExtResource("10_oebtq")
 bus = &"sfx"

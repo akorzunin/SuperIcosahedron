@@ -12,7 +12,7 @@ var app_state := AppState.new()
 func _ready():
     app_state.name = "AppState"
     add_child(app_state)
-    if OS.has_feature('web') or OS.has_feature('mobile'):
+    if OS.has_feature('web') or OS.has_feature('mobile') or OS.has_feature('editor'):
         discord_status = DummyDiscordStatus.new()
     else:
         discord_status = load('res://src/components/DiscordStatus.gd').new()

@@ -58,6 +58,12 @@ tasks:
       - ./assets/*
       - ./web/*
 
+  test:
+    desc: run GUT tests headlessly
+    cmds:
+      - godot --headless --path . --import
+      - godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test/integration -gexit
+
   gd-dev-build-web:
     internal: true
     cmds:
