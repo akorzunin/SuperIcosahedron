@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://punqnh5q5wad"]
+
+[ext_resource type="Shader" uid="uid://b2h24mtmlpori" path="res://src/components/dent/dent.gdshader" id="1_3qqoq"]
+[ext_resource type="ArrayMesh" uid="uid://cwdpatu2egi3a" path="res://src/components/dent/face.res" id="2_5vf2p"]
+[ext_resource type="ArrayMesh" uid="uid://d1o08aarej4ry" path="res://src/components/dent/full.res" id="3_ryq2a"]
+[ext_resource type="ArrayMesh" uid="uid://d3wdgb8n0glg" path="res://src/components/dent/tail.res" id="4_3ub21"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ubuxu"]
+render_priority = 0
+shader = ExtResource("1_3qqoq")
+
+[node name="Dent" type="Node3D" unique_id=1752681366]
+
+[node name="Face" type="MeshInstance3D" parent="." unique_id=106139401]
+material_override = SubResource("ShaderMaterial_ubuxu")
+mesh = ExtResource("2_5vf2p")
+
+[node name="Full" type="MeshInstance3D" parent="." unique_id=1970175809]
+mesh = ExtResource("3_ryq2a")
+
+[node name="Tail" type="MeshInstance3D" parent="." unique_id=2141868378]
+mesh = ExtResource("4_3ub21")

@@ -2,6 +2,8 @@ extends MeshInstance3D
 class_name MeshIcosahedron
 
 const BASIC_SHADER = preload("res://src/models/icosahedron/shaders/icosahedron_basic.gdshader")
+const DENT_MESH: Mesh = preload("res://src/models/icosahedron/assets/ico_dent_full.res")
+const DENT_SOURCE_SIDE_ID := 1
 
 @onready var icosahedron: Icosahedron = $".."
 @onready var collider: Collider = $'../Collider'
@@ -15,7 +17,7 @@ var _materials: Array[ShaderMaterial] = []
 var _side_tris: Array[PackedVector3Array] = []
 
 func _ready() -> void:
-    _split_into_side_meshes()
+    _build_side_dents()
     currnt_type = icosahedron.shader_type
     if currnt_type >= 0:
         set_type(currnt_type)
@@ -55,7 +57,7 @@ func _color_for_type(type: int) -> Color:
         return Color(float(c[0]), float(c[1]), float(c[2]), 1.0)
     return Color(0.35, 0.85, 1.0, 1.0)
 
-func _split_into_side_meshes() -> void:
+func _build_side_dents() -> void:
     var source := mesh
     if not source or get_node_or_null("Sides"):
         return
@@ -63,16 +65,18 @@ func _split_into_side_meshes() -> void:
     root.name = "Sides"
     add_child(root)
     _side_tris.resize(20)
+    var base_basis := _basis_for_triangle(_side_triangle(source, DENT_SOURCE_SIDE_ID))
     for i in 20:
         var side := MeshInstance3D.new()
         side.name = "Side_%02d" % i
-        side.cast_shadow = cast_shadow
+        side.mesh = DENT_MESH
         var tri := _side_triangle(source, i)
         _side_tris[i] = tri
-        side.mesh = _tetra_mesh(tri)
+        side.transform.basis = _basis_for_triangle(tri) * base_basis.inverse()
         var mat := ShaderMaterial.new()
         mat.shader = BASIC_SHADER
         side.material_override = mat
+        side.cast_shadow = cast_shadow
         _materials.append(mat)
         root.add_child(side)
     mesh = null
@@ -105,11 +109,11 @@ func _side_triangle(source: Mesh, side_id: int) -> PackedVector3Array:
                 best = tri
     return best
 
-func _tetra_mesh(tri: PackedVector3Array) -> ArrayMesh:
-    var arrays := []
-    arrays.resize(Mesh.ARRAY_MAX)
-    arrays[Mesh.ARRAY_VERTEX] = PackedVector3Array([Vector3.ZERO, tri[0], tri[1], tri[2]])
-    arrays[Mesh.ARRAY_INDEX] = PackedInt32Array([1, 2, 3, 0, 2, 1, 0, 3, 2, 0, 1, 3])
-    var m := ArrayMesh.new()
-    m.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-    return m
+func _basis_for_triangle(tri: PackedVector3Array) -> Basis:
+    var center := (tri[0] + tri[1] + tri[2]) / 3.0
+    var normal := (tri[1] - tri[0]).cross(tri[2] - tri[0]).normalized()
+    if normal.dot(center) < 0.0:
+        normal = -normal
+    var tangent := (tri[0] - center).normalized()
+    var bitangent := normal.cross(tangent).normalized()
+    return Basis(tangent, bitangent, normal).orthonormalized()
