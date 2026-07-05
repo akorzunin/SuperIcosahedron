@@ -38,8 +38,8 @@ func set_cutplane(v: Vector4):
 
 func set_color(c: Variant):
     var color: Color = c if c is Color else Color(c.x, c.y, c.z, 1.0)
-    for i in _materials.size():
-        _materials[i].set_shader_parameter("color", color.lightened(float(i) * 0.012))
+    for material in _materials:
+        material.set_shader_parameter("color", color)
 
 func set_type(type: int):
     currnt_type = type

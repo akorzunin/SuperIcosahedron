@@ -37,7 +37,14 @@ func _mount_scenes() -> void:
 
 func _set_scene_active(scene: Node, active: bool) -> void:
     scene.visible = active
+    _set_canvas_layers_visible(scene, active)
     scene.process_mode = Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
+
+func _set_canvas_layers_visible(node: Node, visible: bool) -> void:
+    if node is CanvasLayer:
+        node.visible = visible
+    for child in node.get_children():
+        _set_canvas_layers_visible(child, visible)
 
 func release_inputs():
     for a in InputMap.get_actions():
