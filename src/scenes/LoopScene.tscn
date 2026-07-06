@@ -167,7 +167,7 @@ text = "00:00:000
 unique_name_in_owner = true
 visible = false
 
-[node name="ControlsContainer" type="PanelContainer" parent="Gui"]
+[node name="ControlsContainer" type="Control" parent="Gui"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

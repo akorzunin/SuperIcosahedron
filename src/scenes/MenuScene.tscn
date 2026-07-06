@@ -107,14 +107,13 @@ script = ExtResource("8_rgs6i")
 [node name="DebugStatsContainer" parent="Gui" unique_id=1311977284 instance=ExtResource("8_w8wvy")]
 unique_name_in_owner = true
 
-[node name="ControlsContainer" type="PanelContainer" parent="Gui" unique_id=1317685477]
+[node name="ControlsContainer" type="Control" parent="Gui" unique_id=1317685477]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("7_vbk8k")
-script = SubResource("GDScript_ptf72")
 
 [node name="LeftGameButton" type="Button" parent="Gui/ControlsContainer" unique_id=714423989]
 custom_minimum_size = Vector2(437.78, 0)

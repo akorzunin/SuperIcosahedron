@@ -40,36 +40,59 @@ func _gui_input(event: InputEvent) -> void:
         Input.action_press(get_action_name(action))
         #Input.action_release(get_action_name(action))
 
-## width of side panel
-const a := 20
-## height of top/bot panel
-const c := 30
-const b := 100 - 2 * a
-const d := 100 - 2 * c
+## Width of side touch panels, as a fraction of the viewport.
+const SIDE_PANEL := 0.20
+## Height of top/bottom touch panels, as a fraction of the viewport.
+const VERTICAL_PANEL := 0.30
+
 func set_button_size():
-    var screenSize = get_viewport_rect().size
+    custom_minimum_size = Vector2.ZERO
+    set_offsets_preset(Control.PRESET_FULL_RECT)
+
     match action:
         ActionType.UI_LEFT:
-            custom_minimum_size.x = int(screenSize.x * (a / 100.))
-            custom_minimum_size.y = int(screenSize.y)
+            anchor_left = 0.0
+            anchor_right = SIDE_PANEL
+            anchor_top = 0.0
+            anchor_bottom = 1.0
         ActionType.UI_RIGHT:
-            custom_minimum_size.x = int(screenSize.x * (a / 100.))
-            custom_minimum_size.y = int(screenSize.y)
+            anchor_left = 1.0 - SIDE_PANEL
+            anchor_right = 1.0
+            anchor_top = 0.0
+            anchor_bottom = 1.0
         ActionType.UI_UP:
-            custom_minimum_size.x = int(screenSize.x * (b / 100.))
-            custom_minimum_size.y = int(screenSize.y * (c / 100.))
+            anchor_left = SIDE_PANEL
+            anchor_right = 1.0 - SIDE_PANEL
+            anchor_top = 0.0
+            anchor_bottom = VERTICAL_PANEL
         ActionType.UI_DOWN:
-            custom_minimum_size.x = int(screenSize.x * (b / 100.))
-            custom_minimum_size.y = int(screenSize.y * (c / 100.))
+            anchor_left = SIDE_PANEL
+            anchor_right = 1.0 - SIDE_PANEL
+            anchor_top = 1.0 - VERTICAL_PANEL
+            anchor_bottom = 1.0
         ActionType.UI_ACCEPT:
-            custom_minimum_size.x = int(screenSize.x * (b / 100.))
-            custom_minimum_size.y = int(screenSize.y * (d / 100.))
+            anchor_left = SIDE_PANEL
+            anchor_right = 1.0 - SIDE_PANEL
+            anchor_top = VERTICAL_PANEL
+            anchor_bottom = 1.0 - VERTICAL_PANEL
+        _:
+            anchor_left = 0.0
+            anchor_right = 1.0
+            anchor_top = 0.0
+            anchor_bottom = 1.0
+
+    offset_left = 0.0
+    offset_top = 0.0
+    offset_right = 0.0
+    offset_bottom = 0.0
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_manager = get_node_or_null('%GameStateManager')
     process_mode = Node.PROCESS_MODE_ALWAYS
     focus_mode = FocusMode.FOCUS_NONE
     set_button_size()
+    get_viewport().size_changed.connect(set_button_size)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
