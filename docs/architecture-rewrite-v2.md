@@ -1,6 +1,6 @@
 # SuperIcosahedron architecture rewrite v2
 
-Keeps the previous data split (`FigureData`, `SideData`, `ModifierData`, `GameSession`) and changes the runtime architecture around it.
+Historical rewrite plan. Current runtime keeps the data split (`FigureData`, `SideData`, `ModifierData`) under `src/side/`; the old experimental `GameSession` node was removed in favor of `GameProgress` owning run state.
 
 ## Goals
 
@@ -46,7 +46,7 @@ Panels hide/show. The world stays alive.
 src/game/FigureData.gd
 src/game/SideData.gd
 src/game/ModifierData.gd
-src/game/GameSession.gd
+removed: src/game/GameSession.gd
 src/game/StageGenerator.gd
 ```
 
@@ -221,7 +221,7 @@ Side meaning should come from `SideVisual` color/icon for now, not shader tricks
 
 ```text
 src/app/AppState.gd
-src/game/GameSession.gd
+removed: src/game/GameSession.gd
 src/game/StageGenerator.gd
 src/game/FigureData.gd
 src/game/SideData.gd

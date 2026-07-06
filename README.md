@@ -7,6 +7,12 @@ complements the intricate gameplay, offering a unique blend of skill and strateg
 
 Game mostly inspired by Super Hexagon
 
+## Project layout
+
+- `src/` contains shipped runtime scenes, scripts, and assets.
+- `dev/` contains debug/manual-test scenes, shader experiments, and scratch scripts; export presets exclude it.
+- `test/` contains automated GUT tests.
+
 ## Formatting and code style
 
 Format all shader files
