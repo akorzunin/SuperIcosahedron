@@ -12,4 +12,4 @@ func _ready() -> void:
     gameplay.game_state_manager.game_state_changed.connect(func(_old, state):
         status.text = GameStateManager.GameStateNames[state]
     )
-    status.text = "ACTIVE — legacy end detector pending replacement"
+    status.text = "ACTIVE — align the empty dent; accept commits early"

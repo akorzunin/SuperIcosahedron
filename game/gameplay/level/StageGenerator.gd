@@ -13,20 +13,12 @@ static func create_figure(stage: int = 0) -> FigureData:
     return figure
 
 static func _kind_for(id: int, stage: int) -> SideData.Kind:
-    if id == (stage * 7) % 20:
-        return SideData.Kind.SOLID
-    if id % 5 == 0:
-        return SideData.Kind.NEGATIVE
-    return SideData.Kind.POSITIVE
+    if id == posmod(stage, 20):
+        return SideData.Kind.POSITIVE
+    return SideData.Kind.SOLID
 
-static func _score_for(kind: SideData.Kind, id: int) -> int:
-    match kind:
-        SideData.Kind.POSITIVE:
-            return 1 + id % 3
-        SideData.Kind.NEGATIVE:
-            return -1
-        _:
-            return 0
+static func _score_for(kind: SideData.Kind, _id: int) -> int:
+    return 1 if kind == SideData.Kind.POSITIVE else 0
 
 static func _kind_name(kind: SideData.Kind) -> String:
     return SideData.Kind.keys()[kind].to_lower()

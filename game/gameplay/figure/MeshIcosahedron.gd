@@ -6,7 +6,6 @@ const DENT_MESH: Mesh = preload("res://game/gameplay/figure/assets/ico_dent_full
 const DENT_SOURCE_SIDE_ID := 1
 
 @onready var icosahedron: Icosahedron = $".."
-@onready var collider: Collider = $'../Collider'
 
 var angle_good := false
 var is_alt := false
@@ -14,10 +13,13 @@ var is_rotating := false
 var currnt_type: int
 var cutplane := Vector3.RIGHT
 var _materials: Array[ShaderMaterial] = []
+var _dents: Array[Dent] = []
 var _side_tris: Array[PackedVector3Array] = []
 
 func _ready() -> void:
-    _build_side_dents()
+    _build_dents()
+    if icosahedron.data:
+        apply_side_data(icosahedron.data.sides)
     currnt_type = icosahedron.shader_type
     if currnt_type >= 0:
         set_type(currnt_type)
@@ -26,9 +28,6 @@ func _ready() -> void:
     transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
 
 func set_controlled(state: bool):
-    if collider:
-        collider.set_collision_mask_value(1, state)
-        collider.set_collision_layer_value(1, state)
     var c := Color(1.0, 0.9, 0.3, 1.0) if state else _color_for_type(currnt_type)
     set_color(c)
 
@@ -56,28 +55,35 @@ func _color_for_type(type: int) -> Color:
         return Color(float(c[0]), float(c[1]), float(c[2]), 1.0)
     return Color(0.35, 0.85, 1.0, 1.0)
 
-func _build_side_dents() -> void:
+func apply_side_data(sides: Array[SideData]) -> void:
+    for side in sides:
+        if side.id >= 0 and side.id < _dents.size():
+            _dents[side.id].apply_data(side)
+
+func get_dents() -> Array[Dent]:
+    return _dents
+
+func _build_dents() -> void:
     var source := mesh
-    if not source or get_node_or_null("Sides"):
+    if not source or get_node_or_null("Dents"):
         return
     var root := Node3D.new()
-    root.name = "Sides"
+    root.name = "Dents"
     add_child(root)
     _side_tris.resize(20)
     var base_basis := _basis_for_triangle(_side_triangle(source, DENT_SOURCE_SIDE_ID))
     for i in 20:
-        var side := MeshInstance3D.new()
-        side.name = "Side_%02d" % i
-        side.mesh = DENT_MESH
+        var dent := Dent.new().init(i, DENT_MESH)
         var tri := _side_triangle(source, i)
         _side_tris[i] = tri
-        side.transform.basis = _basis_for_triangle(tri) * base_basis.inverse()
+        dent.transform.basis = _basis_for_triangle(tri) * base_basis.inverse()
         var mat := ShaderMaterial.new()
         mat.shader = BASIC_SHADER
-        side.material_override = mat
-        side.cast_shadow = cast_shadow
+        dent.material_override = mat
+        dent.cast_shadow = cast_shadow
         _materials.append(mat)
-        root.add_child(side)
+        _dents.append(dent)
+        root.add_child(dent)
     mesh = null
 
 func get_side_points(side_id: int) -> PackedVector3Array:

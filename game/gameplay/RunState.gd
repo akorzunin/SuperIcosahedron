@@ -28,7 +28,7 @@ func resolve_side(figure_id: int, side: SideData) -> Outcome:
     if ended or not side or _resolved_figures.has(figure_id) or side.collected:
         return Outcome.IGNORED
     _resolved_figures[figure_id] = true
-    if side.kind == SideData.Kind.SOLID:
+    if not side.is_empty():
         ended = true
         return Outcome.GAME_OVER
     side.collected = true

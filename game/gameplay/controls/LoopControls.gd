@@ -34,6 +34,7 @@ func set_controlled_node(node: MeshIcosahedron):
         controlledNode.set_controlled(false)
     node.set_controlled(true)
     controlledNode = node
+    figure_controller.target = node
 
 func update_controlled_node():
     if controlledNode and not is_instance_valid(controlledNode):
@@ -48,15 +49,20 @@ func update_controlled_node():
             sound_requested.emit(&"on_node_passed")
         set_controlled_node(unchecked_mesh)
     elif not unchecked_mesh:
+        if controlledNode and is_instance_valid(controlledNode):
+            controlledNode.set_controlled(false)
         controlledNode = null
+        figure_controller.target = null
 
-func pass_next_node(node: Collider):
-    if controlledNode != null \
-    and game_state_manager.game_state != GameStateManager.GameState.GAME_END \
-    and not controlledNode.angle_good \
-    and node.mesh_icosahedron == controlledNode:
-        controlledNode.angle_good = true
-        game_progress.log_tts(controlledNode.icosahedron.spwan_time, controlledNode.currnt_type)
+func advance_control() -> void:
+    if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
+        return
+    if not controlledNode or not is_instance_valid(controlledNode) or controlledNode.angle_good:
+        return
+    controlledNode.angle_good = true
+    # Hide only the visuals: committing does not bypass collision validation.
+    controlledNode.hide()
+    game_progress.log_tts(controlledNode.icosahedron.spwan_time, controlledNode.currnt_type)
     update_controlled_node()
 
 func _input(event: InputEvent) -> void:
@@ -70,6 +76,10 @@ func _input(event: InputEvent) -> void:
         sound_requested.emit(&"on_section_select")
         get_viewport().set_input_as_handled()
         return
+    if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE \
+    and event.is_action_pressed('ui_accept'):
+        advance_control()
+        get_viewport().set_input_as_handled()
 
 func handle_game_over_input(event: InputEvent, is_inverted: bool):
     var restart_action := 'ui_left' if is_inverted else 'ui_right'

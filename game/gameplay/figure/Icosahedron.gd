@@ -46,6 +46,8 @@ func _ready() -> void:
     spwan_time = Time.get_unix_time_from_system()
     if not data:
         data = StageGenerator.create_figure(shader_type if shader_type >= 0 else 0)
+    mesh_icosahedron.apply_side_data(data.sides)
+    _build_side_colliders()
 
 func _on_scale_tick() -> void:
     if scaling_enabled:

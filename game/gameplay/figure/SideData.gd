@@ -18,3 +18,6 @@ func init(_id: int, _normal: Vector3, _kind: Kind, _modifier: ModifierData = nul
     modifier = _modifier
     score_delta = _modifier.score_value if _modifier else 0
     return self
+
+func is_empty() -> bool:
+    return kind != Kind.SOLID

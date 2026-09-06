@@ -13,8 +13,8 @@ script = ExtResource("2_ico")
 shader_type = -1
 
 [node name="Collider" type="Area3D" parent="."]
-collision_layer = 3
-collision_mask = 3
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("3_col")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
