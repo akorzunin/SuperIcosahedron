@@ -1,10 +1,10 @@
 {
   "include_subdirs": true,
   "configured_dirs": [
-    "res://test/integration/"
+    "res://test/"
   ],
   "dirs": [
-    "res://test/integration/"
+    "res://test/"
   ],
   "should_exit": true,
   "should_exit_on_success": true,

@@ -1,6 +1,6 @@
 # SuperIcosahedron architecture rewrite v2
 
-Historical rewrite plan. Current runtime keeps the data split (`FigureData`, `SideData`, `ModifierData`) under `src/side/`; the old experimental `GameSession` node was removed in favor of `GameProgress` owning run state.
+Historical rewrite plan; paths and migration steps below are retained as historical context, not current instructions. See [file-structure.md](file-structure.md) for the current `game/` layout, reusable labs, and remaining rewrite work.
 
 ## Goals
 

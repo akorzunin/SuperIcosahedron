@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://c28nbcejwepp8"]
+
+[ext_resource type="ArrayMesh" uid="uid://dh3qpoqqgdct5" path="res://game/gameplay/figure/assets/icosahedron_Solid.res" id="1_mesh"]
+[ext_resource type="Script" uid="uid://bumb7103wh6xa" path="res://game/gameplay/figure/Icosahedron.gd" id="2_ico"]
+[ext_resource type="Script" uid="uid://bx18kjrri1ero" path="res://game/gameplay/figure/Collider.gd" id="3_col"]
+[ext_resource type="Script" uid="uid://dsnfv57r65h60" path="res://game/gameplay/figure/MeshIcosahedron.gd" id="4_meshscript"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_body"]
+size = Vector3(1.66211, 1.56055, 1.42188)
+
+[node name="Icosahedron" type="Node3D"]
+script = ExtResource("2_ico")
+shader_type = -1
+
+[node name="Collider" type="Area3D" parent="."]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("3_col")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collider"]
+shape = SubResource("BoxShape3D_body")
+
+[node name="MeshIcosahedron" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = ExtResource("1_mesh")
+script = ExtResource("4_meshscript")

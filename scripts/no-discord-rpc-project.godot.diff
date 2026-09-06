@@ -1,23 +1,19 @@
 diff --git a/project.godot b/project.godot
-index 96f0c6e..5b2973e 100644
 --- a/project.godot
 +++ b/project.godot
-@@ -21,7 +21,6 @@ config/windows_native_icon="res://icons/icon.ico"
+@@ -25,6 +25,5 @@
  [autoload]
 
- G="*res://src/globals.gd"
+ G="*res://game/app/globals.gd"
 -DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
 
  [debug]
+@@ -44,7 +43,7 @@
+ [editor_plugins]
 
-@@ -38,10 +37,6 @@ window/size/mode=2
- window/stretch/mode="canvas_items"
- window/stretch/aspect="expand"
+-enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/indent_settings/plugin.cfg")
++enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/indent_settings/plugin.cfg")
 
--[editor_plugins]
--
--enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg")
--
  [filesystem]
 
  import/blender/enabled=false

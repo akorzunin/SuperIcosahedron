@@ -8,7 +8,7 @@ from pathlib import Path
 app_name = "SuperIcosahedron"
 config_name = "settings.cfg"
 opener = "xdg-open"
-default_config = Path("./src/components/settings/default_settings.cfg")
+default_config = Path("./game/services/settings/default_settings.cfg")
 
 
 def get_config_path(project_name: str) -> Path:

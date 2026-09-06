@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://bgersn2bx7nt"]
+
+[ext_resource type="PackedScene" uid="uid://punqnh5q5wad" path="res://game/gameplay/figure/dent/dent.tscn" id="1_krqh7"]
+
+[node name="IcoNode" type="Node3D" unique_id=1574946967]
+
+[node name="Dent01" parent="." unique_id=1204197996 instance=ExtResource("1_krqh7")]
+
+[node name="Dent02" parent="." unique_id=1911453007 instance=ExtResource("1_krqh7")]
+transform = Transform3D(0.5, -0.309017, 0.809017, -0.309017, 0.809017, 0.5, -0.809017, -0.5, 0.309017, 0, 0, 0)
+
+[node name="Dent03" parent="." unique_id=1934471393 instance=ExtResource("1_krqh7")]
+transform = Transform3D(0.809017, 0.5, -0.309017, -0.5, 0.309017, -0.809017, -0.309017, 0.809017, 0.5, 0, 0, 0)
+
+[node name="Dent04" parent="." unique_id=1932786994 instance=ExtResource("1_krqh7")]
+transform = Transform3D(0.809017, -0.5, -0.309017, 0.5, 0.309017, 0.809017, -0.309017, -0.809017, 0.5, 0, 0, 0)
+
+[node name="Dent05" parent="." unique_id=877202420 instance=ExtResource("1_krqh7")]
+transform = Transform3D(0.809017, -0.5, 0.309017, -0.5, -0.309017, 0.809017, -0.309017, -0.809017, -0.5, 0, 0, 0)
+
+[node name="Dent06" parent="." unique_id=887797621 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.309017, -0.809017, 0.5, 0.809017, -0.5, -0.309017, 0.5, 0.309017, 0.809017, 0, 0, 0)
+
+[node name="Dent07" parent="." unique_id=285934193 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.5, 0.309017, -0.809017, -0.309017, 0.809017, 0.5, 0.809017, 0.5, -0.309017, 0, 0, 0)
+
+[node name="Dent08" parent="." unique_id=71922079 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.5, -0.309017, -0.809017, 0.309017, 0.809017, -0.5, 0.809017, -0.5, -0.309017, 0, 0, 0)
+
+[node name="Dent09" parent="." unique_id=1068909676 instance=ExtResource("1_krqh7")]
+transform = Transform3D(0.5, 0.309017, -0.809017, -0.309017, -0.809017, -0.5, -0.809017, 0.5, -0.309017, 0, 0, 0)
+
+[node name="Dent10" parent="." unique_id=1476353220 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.809017, -0.5, 0.309017, 0.5, -0.309017, 0.809017, -0.309017, 0.809017, 0.5, 0, 0, 0)
+
+[node name="Dent11" parent="." unique_id=1141108438 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.809017, 0.5, -0.309017, -0.5, -0.309017, 0.809017, 0.309017, 0.809017, 0.5, 0, 0, 0)
+
+[node name="Dent12" parent="." unique_id=1690297273 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.809017, -0.5, -0.309017, 0.5, -0.309017, -0.809017, 0.309017, -0.809017, 0.5, 0, 0, 0)
+
+[node name="Dent13" parent="." unique_id=1366756286 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.309017, 0.809017, -0.5, 0.809017, 0.5, 0.309017, 0.5, -0.309017, -0.809017, 0, 0, 0)
+
+[node name="Dent14" parent="." unique_id=839552053 instance=ExtResource("1_krqh7")]
+transform = Transform3D(0.5, -0.309017, -0.809017, 0.309017, -0.809017, 0.5, -0.809017, -0.5, -0.309017, 0, 0, 0)
+
+[node name="Dent15" parent="." unique_id=513256920 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.809017, 0.5, -0.309017, 0.5, 0.309017, -0.809017, -0.309017, -0.809017, -0.5, 0, 0, 0)
+
+[node name="Dent16" parent="." unique_id=2138606812 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.809017, 0.5, 0.309017, 0.5, 0.309017, 0.809017, 0.309017, 0.809017, -0.5, 0, 0, 0)
+
+[node name="Dent17" parent="." unique_id=1780358904 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Dent18" parent="." unique_id=1488777596 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Dent19" parent="." unique_id=2093058512 instance=ExtResource("1_krqh7")]
+transform = Transform3D(1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0)
+
+[node name="Dent20" parent="." unique_id=261464990 instance=ExtResource("1_krqh7")]
+transform = Transform3D(-0.5, 0.309017, 0.809017, 0.309017, -0.809017, 0.5, 0.809017, 0.5, 0.309017, 0, 0, 0)

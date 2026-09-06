@@ -17,7 +17,7 @@ The player navigates a stream of rotating icosahedrons by aligning the active sp
 ## 3. Target platforms / tech
 
 - Engine: **Godot 4**.
-- Main scene: `src/scenes/MainScene.tscn`.
+- Main scene: `game/app/Main.tscn`.
 - Export targets already configured: **Windows**, **Web**, **Linux/X11**, **Android**.
 - Landing page exists in `web/` using Astro/React/Tailwind.
 - Optional desktop Discord Rich Presence; disabled on web/mobile.

@@ -2,7 +2,7 @@
 
 # Define the source and target files
 SOURCE_FILE="assets/build/ost/section_change.wav"
-TARGET_FILE="assets/build/ost/section_change_v1.wav"
+TARGET_FILE="game/services/audio/assets/section_change_v1.wav"
 
 # Define the speed adjustment factor
 

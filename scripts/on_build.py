@@ -5,8 +5,8 @@ import fileinput
 import os
 import sys
 
-main_scene = "res://src/scenes/MainScene.tscn"
-version_file = "./src/version.gd"
+main_scene = "res://game/app/Main.tscn"
+version_file = "./game/app/version.gd"
 
 
 def check_main_scene():

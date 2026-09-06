@@ -1,0 +1,34 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://dev/labs/run/RunLab.gd" id="1"]
+[ext_resource type="PackedScene" path="res://game/gameplay/Gameplay.tscn" id="2"]
+
+[node name="RunLab" type="Node"]
+script = ExtResource("1")
+
+[node name="Gameplay" parent="." instance=ExtResource("2")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Panel" type="PanelContainer" parent="UI"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 480.0
+
+[node name="Buttons" type="VBoxContainer" parent="UI/Panel"]
+layout_mode = 2
+
+[node name="Status" type="Label" parent="UI/Panel/Buttons"]
+layout_mode = 2
+text = "Run lab"
+
+[node name="Restart" type="Button" parent="UI/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
+text = "Restart run"
+
+[node name="Pause" type="Button" parent="UI/Panel/Buttons"]
+layout_mode = 2
+focus_mode = 0
+text = "Pause / resume"

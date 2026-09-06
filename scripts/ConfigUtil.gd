@@ -1,7 +1,7 @@
 #!/usr/bin/env -S godot --headless -s
 extends SceneTree
 
-var local_confg := "res://src/components/settings/default_settings.cfg"
+var local_confg := "res://game/services/settings/default_settings.cfg"
 var user_config := "user://settings.cfg"
 
 func copy_config(src: String, dest: String):

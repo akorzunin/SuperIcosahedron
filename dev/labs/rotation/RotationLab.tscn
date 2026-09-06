@@ -1,0 +1,80 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://dev/labs/rotation/RotationLab.gd" id="1"]
+[ext_resource type="Script" path="res://game/gameplay/controls/FigureController.gd" id="2"]
+[ext_resource type="Script" path="res://game/gameplay/controls/PlayerInput.gd" id="3"]
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 1
+background_color = Color(0.025, 0.025, 0.04, 1)
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.6
+
+[node name="RotationLab" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(0, 0, 4)
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-30, -30, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="FigureController" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="PlayerInput" type="Node" parent="." node_paths=PackedStringArray("controller")]
+script = ExtResource("3")
+controller = NodePath("../FigureController")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="PanelContainer" parent="UI"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 400.0
+
+[node name="Controls" type="VBoxContainer" parent="UI/Panel"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/Panel/Controls"]
+layout_mode = 2
+text = "Rotation lab — arrow keys to rotate"
+
+[node name="Mode" type="OptionButton" parent="UI/Panel/Controls"]
+layout_mode = 2
+focus_mode = 0
+item_count = 2
+selected = 0
+popup/item_0/text = "Free spin"
+popup/item_0/id = 0
+popup/item_1/text = "Face lock"
+popup/item_1/id = 1
+
+[node name="Invert" type="CheckButton" parent="UI/Panel/Controls"]
+layout_mode = 2
+focus_mode = 0
+text = "Invert horizontal control"
+
+[node name="SpeedLabel" type="Label" parent="UI/Panel/Controls"]
+layout_mode = 2
+text = "Rotation speed"
+
+[node name="Speed" type="HSlider" parent="UI/Panel/Controls"]
+layout_mode = 2
+focus_mode = 0
+max_value = 100.0
+value = 12.0
+
+[node name="Reset" type="Button" parent="UI/Panel/Controls"]
+layout_mode = 2
+focus_mode = 0
+text = "Reset orientation"
+
+[node name="Orientation" type="Label" parent="UI/Panel/Controls"]
+layout_mode = 2
+text = "Quaternion"

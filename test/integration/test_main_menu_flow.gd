@@ -1,15 +1,23 @@
 extends GutTest
 
-const MAIN_SCENE := preload("res://src/scenes/MainScene.tscn")
+const MAIN_SCENE := preload("res://game/app/Main.tscn")
 const SETTINGS_FILE := "user://settings.cfg"
 
 var _main_scene: Node
+var _saved_settings_file: PackedByteArray
+var _had_settings_file := false
+var _previous_settings: Dictionary
+var _previous_data: Dictionary
 
 func before_each() -> void:
     _release_all_actions()
+    _previous_settings = G.settings
+    _previous_data = G.data
     G.settings = {}
     G.data = {}
-    if FileAccess.file_exists(SETTINGS_FILE):
+    _had_settings_file = FileAccess.file_exists(SETTINGS_FILE)
+    if _had_settings_file:
+        _saved_settings_file = FileAccess.get_file_as_bytes(SETTINGS_FILE)
         DirAccess.remove_absolute(ProjectSettings.globalize_path(SETTINGS_FILE))
 
 func after_each() -> void:
@@ -18,6 +26,14 @@ func after_each() -> void:
         _main_scene.queue_free()
     _main_scene = null
     await wait_process_frames(3)
+    if _had_settings_file:
+        var file := FileAccess.open(SETTINGS_FILE, FileAccess.WRITE)
+        file.store_buffer(_saved_settings_file)
+        file.close()
+    elif FileAccess.file_exists(SETTINGS_FILE):
+        DirAccess.remove_absolute(ProjectSettings.globalize_path(SETTINGS_FILE))
+    G.settings = _previous_settings
+    G.data = _previous_data
 
 func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void:
     const WAIT_MOD := 1

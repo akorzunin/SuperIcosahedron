@@ -16,7 +16,7 @@ The player navigates a stream of rotating icosahedrons by aligning camera toward
 ## 3. Target platforms / tech
 
 - Engine: **Godot 4**.
-- Main scene: `src/scenes/MainScene.tscn`.
+- Main scene: `game/app/Main.tscn`.
 - Targets priority:
   - **Web**
   - **Android**

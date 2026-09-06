@@ -54,7 +54,7 @@ tasks:
     cmds:
       - pre-commit run --all-files --color always
     sources:
-      - ./src/*
+      - ./game/*
       - ./assets/*
       - ./web/*
 
@@ -62,7 +62,17 @@ tasks:
     desc: run GUT tests headlessly
     cmds:
       - godot --headless --path . --import
-      - godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test/integration -gexit
+      - godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test -ginclude_subdirs -gexit
+
+  lab-run:
+    desc: run gameplay directly without the menu
+    cmds:
+      - godot --path . res://dev/labs/run/RunLab.tscn
+
+  lab-rotation:
+    desc: test production rotation controls
+    cmds:
+      - godot --path . res://dev/labs/rotation/RotationLab.tscn
 
   gd-dev-build-web:
     internal: true
