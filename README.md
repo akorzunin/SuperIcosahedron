@@ -26,7 +26,13 @@ Open either scene and press **F6**, or run:
 task lab-run       # production game loop, no menu
 task lab-rotation  # production controls, isolated figure
 task test          # GUT unit + integration tests
+task visual-playtest # rendered lab replays + screenshots (Linux graphical session)
 ```
+
+For visual changes, run the playtest before and after editing, then **open and
+inspect** the generated contact sheets. Passing state checks alone is not visual
+validation. See [rendered playtests](docs/visual-playtest.md) for evidence paths,
+checkpoints, and renderer requirements.
 
 The legacy end detector is still awaiting its collider rewrite. RunLab does not
 imply that collision/pass-fail behavior is correct yet.

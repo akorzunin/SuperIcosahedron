@@ -64,6 +64,12 @@ tasks:
       - godot --headless --path . --import
       - godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test -ginclude_subdirs -gexit
 
+  visual-playtest:
+    desc: replay rendered labs and save screenshots for visual review (Linux)
+    platforms: [linux]
+    cmds:
+      - bash scripts/visual_playtest.sh {{.CLI_ARGS}}
+
   lab-run:
     desc: run gameplay directly without the menu
     cmds:
