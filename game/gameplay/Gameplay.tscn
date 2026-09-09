@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=37 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" uid="uid://c8l7bdj6xnlwh" path="res://game/gameplay/Gameplay.gd" id="1_rcesrc"]
 [ext_resource type="Shader" uid="uid://m5sywmm0umxn" path="res://game/gameplay/level/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -57,9 +57,6 @@ expand_margin_right = 25.0
 expand_margin_bottom = 15.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cw5a6"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_end"]
-size = Vector3(4, 4, 4)
 
 [node name="LoopScene" type="Node3D"]
 script = ExtResource("1_rcesrc")
@@ -260,13 +257,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5666, 0, 0)
 shape = SubResource("BoxShape3D_cw5a6")
 
 [node name="EndDetector" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.38583, 10.9777)
 collision_layer = 1
 collision_mask = 1
 script = ExtResource("28_end")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EndDetector"]
-shape = SubResource("BoxShape3D_end")
 
 [node name="Config" type="Node" parent="."]
 script = ExtResource("18_tjx6c")

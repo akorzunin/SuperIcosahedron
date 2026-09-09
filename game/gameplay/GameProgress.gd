@@ -76,7 +76,10 @@ func register_figure(figure: FigureData) -> void:
 func resolve_side(figure: Icosahedron, side: SideData) -> void:
     if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
         return
-    if not figure or figure.resolved or not side or side.collected:
+    if not is_instance_valid(figure) or figure.resolved or figure.despawning \
+    or figure.is_queued_for_deletion() or not side or side.collected:
+        return
+    if figure.get_parent() != loop_controls.figureRoot.anchor or not figure.data.sides.has(side):
         return
     var outcome := run_state.resolve_side(figure.get_instance_id(), side)
     if outcome == RunState.Outcome.IGNORED:
@@ -86,6 +89,7 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
     if outcome == RunState.Outcome.GAME_OVER:
         _game_over()
         return
+    sound_requested.emit(&"on_node_passed")
     _update_level()
     log_tts(figure.spwan_time, side.id)
     figure.despawn()

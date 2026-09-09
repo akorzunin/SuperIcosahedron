@@ -41,6 +41,9 @@ func _mount_scenes() -> void:
 
 func _set_scene_active(scene: Node, active: bool) -> void:
     scene.visible = active
+    # Hiding a mounted scene does not deactivate its camera in the shared viewport.
+    if active:
+        scene.get_node("Environment/Camera3D").make_current()
     _set_canvas_layers_visible(scene, active)
     scene.process_mode = Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
 

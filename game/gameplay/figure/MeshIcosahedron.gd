@@ -10,6 +10,14 @@ const DENT_SOURCE_SIDE_ID := 1
 var angle_good := false
 var is_alt := false
 var is_rotating := false
+var rotation_tween: Tween
+var fade_tween: Tween
+const FADE_TIME := 0.3
+var opacity := 1.0:
+    set(value):
+        opacity = value
+        for material in _materials:
+            material.set_shader_parameter("opacity", opacity)
 var currnt_type: int
 var cutplane := Vector3.RIGHT
 var _materials: Array[ShaderMaterial] = []
@@ -28,8 +36,21 @@ func _ready() -> void:
     transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
 
 func set_controlled(state: bool):
-    var c := Color(1.0, 0.9, 0.3, 1.0) if state else _color_for_type(currnt_type)
-    set_color(c)
+    for material in _materials:
+        material.set_shader_parameter("controlled", state)
+
+func stop_rotation() -> void:
+    if rotation_tween:
+        rotation_tween.kill()
+        rotation_tween = null
+    is_rotating = false
+
+func fade_out() -> void:
+    if fade_tween:
+        return
+    fade_tween = create_tween()
+    fade_tween.tween_property(self, "opacity", 0.0, FADE_TIME)
+    fade_tween.tween_callback(hide)
 
 func set_cutplane(v: Vector4):
     cutplane = Vector3(v.x, v.y, v.z).normalized()

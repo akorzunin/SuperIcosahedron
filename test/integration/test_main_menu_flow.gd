@@ -44,6 +44,7 @@ func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void
     var game_state_manager: GameStateManager = loop_scene.get_node("GameStateManager")
 
     assert_eq(main_scene.current_scene, menu_scene, "Game boots into the main menu.")
+    assert_eq(get_viewport().get_camera_3d(), menu_scene.get_node("Environment/Camera3D"))
     assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_MENU)
 
     await _tap_action(&"ui_accept")
@@ -53,11 +54,20 @@ func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void
     await _tap_action(&"ui_accept")
     await wait_process_frames(10 * WAIT_MOD)
     assert_eq(main_scene.current_scene, loop_scene, "Second accept starts the selected level.")
+    assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"),
+        "Gameplay must not render through the close-up menu camera.")
     assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
 
     assert_true(_resolve_first_solid_side(loop_scene), "A spawned figure has a solid side that can end the run.")
     await wait_process_frames(2 * WAIT_MOD)
     assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_END)
+    assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"))
+
+    main_scene.change_scene("MenuScene")
+    assert_eq(get_viewport().get_camera_3d(), menu_scene.get_node("Environment/Camera3D"),
+        "Returning to menu restores its close-up camera.")
+    main_scene.change_scene("LoopScene")
+    assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"))
 
 func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
     var main_scene := await _load_main_scene()

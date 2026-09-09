@@ -45,6 +45,15 @@ func test_run_lab_starts_without_main_menu_and_restarts_with_one_figure() -> voi
     assert_false(gameplay.get_node("ScaleTimer").paused)
     assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
 
+func test_collision_debug_toggles_do_not_take_keyboard_focus() -> void:
+    lab = RUN_LAB.instantiate()
+    add_child(lab)
+    await wait_process_frames(2)
+    for name in ["Collisions", "Observer"]:
+        var button: CheckButton = lab.get_node("UI/Panel/Buttons/" + name)
+        assert_eq(button.focus_mode, Control.FOCUS_NONE,
+            name + " must not block PlayerInput after a mouse click.")
+
 func test_accept_locks_current_figure_and_controls_the_next_one() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -59,10 +68,16 @@ func test_accept_locks_current_figure_and_controls_the_next_one() -> void:
     accept.action = &"ui_accept"
     accept.pressed = true
 
+    _align_for_commit(gameplay, first.icosahedron)
+    watch_signals(gameplay.controls)
+    watch_signals(gameplay.progress)
     gameplay.controls._input(accept)
 
+    assert_signal_not_emitted(gameplay.controls, "sound_requested")
+    assert_signal_not_emitted(gameplay.progress, "sound_requested")
     assert_true(first.angle_good)
-    assert_false(first.visible)
+    assert_true(first.visible, "Commit starts a fade instead of hiding immediately.")
+    assert_eq(first.opacity, 1.0)
     assert_eq(gameplay.controls.controlledNode, second)
     assert_eq(gameplay.controls.figure_controller.target, second)
     assert_true(second.visible)
@@ -70,6 +85,12 @@ func test_accept_locks_current_figure_and_controls_the_next_one() -> void:
     assert_eq(gameplay.progress.figures_passed, 0)
     for collider in first.get_node("SideColliders").get_children():
         assert_true(collider.get_collision_layer_value(1))
+    await wait_seconds(MeshIcosahedron.FADE_TIME / 2.0)
+    assert_gt(first.opacity, 0.0)
+    assert_lt(first.opacity, 1.0)
+    await wait_seconds(MeshIcosahedron.FADE_TIME)
+    assert_false(first.visible)
+    assert_false(first.icosahedron.resolved, "Fading must not bypass collision validation.")
 
 func test_empty_dent_collision_advances_control_without_accept() -> void:
     lab = RUN_LAB.instantiate()
@@ -80,26 +101,37 @@ func test_empty_dent_collision_advances_control_without_accept() -> void:
     gameplay.spawner.spawn_icosahedron()
     var second := gameplay.figure_root.get_live_figures()[1].mesh_icosahedron
 
+    watch_signals(gameplay.progress)
     await _collide_with_side(gameplay, first, true)
 
+    assert_signal_emitted_with_parameters(gameplay.progress, "sound_requested", [&"on_node_passed"])
     assert_eq(gameplay.progress.figures_passed, 1)
     assert_eq(gameplay.controls.controlledNode, second)
     assert_eq(gameplay.controls.figure_controller.target, second)
     assert_false(is_instance_valid(first))
 
-func test_committed_figure_still_fails_on_solid_dent_collision() -> void:
+func test_incorrect_commit_is_rejected_without_losing_control() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
     await wait_process_frames(2)
     var gameplay: LoopScene = lab.get_node("Gameplay")
     var first := gameplay.controls.controlledNode.icosahedron
-    gameplay.controls.advance_control()
-    assert_null(gameplay.controls.figure_controller.target)
-
-    await _collide_with_side(gameplay, first, false)
-
-    assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_END)
+    _align_for_commit(gameplay, first, false)
+    watch_signals(gameplay.controls)
+    var accept := InputEventAction.new()
+    accept.action = &"ui_accept"
+    accept.pressed = true
+    gameplay.controls._input(accept)
+    assert_signal_emitted_with_parameters(gameplay.controls, "commit_rejected", [first])
+    assert_eq(gameplay.controls.figure_controller.target, first.mesh_icosahedron)
+    assert_false(first.mesh_icosahedron.angle_good)
+    assert_null(first.mesh_icosahedron.fade_tween)
+    assert_true(first.mesh_icosahedron.visible)
+    assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
     assert_eq(gameplay.progress.figures_passed, 0)
+    _align_for_commit(gameplay, first)
+    gameplay.controls._input(accept)
+    assert_true(first.mesh_icosahedron.angle_good, "Player can correct and retry.")
 
 func test_committed_figure_pass_does_not_skip_next_figure() -> void:
     lab = RUN_LAB.instantiate()
@@ -107,6 +139,7 @@ func test_committed_figure_pass_does_not_skip_next_figure() -> void:
     await wait_process_frames(2)
     var gameplay: LoopScene = lab.get_node("Gameplay")
     var first := gameplay.controls.controlledNode.icosahedron
+    _align_for_commit(gameplay, first)
     gameplay.controls.advance_control()
     gameplay.spawner.spawn_icosahedron()
     await wait_process_frames(2)
@@ -120,12 +153,22 @@ func test_committed_figure_pass_does_not_skip_next_figure() -> void:
     assert_eq(gameplay.controls.controlledNode, second)
     assert_false(second.angle_good)
 
+func _align_for_commit(gameplay: LoopScene, figure: Icosahedron, empty := true) -> void:
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    for side in figure.data.sides:
+        if side.is_empty() == empty:
+            var points := figure.mesh_icosahedron.get_side_points(side.id)
+            var normal := (points[1] + points[2] + points[3]).normalized()
+            var direction := (detector.global_position - figure.global_position).normalized()
+            figure.mesh_icosahedron.global_basis = Basis(Quaternion(normal, direction))
+            return
+
 func _collide_with_side(gameplay: LoopScene, figure: Icosahedron, empty: bool) -> void:
     var detector: EndDetector = gameplay.get_node("EndDetector")
     for side in figure.data.sides:
         if side.is_empty() == empty:
             var direction := (detector.global_position - figure.global_position).normalized()
-            figure.mesh_icosahedron.global_basis = Basis(Quaternion(side.normal.normalized(), direction))
+            _align_for_commit(gameplay, figure, empty)
             gameplay.get_node("LoopTimer").stop()
             gameplay.get_node("ScaleTimer").stop()
             for size in range(2, 25):
@@ -145,6 +188,85 @@ func test_run_lab_resets_game_over_presentation() -> void:
     await wait_seconds(0.25)
     assert_true(gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY))
     assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
+
+func test_control_handoff_preserves_each_figures_color() -> void:
+    lab = RUN_LAB.instantiate()
+    add_child(lab)
+    await wait_process_frames(2)
+    var gameplay: LoopScene = lab.get_node("Gameplay")
+    var first := gameplay.controls.controlledNode
+    gameplay.spawner.spawn_icosahedron()
+    var second := gameplay.figure_root.get_live_figures()[1].mesh_icosahedron
+    var first_color: Color = first.get_dents()[0].material_override.get_shader_parameter("color")
+    var second_color: Color = second.get_dents()[0].material_override.get_shader_parameter("color")
+    _align_for_commit(gameplay, first.icosahedron)
+    gameplay.controls.advance_control()
+    assert_eq(first.get_dents()[0].material_override.get_shader_parameter("color"), first_color)
+    assert_eq(second.get_dents()[0].material_override.get_shader_parameter("color"), second_color)
+
+func test_commit_stops_in_flight_face_rotation() -> void:
+    lab = RUN_LAB.instantiate()
+    add_child(lab)
+    await wait_process_frames(2)
+    var gameplay: LoopScene = lab.get_node("Gameplay")
+    var mesh := gameplay.controls.controlledNode
+    gameplay.controls.figure_controller.step_face(Vector2.RIGHT)
+    _align_for_commit(gameplay, mesh.icosahedron)
+    gameplay.controls.advance_control()
+    var committed := mesh.quaternion
+    await wait_seconds(FaceLock.ROTATION_TIME + 0.05)
+    assert_true(mesh.quaternion.is_equal_approx(committed))
+    assert_false(mesh.is_rotating)
+
+func test_end_game_rotates_before_activating_option(inverted = use_parameters([false, true])) -> void:
+    lab = RUN_LAB.instantiate()
+    add_child(lab)
+    await wait_process_frames(2)
+    var gameplay: LoopScene = lab.get_node("Gameplay")
+    var controls := gameplay.controls
+    gameplay.game_state_manager.change_state(GameStateManager.GameState.GAME_END)
+    await wait_seconds(1.05)
+    var anchor := gameplay.figure_root.anchor
+    var initial := anchor.quaternion
+    watch_signals(controls)
+    var event := InputEventAction.new()
+    event.action = &"ui_left" if inverted else &"ui_right"
+    event.pressed = true
+    controls.handle_game_over_input(event, inverted)
+    assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_END)
+    assert_signal_not_emitted(controls, "restart_requested")
+    await wait_seconds(LoopControls.OPTION_ROTATION_TIME / 2.0)
+    assert_false(anchor.quaternion.is_equal_approx(initial))
+    assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_END)
+    await wait_seconds(LoopControls.OPTION_ROTATION_TIME)
+    assert_signal_emit_count(controls, "restart_requested", 1)
+    assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
+    assert_true(anchor.transform.is_equal_approx(Transform3D.IDENTITY))
+
+    gameplay.game_state_manager.change_state(GameStateManager.GameState.GAME_END)
+    await wait_seconds(1.05)
+    event.action = &"ui_right" if inverted else &"ui_left"
+    controls.handle_game_over_input(event, inverted)
+    assert_signal_not_emitted(controls, "menu_requested")
+    await wait_seconds(LoopControls.OPTION_ROTATION_TIME + 0.05)
+    assert_signal_emit_count(controls, "menu_requested", 1)
+
+func test_restart_cancels_pending_end_game_selection() -> void:
+    lab = RUN_LAB.instantiate()
+    add_child(lab)
+    await wait_process_frames(2)
+    var gameplay: LoopScene = lab.get_node("Gameplay")
+    gameplay.game_state_manager.change_state(GameStateManager.GameState.GAME_END)
+    await wait_seconds(1.05)
+    var event := InputEventAction.new()
+    event.action = &"ui_left"
+    event.pressed = true
+    watch_signals(gameplay.controls)
+    gameplay.controls.handle_game_over_input(event, false)
+    gameplay.restart()
+    await wait_seconds(LoopControls.OPTION_ROTATION_TIME + 0.05)
+    assert_signal_not_emitted(gameplay.controls, "menu_requested")
+    assert_true(gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY))
 
 func test_rotation_lab_uses_production_controller_and_resets_target() -> void:
     G.settings = {} # Rotation must not depend on app settings initialization.

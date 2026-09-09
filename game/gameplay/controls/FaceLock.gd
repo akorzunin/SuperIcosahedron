@@ -22,7 +22,9 @@ const down_q := Quaternion(0, 0, -a1, b1)
 const alt_q := Quaternion(0.515479, 0.282345, -0.400652, 0.702881)
 
 static func face_lock_transform(q: Quaternion, m: MeshIcosahedron):
+    m.stop_rotation()
     var tw := m.create_tween()
+    m.rotation_tween = tw
     var rot := q * m.quaternion
     tw.tween_property(m, 'quaternion', rot.normalized(), ROTATION_TIME)
     tw.set_pause_mode(Tween.TWEEN_PAUSE_BOUND)

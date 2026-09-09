@@ -38,6 +38,8 @@ func _ready() -> void:
 func _run() -> void:
     await _rotation_replay()
     await _restart_sequence()
+    await _mounted_gameplay_sequence()
+    await _collision_sequence()
     var report := {
         "automated_status": "failed" if failed else "passed",
         "visual_review": "required — inspect PNGs; state checks do not prove visual correctness",
@@ -129,6 +131,219 @@ func _restart_sequence() -> void:
     lab.queue_free()
     await _frames(3)
 
+func _mounted_gameplay_sequence() -> void:
+    seed(SEED)
+    var main := preload("res://game/app/Main.tscn").instantiate()
+    # Keep the replay's render settings; Config uses the in-memory settings above.
+    main.get_node("GameSettings").free()
+    # Audio is outside visual coverage; avoid real-time playback in a fixed-FPS replay.
+    for player in main.get_node("SfxPlayer").get_children():
+        player.stream = null
+    get_tree().root.add_child(main)
+    await _frames(30)
+    await _capture("mounted", "01_menu", {})
+    await _tap_accept()
+    await _frames(30)
+    await _tap_accept()
+    await _frames(30)
+    var gameplay: LoopScene = main.scenes.LoopScene
+    _check(main.current_scene == gameplay, "Menu input starts mounted gameplay")
+    _check(get_viewport().get_camera_3d() == gameplay.get_node("Environment/Camera3D"),
+        "Mounted gameplay uses gameplay camera")
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    var figure := gameplay.figure_root.get_live_figures()[0]
+    var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
+    _align_side(gameplay, figure, empty)
+    figure.scale = Vector3.ONE * 5.0
+    await _frames(3)
+    await _capture("mounted", "02_approaching_hole", _run_state(gameplay))
+    gameplay.spawner.spawn_icosahedron()
+    await _grow_to_contact(figure)
+    _check(gameplay.progress.figures_passed == 1, "Mounted physical passage scores once")
+    await _capture("mounted", "03_passed", _run_state(gameplay))
+    figure = gameplay.figure_root.get_live_figures()[0]
+    var solid := figure.data.sides.filter(func(side: SideData): return not side.is_empty())[0] as SideData
+    _align_side(gameplay, figure, solid)
+    figure.scale = Vector3.ONE * 5.0
+    await _frames(3)
+    await _capture("mounted", "04_approaching_solid", _run_state(gameplay))
+    await _grow_to_contact(figure)
+    await _frames(20)
+    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Mounted solid contact ends run")
+    await _capture("mounted", "05_game_over", _run_state(gameplay))
+    main.change_scene("MenuScene")
+    await _frames(3)
+    _check(get_viewport().get_camera_3d() == main.scenes.MenuScene.get_node("Environment/Camera3D"),
+        "Returning to menu restores menu camera")
+    await _capture("mounted", "06_menu_return", {})
+    _save_contact_sheet("mounted")
+    await _transition_sequence(main)
+    main.queue_free()
+    await _frames(3)
+
+func _transition_sequence(main: Node) -> void:
+    main.change_scene("LoopScene")
+    var gameplay: LoopScene = main.scenes.LoopScene
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    await _frames(3)
+    var figure := gameplay.figure_root.get_live_figures()[0]
+    var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
+    _align_side(gameplay, figure, empty)
+    figure.scale = Vector3.ONE * 7.0
+    gameplay.spawner.spawn_icosahedron()
+    await _frames(3)
+    await _capture("fade", "01_before_commit", _run_state(gameplay))
+    await _tap_accept()
+    await _frames(2)
+    await _capture("fade", "02_early", _run_state(gameplay))
+    await _frames(4)
+    await _capture("fade", "03_mid", _run_state(gameplay))
+    _check(figure.mesh_icosahedron.opacity > 0.0 and figure.mesh_icosahedron.opacity < 1.0,
+        "Commit visibly fades over time")
+    await _frames(5)
+    await _capture("fade", "04_late", _run_state(gameplay))
+    await _frames(8)
+    _check(not figure.mesh_icosahedron.visible and not figure.resolved,
+        "Faded shell still awaits collision validation")
+    await _capture("fade", "05_hidden", _run_state(gameplay))
+    await _grow_to_contact(figure)
+    _check(gameplay.progress.figures_passed == 1, "Committed shell scores at physical passage")
+    await _capture("fade", "06_passed", _run_state(gameplay))
+    _save_contact_sheet("fade")
+
+    gameplay.game_state_manager.change_state(GameStateManager.GameState.GAME_END)
+    await _frames(65)
+    await _capture("options", "01_score", _run_state(gameplay))
+    await _tap_accept(&"ui_right")
+    await _frames(7)
+    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Restart waits for rotation")
+    await _capture("options", "02_restart_turn", _run_state(gameplay))
+    await _frames(15)
+    _check_active_run(gameplay, "Animated restart")
+    await _capture("options", "03_restarted", _run_state(gameplay))
+    gameplay.game_state_manager.change_state(GameStateManager.GameState.GAME_END)
+    await _frames(65)
+    await _capture("options", "04_score", _run_state(gameplay))
+    await _tap_accept(&"ui_left")
+    await _frames(7)
+    _check(main.current_scene == gameplay, "Exit waits for rotation")
+    await _capture("options", "05_exit_turn", _run_state(gameplay))
+    await _frames(15)
+    _check(main.current_scene == main.scenes.MenuScene, "Animated exit returns to menu")
+    await _capture("options", "06_menu", {})
+    _save_contact_sheet("options")
+
+func _collision_sequence() -> void:
+    seed(SEED)
+    var lab := RUN_LAB.instantiate()
+    add_child(lab)
+    var gameplay: LoopScene = lab.gameplay
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    var figure := gameplay.figure_root.get_live_figures()[0]
+    var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
+    _align_side(gameplay, figure, empty)
+    figure.scale = Vector3.ONE * 7.0
+    await _frames(3)
+    await _click(lab.get_node("UI/Panel/Buttons/Collisions"))
+    await _frames(3)
+    _check(lab.collision_debug.enabled, "Collision overlay enabled by UI")
+    _check(lab.collision_debug.shapes.size() == 21, "Overlay includes 20 sides and player ring")
+    await _check_debug_steering(figure, "Colliders")
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    var camera: Camera3D = gameplay.get_node("Environment/Camera3D")
+    _check(detector.global_basis.is_equal_approx(camera.global_basis), "Window is parallel to camera plane")
+    var solid_start := figure.data.sides.filter(func(side: SideData): return not side.is_empty())[0] as SideData
+    _align_side(gameplay, figure, solid_start)
+    var rejected: Array[Icosahedron] = []
+    gameplay.controls.commit_rejected.connect(func(value): rejected.append(value))
+    await _tap_accept()
+    _check(rejected == [figure], "Incorrect Space emits rejection signal")
+    _check(not figure.mesh_icosahedron.angle_good and figure.mesh_icosahedron.visible,
+        "Rejected figure stays visible and unlocked")
+    _check(gameplay.controls.controlledNode == figure.mesh_icosahedron and gameplay.progress.score == 0,
+        "Rejected commit keeps control and does not score")
+    await _capture("collision", "01_player_view", _run_state(gameplay))
+    _align_side(gameplay, figure, empty)
+    await _click(lab.get_node("UI/Panel/Buttons/Observer"))
+    await _frames(3)
+    _check(lab.collision_debug.observer, "Observer camera enabled by UI")
+    await _check_debug_steering(figure, "Observer")
+    await _capture("collision", "02_observer", _run_state(gameplay))
+    _align_side(gameplay, figure, empty)
+    gameplay.spawner.spawn_icosahedron()
+    await _tap_accept()
+    await _frames(25)
+    _check(not figure.mesh_icosahedron.visible and not figure.resolved, "Debug: hidden shell still unresolved")
+    var shape: CollisionShape3D = figure.get_node("MeshIcosahedron/SideColliders").get_child(0).get_child(0)
+    _check(lab.collision_debug.shapes[shape].is_visible_in_tree(), "Hidden shell retains debug wireframe")
+    await _capture("collision", "03_hidden_collider", _run_state(gameplay))
+    await _grow_to_contact(figure)
+    _check(gameplay.progress.figures_passed == 1, "Debug: real hole contact scores")
+    await _capture("collision", "04_passed", _run_state(gameplay))
+    figure = gameplay.figure_root.get_live_figures()[0]
+    var solid := figure.data.sides.filter(func(side: SideData): return not side.is_empty())[0] as SideData
+    _align_side(gameplay, figure, solid)
+    figure.scale = Vector3.ONE * 10.0
+    await _frames(3)
+    await _capture("collision", "05_solid_approach", _run_state(gameplay))
+    await _grow_to_contact(figure)
+    await _frames(20)
+    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Debug: real solid contact fails")
+    await _click(lab.get_node("UI/Panel/Buttons/Collisions"))
+    await _click(lab.get_node("UI/Panel/Buttons/Observer"))
+    await _frames(3)
+    _check(not lab.collision_debug.visible, "Collision overlay can be hidden")
+    _check(gameplay.get_node("Environment/Camera3D").transform.is_equal_approx(lab.collision_debug.camera_transform),
+        "Observer restores gameplay camera")
+    await _capture("collision", "06_game_over", _run_state(gameplay))
+    _save_contact_sheet("collision")
+    lab.queue_free()
+    await _frames(3)
+
+func _check_debug_steering(figure: Icosahedron, label: String) -> void:
+    _check(get_viewport().gui_get_focus_owner() == null, label + ": click leaves gameplay keyboard focus")
+    var initial := figure.mesh_icosahedron.quaternion
+    Input.action_press("ui_right")
+    await _frames(15)
+    Input.action_release("ui_right")
+    var turned := figure.mesh_icosahedron.quaternion
+    _check(not turned.is_equal_approx(initial), label + ": steering works after click")
+    await _frames(15)
+    _check(figure.mesh_icosahedron.quaternion.is_equal_approx(turned), label + ": release stops steering")
+
+func _tap_accept(action: StringName = &"ui_accept") -> void:
+    var event := InputEventAction.new()
+    event.action = action
+    event.pressed = true
+    Input.parse_input_event(event)
+    await _frames(1)
+    event = event.duplicate()
+    event.pressed = false
+    Input.parse_input_event(event)
+    await _frames(1)
+
+func _align_side(gameplay: LoopScene, figure: Icosahedron, side: SideData) -> void:
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    var direction := (detector.global_position - figure.global_position).normalized()
+    var mesh_scale := figure.mesh_icosahedron.global_basis.get_scale()
+    var points := figure.mesh_icosahedron.get_side_points(side.id)
+    var normal := (points[1] + points[2] + points[3]).normalized()
+    figure.mesh_icosahedron.global_basis = Basis(Quaternion(normal, direction)).scaled(mesh_scale)
+
+func _grow_to_contact(figure: Icosahedron) -> void:
+    # Controlled scale steps isolate camera/passage presentation from wall-clock growth.
+    for size in range(6, 25):
+        if not is_instance_valid(figure) or figure.resolved:
+            break
+        figure.scale = Vector3.ONE * size
+        await _frames(3)
+
 func _check_active_run(gameplay: LoopScene, label: String) -> void:
     _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE, label + ": active")
     _check(gameplay.progress.score == 0, label + ": score reset")
@@ -147,6 +362,8 @@ func _run_state(gameplay: LoopScene) -> Dictionary:
         figures.append({
             "orientation": _quaternion(figure.mesh_icosahedron.quaternion),
             "scale": [figure.scale.x, figure.scale.y, figure.scale.z],
+            "opacity": figure.mesh_icosahedron.opacity,
+            "committed": figure.mesh_icosahedron.angle_good,
             "visible": figure.mesh_icosahedron.is_visible_in_tree(),
             "controlled": figure.mesh_icosahedron == gameplay.controls.figure_controller.target,
         })
@@ -156,6 +373,7 @@ func _run_state(gameplay: LoopScene) -> Dictionary:
         "score": gameplay.progress.score,
         "figures_passed": gameplay.progress.figures_passed,
         "anchor_scale": [anchor_scale.x, anchor_scale.y, anchor_scale.z],
+        "anchor_orientation": _quaternion(gameplay.figure_root.anchor.quaternion),
         "figures": figures,
     }
 
