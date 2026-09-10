@@ -80,6 +80,23 @@ tasks:
     cmds:
       - godot --path . res://dev/labs/rotation/RotationLab.tscn
 
+  build:
+    desc: export debug game builds through Docker (TARGET=all|linux|windows|web|android)
+    env:
+      TARGET: '{{.TARGET | default "all"}}'
+      GAME_VERSION: '{{.GAME_VERSION | default ""}}'
+      GAME_COMMIT: '{{.GAME_COMMIT | default ""}}'
+      DISCORD_APP_ID: '{{.DISCORD_APP_ID | default "0"}}'
+    cmds:
+      - bash scripts/build_game.sh
+
+  test-docker:
+    desc: run GUT in the pinned game builder without host Godot
+    env:
+      TARGET: test
+    cmds:
+      - bash scripts/build_game.sh
+
   gd-dev-build-web:
     internal: true
     cmds:

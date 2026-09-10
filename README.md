@@ -71,19 +71,18 @@ choco install go-task
 
 ## Build and deploy
 
-```sh
-    task deploy-build-dev
-```
-
-### Build from linux(WSL)
-
-NOTE: Export templates should be installed
-
-dev build
+Build the game with Docker (no host Godot or cloud assets required):
 
 ```sh
-    task dev-build-all
+task build                    # Linux, Windows, Web, Android debug builds
+task build TARGET=web         # one platform
+task test-docker              # containerized GUT tests
 ```
+
+Artifacts: `build/docker/<TARGET>/`. See [Docker game builds](docs/docker-build.md)
+for prerequisites, metadata, signing limitations, and commands without Task.
+CI is unchanged. Legacy `dev-build-*` / `deploy-build-dev` tasks still use host
+tooling and the old output layout; they do not use this Docker path.
 
 ## Downloading assets
 

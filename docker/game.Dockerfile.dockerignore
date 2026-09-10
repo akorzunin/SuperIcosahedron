@@ -1,0 +1,24 @@
+# Dedicated allowlist: root assets/, .git/, .godot/, build/, web/ never enter.
+**
+!project.godot
+!export_presets.cfg
+!default_bus_layout.tres
+!game/
+!game/**
+!addons/
+!addons/**
+!test/
+!test/**
+!dev/
+!dev/**
+!docker/
+!docker/**
+# Keep tracked GDExtension bin/ libraries, but never local configuration/caches.
+**/__pycache__/
+**/.godot/
+**/.git/
+**/.env*
+**/*.keystore
+**/*.jks
+game/app/env.gd
+game/app/env.gd.uid
