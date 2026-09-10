@@ -23,6 +23,8 @@ var cutplane := Vector3.RIGHT
 var _materials: Array[ShaderMaterial] = []
 var _dents: Array[Dent] = []
 var _side_tris: Array[PackedVector3Array] = []
+var _controlled := false
+var _dent_marker: MeshInstance3D
 
 func _ready() -> void:
     _build_dents()
@@ -36,8 +38,23 @@ func _ready() -> void:
     transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
 
 func set_controlled(state: bool):
+    _controlled = state
     for material in _materials:
         material.set_shader_parameter("controlled", state)
+    _update_dent_marker()
+
+func _update_dent_marker() -> void:
+    if not _dent_marker:
+        return
+    _dent_marker.hide()
+    if not _controlled:
+        return
+    for dent in _dents:
+        if dent.is_empty():
+            var tri := _side_tris[dent.side_id]
+            _dent_marker.position = (tri[0] + tri[1] + tri[2]) / 3.0 * 1.03
+            _dent_marker.show()
+            return
 
 func stop_rotation() -> void:
     if rotation_tween:
@@ -57,6 +74,7 @@ func burst_dents() -> void:
     if not visible or not _dents.any(func(dent: Dent): return dent.visible):
         return
     stop_rotation()
+    set_controlled(false)
     # Visual-only fragments: keep the original radial colliders intact for passage.
     var fragments := Node3D.new()
     fragments.name = "DentBurst"
@@ -111,6 +129,7 @@ func apply_side_data(sides: Array[SideData]) -> void:
     for side in sides:
         if side.id >= 0 and side.id < _dents.size():
             _dents[side.id].apply_data(side)
+    _update_dent_marker()
 
 func get_dents() -> Array[Dent]:
     return _dents
@@ -137,6 +156,20 @@ func _build_dents() -> void:
         _dents.append(dent)
         root.add_child(dent)
     mesh = null
+    _dent_marker = MeshInstance3D.new()
+    _dent_marker.name = "OpenDentMarker"
+    var quad := QuadMesh.new()
+    quad.size = Vector2(2.0, 2.0)
+    _dent_marker.mesh = quad
+    var marker_material := ShaderMaterial.new()
+    marker_material.shader = preload("res://game/gameplay/figure/shaders/dent_marker.gdshader")
+    marker_material.render_priority = 1
+    _dent_marker.material_override = marker_material
+    _dent_marker.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+    # The billboard is screen-sized; its local quad bounds do not describe its rendered size.
+    _dent_marker.extra_cull_margin = 16384.0
+    add_child(_dent_marker)
+    _dent_marker.hide()
 
 func get_side_points(side_id: int) -> PackedVector3Array:
     var tri: PackedVector3Array = _side_tris[side_id]

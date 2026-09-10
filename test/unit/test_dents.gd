@@ -73,3 +73,25 @@ func test_figure_is_built_from_twenty_dents_with_one_hole() -> void:
     assert_eq(dents.size(), 20)
     assert_eq(hidden_dents.size(), 1)
     assert_eq(hidden_dents[0].side_id, 4)
+
+func test_control_cues_follow_open_dent_and_clear_on_handoff() -> void:
+    var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(StageGenerator.create_figure(4))
+    add_child_autofree(figure)
+    await wait_process_frames(1)
+    var shell := figure.mesh_icosahedron
+    var marker := shell.get_node("OpenDentMarker") as MeshInstance3D
+    assert_false(marker.visible)
+    shell.set_controlled(true)
+    assert_true(marker.visible)
+    var points := shell.get_side_points(4)
+    assert_almost_eq(marker.position, (points[1] + points[2] + points[3]) / 3.0 * 1.03, Vector3.ONE * 0.001)
+    for dent in shell.get_dents():
+        assert_true(dent.material_override.get_shader_parameter("controlled"))
+    shell.apply_side_data(StageGenerator.create_figure(7).sides)
+    points = shell.get_side_points(7)
+    assert_almost_eq(marker.position, (points[1] + points[2] + points[3]) / 3.0 * 1.03, Vector3.ONE * 0.001)
+    assert_false(shell.get_dents()[7].visible, "Marker must not fill the hole.")
+    shell.set_controlled(false)
+    assert_false(marker.visible)
+    for dent in shell.get_dents():
+        assert_false(dent.material_override.get_shader_parameter("controlled"))

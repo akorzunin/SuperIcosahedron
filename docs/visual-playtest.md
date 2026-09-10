@@ -13,6 +13,27 @@ MainScene menu-to-gameplay replay using production scenes, controllers, and inpu
 a fresh directory under `build/visual-playtest/run.*`; old evidence is never reused.
 These development scenes are excluded from exports by the existing `dev/**` filter.
 
+## Controlled figure outline and open-dent diamond
+
+- Before: `build/visual-playtest/run.apxGH6`; after:
+  `build/visual-playtest/run.9CUNad`, default Vulkan Mobile, RTX 5060 Ti.
+  Reviewed all six contact sheets in combined overviews and full-size
+  `mounted_02_approaching_hole.png` before/after, plus after
+  `rotation_03_right_end.png`.
+- Acceptance/observations: only the controlled shell has thin dark triangular
+  edge outlines, preserving stage colors. A small hollow gold diamond tracks
+  its empty face during rotation and stays screen-sized during growth. It is
+  visible through the shell, so a rear opening remains locatable. Control
+  handoff transfers cues; burst fragments and menu/end figures have no cues.
+  Rotation/release/reset, passage, fade and restart remain visually consistent.
+- The outline includes face edges, not just the outer silhouette. The marker
+  does not distinguish front/back or indicate an offscreen opening; those would
+  require directional HUD cues. Existing lab-panel/HUD overlap remains.
+- `task test`: 39 tests / 626 assertions passed. Final rendered checks passed.
+  First after-run `run.T2nRcC` rendered but failed RunLab restart checks; an
+  unchanged rerun passed. This intermittent replay failure is not resolved here.
+  Sparse captures do not validate every animation frame.
+
 ## Radial fragment fade
 
 - Before: `build/visual-playtest/run.zf1y5K`; after:
