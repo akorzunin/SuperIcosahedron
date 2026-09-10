@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "points_by_tier": [100, 250, 500, 1000, 2000, 4000, 8000],
+  "choices_per_figure": 3,
+  "pickups": [
+    {"id": "points", "title": "POINTS", "kind": "base", "value": 0, "color": "ffd166"},
+    {"id": "green", "title": "+ SIGN", "kind": "sign", "value": 1, "color": "72ff99"},
+    {"id": "red", "title": "- SIGN", "kind": "sign", "value": -1, "color": "ff8585"},
+    {"id": "tier", "title": "TIER +1", "kind": "tier", "value": 1, "color": "d5a6ff"}
+  ]
+}

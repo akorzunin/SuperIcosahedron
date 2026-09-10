@@ -40,6 +40,7 @@ func _run() -> void:
     await _restart_sequence()
     await _mounted_gameplay_sequence()
     await _collision_sequence()
+    await _modifier_sequence()
     var report := {
         "automated_status": "failed" if failed else "passed",
         "visual_review": "required — inspect PNGs; state checks do not prove visual correctness",
@@ -62,6 +63,51 @@ func _run() -> void:
     file.close()
     print("Visual playtest: %s. Inspect images in %s" % [report.automated_status, output])
     get_tree().quit(1 if failed else 0)
+
+func _modifier_sequence() -> void:
+    var old_mode: int = G.settings.SPAWN_MODE
+    G.settings.SPAWN_MODE = PatternGen.SpawnMode.QUEUE
+    var lab := RUN_LAB.instantiate()
+    get_tree().root.add_child(lab)
+    await _frames(3)
+    lab.get_node("UI").hide()
+    var gameplay: LoopScene = lab.get_node("Gameplay")
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    gameplay.figure_root.clean_all(true)
+    await _frames(3)
+    for step in 3:
+        var wanted := "tier" if step == 1 else "points"
+        # Search deterministic fixture seeds; all layouts still use production generation.
+        for fixture_seed in range(100):
+            gameplay.spawner.rng.seed = fixture_seed
+            var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng,
+                gameplay.progress.run_state.modifier_system.pending)
+            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted):
+                gameplay.spawner.rng.seed = fixture_seed
+                break
+        gameplay.spawner.spawn_icosahedron()
+        await _frames(2)
+        var figure := gameplay.figure_root.get_live_figures()[0]
+        var side: SideData = figure.data.sides.filter(
+            func(item): return item.modifier and item.modifier.id == wanted)[0]
+        _align_side(gameplay, figure, side)
+        figure.scale = Vector3.ONE * 5.0
+        await _frames(3)
+        await _capture("modifiers", "%02d_choices" % (step * 2 + 1), _run_state(gameplay))
+        await _grow_to_contact(figure)
+        await _frames(70)
+        await _capture("modifiers", "%02d_collected" % (step * 2 + 2), _run_state(gameplay))
+        _check(gameplay.progress.figures_passed == step + 1, "Modifier physical passage %d" % step)
+    _check(gameplay.progress.score == 250, "Points / tier / points commits T2 once")
+    _check(gameplay.progress.run_state.modifier_system.tier == 1, "Commit starts fresh T1 chain")
+    _save_contact_sheet("modifiers")
+    gameplay.restart()
+    await _frames(3)
+    _check(not gameplay.progress.run_state.modifier_system.pending, "Restart discards modifier chain")
+    lab.queue_free()
+    await _frames(3)
+    G.settings.SPAWN_MODE = old_mode
 
 func _rotation_replay() -> void:
     seed(SEED)

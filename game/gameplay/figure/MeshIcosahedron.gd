@@ -25,6 +25,7 @@ var _dents: Array[Dent] = []
 var _side_tris: Array[PackedVector3Array] = []
 var _controlled := false
 var _dent_marker: MeshInstance3D
+var _pickup_labels: Array[Label3D] = []
 
 func _ready() -> void:
     _build_dents()
@@ -47,7 +48,9 @@ func _update_dent_marker() -> void:
     if not _dent_marker:
         return
     _dent_marker.hide()
-    if not _controlled:
+    for label in _pickup_labels:
+        label.visible = _controlled
+    if not _controlled or not _pickup_labels.is_empty():
         return
     for dent in _dents:
         if dent.is_empty():
@@ -55,6 +58,16 @@ func _update_dent_marker() -> void:
             _dent_marker.position = (tri[0] + tri[1] + tri[2]) / 3.0 * 1.03
             _dent_marker.show()
             return
+
+func _process(_delta: float) -> void:
+    var camera := get_viewport().get_camera_3d()
+    if not camera:
+        return
+    for label in _pickup_labels:
+        # Cancel shell growth so fixed-size labels stay screen-sized.
+        label.scale = Vector3.ONE / global_basis.get_scale()
+        var outward := label.global_position - global_position
+        label.visible = _controlled and outward.dot(camera.global_position - label.global_position) > 0
 
 func stop_rotation() -> void:
     if rotation_tween:
@@ -126,9 +139,26 @@ func _color_for_type(type: int) -> Color:
     return Color(0.35, 0.85, 1.0, 1.0)
 
 func apply_side_data(sides: Array[SideData]) -> void:
+    for label in _pickup_labels:
+        label.free()
+    _pickup_labels.clear()
     for side in sides:
         if side.id >= 0 and side.id < _dents.size():
             _dents[side.id].apply_data(side)
+            if side.modifier and not side.modifier.pickup_kind.is_empty() and side.is_empty():
+                var label := Label3D.new()
+                label.text = side.modifier.title
+                label.modulate = side.modifier.pickup_color
+                label.font_size = 48
+                label.outline_size = 10
+                label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+                label.no_depth_test = true
+                label.fixed_size = true
+                label.pixel_size = 0.001
+                var tri := _side_tris[side.id]
+                label.position = (tri[0] + tri[1] + tri[2]) / 3.0 * 1.03
+                add_child(label)
+                _pickup_labels.append(label)
     _update_dent_marker()
 
 func get_dents() -> Array[Dent]:

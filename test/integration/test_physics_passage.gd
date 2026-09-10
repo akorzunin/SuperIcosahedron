@@ -61,7 +61,8 @@ func test_empty_dent_passes_and_hands_control_to_next_figure(side_id = use_param
     assert_eq(gameplay.progress.figures_passed, 1, "Passage must be scored only once.")
 
 func test_touching_solid_edge_of_empty_dent_ends_game() -> void:
-    var figure := gameplay.figure_root.get_live_figures()[0]
+    # Explicit single opening: procedural choices can open both sides of an edge.
+    var figure := _replace_figure(0)
     var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
     var points := figure.mesh_icosahedron.get_side_points(empty.id)
     var edge := ((points[1] + points[2]) / 2.0).normalized()
@@ -130,7 +131,8 @@ func test_sustained_overlapping_passes_do_not_auto_fail() -> void:
             break
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
     assert_eq(gameplay.progress.figures_passed, 24)
-    assert_eq(gameplay.progress.score, 24)
+    assert_eq(gameplay.progress.collected_sides.size(), 24,
+        "Each physical passage collects exactly once; modifier chains determine score.")
 
 func test_off_center_hole_clearance(sample = use_parameters([
     [0, 0.35, true], [7, 0.35, true], [14, 0.35, true],

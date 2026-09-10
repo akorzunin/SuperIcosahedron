@@ -85,6 +85,28 @@ These development scenes are excluded from exports by the existing `dev/**` filt
   is not an approved functional baseline. Sparse captures do not validate every
   animation frame.
 
+## Gameplay JSON migration evidence
+
+- Before: `build/visual-playtest/run.hosb7z`; after:
+  `build/visual-playtest/run.IKkNJf`, default Vulkan Mobile, RTX 5060 Ti.
+- Reviewed all seven contact sheets before/after and full-size
+  `modifiers_03_choices.png` in both runs. Acceptance: moving unchanged defaults
+  into JSON must retain shell scale/appearance, rotation/release/reset, readable
+  pickup/HUD text, modifier activation, and restart/menu transitions. These remain
+  visibly consistent; wall-clock HUD times differ. Existing lab-panel overlap and
+  distant label clustering remain unapproved limitations.
+- `task test`: 46 tests / 1652 assertions passed, including authoritative JSON
+  defaults, saved-config migration, preference preservation, and invalid tuning
+  validation. Rendered replay checks passed. This validates the unchanged default
+  tuning, not the playability of arbitrary future CMS speed values.
+
+## Modifier-chain replay
+
+The replay also produces `modifiers_contact_sheet.png`: generated base choices,
+base collected, tier choices, tier collected, next base, and committed effect.
+It checks physical POINTS → TIER → POINTS passage and restart cleanup. Review this
+seventh sheet for modifier changes. See [implementation and evidence](./modifier-implementation.md).
+
 ## Evidence to inspect
 
 - `{rotation,run,mounted,fade,options,collision}_contact_sheet.png`: six checkpoints each,

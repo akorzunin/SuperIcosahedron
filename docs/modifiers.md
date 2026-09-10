@@ -1,5 +1,8 @@
 # Modifiers
 
+Implemented first slice and centralized upgrade catalog: [modifier implementation](./modifier-implementation.md).
+The notes below remain design ideas, not the implemented feature list.
+
 have custom effects
 
 - It's necessary to make it so that the node debugger can select the number of pellets that have been produced.

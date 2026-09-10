@@ -9,8 +9,10 @@ class_name LoopSpawner
 
 @export var figureRoot: FigureRoot
 var game_over_tween: Tween
+var rng := RandomNumberGenerator.new()
 
-func reset() -> void:
+func reset(run_seed: int = -1) -> void:
+    rng.seed = randi() if run_seed < 0 else run_seed
     if game_over_tween:
         game_over_tween.kill()
         game_over_tween = null
@@ -91,8 +93,14 @@ func spawn_figure(figure: Figure) -> void:
     var new_figure
     match figure.type:
         FigureType.ICOSAHEDRON:
-            var spawn_type: int = get_spawn_type()
-            var figure_data := StageGenerator.create_figure(spawn_type)
+            var spawn_type := 0
+            var figure_data: FigureData
+            if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
+                figure_data = StageGenerator.create_modifier_figure(rng,
+                    game_progress.run_state.modifier_system.pending)
+            else:
+                spawn_type = get_spawn_type()
+                figure_data = StageGenerator.create_figure(spawn_type)
             game_progress.register_figure(figure_data)
             new_figure = IcosahedronScene.instantiate() \
                 .with_type(spawn_type)\

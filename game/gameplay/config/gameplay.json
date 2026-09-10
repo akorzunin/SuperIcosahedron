@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "game_settings": {
+    "SPAWN_MODE": 2,
+    "DESPAWNER_MODE": 16633,
+    "SCALE_FACTOR": 10,
+    "SPAWN_SPEED": 10,
+    "GAME_SPEED": 6,
+    "ROTATION_SPEED": 12,
+    "MAX_LEVEL": 0
+  }
+}

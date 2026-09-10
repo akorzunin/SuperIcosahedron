@@ -13,6 +13,7 @@ signal sound_requested(event: StringName)
 @onready var loop_controls: LoopControls = %LoopControls
 
 var run_state := RunState.new()
+var modifier_hud: Label
 var figures_passed: int:
     get: return run_state.figures_passed
 var score: int:
@@ -27,7 +28,7 @@ var collected_sides: Array[SideData]:
 
 
 func _update_level():
-    if LevelPatterns.is_level_up(figures_passed, pattern_gen.level):
+    if G.settings.SPAWN_MODE != PatternGen.SpawnMode.QUEUE and LevelPatterns.is_level_up(figures_passed, pattern_gen.level):
         G.level_changed.emit(pattern_gen.level + 1)
 
 func reset():
@@ -35,6 +36,20 @@ func reset():
     time_passed = 0
 
 func _ready() -> void:
+    var layer := CanvasLayer.new()
+    add_child(layer)
+    modifier_hud = Label.new()
+    modifier_hud.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+    modifier_hud.offset_top = -92
+    modifier_hud.offset_bottom = -12
+    modifier_hud.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    modifier_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    modifier_hud.add_theme_color_override("font_color", Color.WHITE)
+    modifier_hud.add_theme_color_override("font_shadow_color", Color.BLACK)
+    modifier_hud.add_theme_constant_override("shadow_offset_x", 2)
+    modifier_hud.add_theme_constant_override("shadow_offset_y", 2)
+    modifier_hud.add_theme_font_size_override("font_size", 20)
+    layer.add_child(modifier_hud)
     game_state_manager.game_state_changed.connect(_on_game_state)
     G.level_changed.connect(_on_level_changed)
 
@@ -62,6 +77,10 @@ func _physics_process(delta: float) -> void:
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
     debug_stats_container.current_level.label_text = str(pattern_gen.level)
     gui.game_state_label.set_text(str(figures_passed))
+    modifier_hud.visible = G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and \
+        game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
+    modifier_hud.text = "Score: %d\n%s\n%s" % [score,
+        run_state.modifier_system.summary(), run_state.modifier_system.last_activation]
 
 func get_score():
     return "score\nnodes: %s\nscore: %s\ntime: %s" % [

@@ -12,29 +12,32 @@ static func load_gs(file: String) -> Dictionary:
 static func load_config(file := config_path) -> ConfigFile:
     var config = ConfigFile.new()
     var err = config.load(file)
-    if err == Error.ERR_FILE_CANT_OPEN:
-        push_error("Cant open config file")
-    if err != Error.OK:
-        push_warning("config file not found creating default one")
-        set_default_config_values(config)
-        config.save(file)
-        return config
+    if err != Error.OK and err != Error.ERR_FILE_NOT_FOUND and err != Error.ERR_FILE_CANT_OPEN:
+        push_warning("Cannot read user settings; restoring defaults: " + file)
     update_keys(config, file)
     return config
 
-## If key exist in default config then we need to write in in user config
+## Persist preferences only; old saved gameplay values must not shadow CMS tuning.
 static func update_keys(config: ConfigFile, file: String):
-    var given_d := config_to_kv(config)
-    var default_d: Dictionary = load("res://game/services/settings/DefaultConfig.gd").settings
-    for section in default_d.keys():
-        for key in default_d[section]:
-            if not given_d.has(key):
-                SettingsConfig.write_key(file, section, key, default_d[section][key])
-                config.set_value(section, key, default_d[section][key])
+    var defaults: Dictionary = DafaultConfig.settings
+    var changed := not FileAccess.file_exists(file)
+    if config.has_section("game_settings"):
+        config.erase_section("game_settings")
+        changed = true
+    for key in defaults.user_settings:
+        if not config.has_section_key("user_settings", key):
+            config.set_value("user_settings", key, defaults.user_settings[key])
+            changed = true
+    if changed:
+        var err := config.save(file)
+        if err != OK:
+            push_warning("Cannot save user settings: " + file)
+    # Runtime compatibility: consumers still read G.settings and game_settings.
+    for key in defaults.game_settings:
+        config.set_value("game_settings", key, defaults.game_settings[key])
 
 static func set_default_config_values(config: ConfigFile) -> ConfigFile:
-    var default_config = ConfigFile.new()
-    var settings: Dictionary = load("res://game/services/settings/DefaultConfig.gd").settings
+    var settings: Dictionary = DafaultConfig.settings
     for section in settings.keys():
         if settings[section] is Dictionary:
             for key in settings[section].keys():
@@ -60,7 +63,7 @@ static func config_to_dict(config: ConfigFile) -> Dictionary:
 static func dict_to_config(d: Dictionary) -> ConfigFile:
     var config = ConfigFile.new()
     for section in d.keys():
-        if d[section] is Dictionary:
+        if section != "game_settings" and d[section] is Dictionary:
             for key in d[section].keys():
                 config.set_value(section, key, d[section][key])
     return config

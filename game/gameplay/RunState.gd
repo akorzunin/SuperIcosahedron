@@ -30,6 +30,7 @@ func resolve_side(figure_id: int, side: SideData) -> Outcome:
     _resolved_figures[figure_id] = true
     if not side.is_empty():
         ended = true
+        modifier_system.discard_chain()
         return Outcome.GAME_OVER
     side.collected = true
     collected_sides.append(side)
