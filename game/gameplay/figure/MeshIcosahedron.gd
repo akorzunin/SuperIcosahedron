@@ -63,11 +63,33 @@ func _process(_delta: float) -> void:
     var camera := get_viewport().get_camera_3d()
     if not camera:
         return
+    var candidates: Array[Label3D] = []
     for label in _pickup_labels:
         # Cancel shell growth so fixed-size labels stay screen-sized.
         label.scale = Vector3.ONE / global_basis.get_scale()
         var outward := label.global_position - global_position
-        label.visible = _controlled and outward.dot(camera.global_position - label.global_position) > 0
+        label.hide()
+        if _controlled and outward.dot(camera.global_position - label.global_position) > 0 \
+        and not camera.is_position_behind(label.global_position):
+            candidates.append(label)
+    var screen_center := get_viewport().get_visible_rect().size / 2.0
+    candidates.sort_custom(func(a, b): return camera.unproject_position(a.global_position).distance_squared_to(screen_center) \
+        < camera.unproject_position(b.global_position).distance_squared_to(screen_center))
+    var occupied: Array[Rect2] = []
+    # Greedy O(n²) suppression, bounded to 20 faces. Use screen-space label layout
+    # if more markers are added; rotating reveals labels hidden by nearer choices.
+    var pixels_per_unit := camera.get_camera_projection().y.y * screen_center.y
+    for label in candidates:
+        var font: Font = label.font if label.font else ThemeDB.fallback_font
+        var lines := label.text.split("\n")
+        var width := 0.0
+        for line in lines:
+            width = maxf(width, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x)
+        var size := Vector2(width, font.get_height(label.font_size) * lines.size()) * label.pixel_size * pixels_per_unit
+        var rect := Rect2(camera.unproject_position(label.global_position) - size / 2.0, size).grow(6)
+        if not occupied.any(func(other): return other.intersects(rect)):
+            occupied.append(rect)
+            label.show()
 
 func stop_rotation() -> void:
     if rotation_tween:
@@ -145,10 +167,10 @@ func apply_side_data(sides: Array[SideData]) -> void:
     for side in sides:
         if side.id >= 0 and side.id < _dents.size():
             _dents[side.id].apply_data(side)
-            if side.modifier and not side.modifier.pickup_kind.is_empty() and side.is_empty():
+            if side.is_empty() and icosahedron.data and icosahedron.data.easy_side >= 0:
                 var label := Label3D.new()
-                label.text = side.modifier.title
-                label.modulate = side.modifier.pickup_color
+                label.text = side.modifier.title if side.modifier else "PASS"
+                label.modulate = side.modifier.pickup_color if side.modifier else Color.WHITE
                 label.font_size = 48
                 label.outline_size = 10
                 label.billboard = BaseMaterial3D.BILLBOARD_ENABLED

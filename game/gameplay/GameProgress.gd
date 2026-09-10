@@ -66,7 +66,7 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
         status_changed.emit("Game over", "Enjoying results")
         end()
     elif new_state == gs.GAME_ACTIVE:
-        level_changed.emit(pattern_gen.level)
+        level_changed.emit(run_state.difficulty + 1 if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE else pattern_gen.level)
         start()
 
 func _on_level_changed(new_level: int):
@@ -75,11 +75,12 @@ func _on_level_changed(new_level: int):
 func _physics_process(delta: float) -> void:
     debug_stats_container.nodes_passed.label_text = str(figures_passed)
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
-    debug_stats_container.current_level.label_text = str(pattern_gen.level)
+    debug_stats_container.current_level.label_text = str(run_state.difficulty + 1) if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE else str(pattern_gen.level)
     gui.game_state_label.set_text(str(figures_passed))
     modifier_hud.visible = G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and \
         game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
-    modifier_hud.text = "Score: %d\n%s\n%s" % [score,
+    modifier_hud.text = "Score: %d | Difficulty: %d | Tiers collected: %d\n%s\n%s" % [score,
+        run_state.difficulty + 1, run_state.tiers_collected,
         run_state.modifier_system.summary(), run_state.modifier_system.last_activation]
 
 func get_score():
@@ -103,12 +104,16 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
     var outcome := run_state.resolve_side(figure.get_instance_id(), side)
     if outcome == RunState.Outcome.IGNORED:
         return
+    loop_controls.sync_orientation()
     figure.resolved = true
     figure.mesh_icosahedron.angle_good = true
     figure.mesh_icosahedron.burst_dents()
     if outcome == RunState.Outcome.GAME_OVER:
         _game_over()
         return
+    if figure.data.easy_side >= 0:
+        loop_controls.loop_spawner.recenter_after_pass(side.id)
+        level_changed.emit(run_state.difficulty + 1)
     sound_requested.emit(&"on_node_passed")
     _update_level()
     log_tts(figure.spwan_time, side.id)

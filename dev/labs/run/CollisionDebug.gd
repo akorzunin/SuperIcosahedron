@@ -63,13 +63,13 @@ func _process(_delta: float) -> void:
             var material := StandardMaterial3D.new()
             material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
             material.no_depth_test = true
-            var area := shape.get_parent()
-            material.albedo_color = Color.MAGENTA
-            if area is SideCollider:
-                material.albedo_color = Color.LIME_GREEN if area.side.is_empty() else Color.RED
             wire.material_override = material
             add_child(wire)
             shapes[shape] = wire
         # Sibling debug meshes stay visible after a committed shell hides.
         shapes[shape].global_transform = shape.global_transform
         shapes[shape].visible = not shape.disabled
+        # Recentered layouts keep collider identity but can change passage/solid kind.
+        var area := shape.get_parent()
+        shapes[shape].material_override.albedo_color = (
+            Color.LIME_GREEN if area.side.is_empty() else Color.RED) if area is SideCollider else Color.MAGENTA

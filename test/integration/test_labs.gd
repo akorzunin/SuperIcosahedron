@@ -218,6 +218,49 @@ func test_commit_stops_in_flight_face_rotation() -> void:
     assert_true(mesh.quaternion.is_equal_approx(committed))
     assert_false(mesh.is_rotating)
 
+func test_shared_rotation_spawn_commit_and_recenter() -> void:
+    lab = RUN_LAB.instantiate()
+    add_child(lab)
+    await wait_process_frames(2)
+    var gameplay: LoopScene = lab.get_node("Gameplay")
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    var first := gameplay.controls.controlledNode.icosahedron
+    gameplay.spawner.spawn_icosahedron()
+    var second := gameplay.figure_root.get_live_figures()[1]
+    gameplay.controls.figure_controller.rotate_continuous(Vector2.RIGHT, 0.1)
+    gameplay.controls.sync_orientation()
+    assert_true(first.mesh_icosahedron.basis.is_equal_approx(second.mesh_icosahedron.basis))
+    gameplay.spawner.spawn_icosahedron()
+    var third := gameplay.figure_root.get_live_figures()[2]
+    assert_true(first.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
+        "New figures inherit accumulated steering")
+    lab.collision_debug.set_enabled(true)
+    await wait_process_frames(2)
+    _align_for_commit(gameplay, first)
+    var passed: SideData = gameplay.get_node("EndDetector").get_passing_side(first)
+    gameplay.controls.advance_control()
+    var frozen := first.mesh_icosahedron.basis
+    gameplay.controls.figure_controller.step_face(Vector2.RIGHT)
+    await wait_seconds(FaceLock.ROTATION_TIME + 0.05)
+    gameplay.controls.sync_orientation()
+    assert_true(first.mesh_icosahedron.basis.is_equal_approx(frozen), "Committed shell stays safe")
+    assert_true(second.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
+        "FaceLock tween propagates to upcoming shells")
+    await _collide_with_side(gameplay, first, true)
+    assert_eq(second.data.easy_side, passed.id)
+    assert_eq(third.data.easy_side, passed.id)
+    assert_true(second.data.sides[passed.id].is_empty())
+    assert_null(second.data.sides[passed.id].modifier)
+    await wait_process_frames(2)
+    for area in second.get_node("MeshIcosahedron/SideColliders").get_children():
+        var wire: MeshInstance3D = lab.collision_debug.shapes[area.get_child(0)]
+        assert_eq(wire.material_override.albedo_color, Color.LIME_GREEN if area.side.is_empty() else Color.RED)
+    gameplay.restart()
+    await wait_process_frames(2)
+    assert_eq(gameplay.progress.run_state.tiers_collected, 0)
+    assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
+
 func test_end_game_rotates_before_activating_option(inverted = use_parameters([false, true])) -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)

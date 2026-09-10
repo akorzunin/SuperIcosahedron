@@ -51,7 +51,69 @@ func get_passing_side(figure: Icosahedron) -> SideData:
                 break
         if fits:
             return side
-    return null
+    return _get_union_side(figure)
+
+func _get_union_side(figure: Icosahedron) -> SideData:
+    if figure.data.sides.filter(func(side): return side.is_empty()).size() < 2:
+        return null
+    var mesh := figure.mesh_icosahedron
+    var shape: CollisionShape3D = $CollisionShape3D
+    var window: ConvexPolygonShape3D = shape.shape
+    var center := shape.global_position - mesh.global_position
+    var x := shape.global_basis.x.normalized()
+    var y := shape.global_basis.y.normalized()
+    var z := shape.global_basis.z.normalized()
+    var distance := z.dot(center)
+    var projected := PackedVector2Array()
+    for point in window.points:
+        var relative := shape.global_transform * point - mesh.global_position
+        if z.dot(relative) * distance <= 0:
+            return null
+        var on_plane := relative * (distance / z.dot(relative)) - center
+        projected.append(Vector2(on_plane.dot(x), on_plane.dot(y)))
+    # Perspective projection of the convex prism is a convex polygon. Testing
+    # solid-sector intersections covers its interior, not only its vertices.
+    var hull := Geometry2D.convex_hull(projected)
+    var polygon := PackedVector3Array()
+    for point in hull:
+        polygon.append(center + x * point.x + y * point.y)
+    for side in figure.data.sides:
+        if side.is_empty():
+            continue
+        var clipped := polygon
+        var points := mesh.get_side_points(side.id)
+        for edge in 3:
+            var a := mesh.global_basis * points[edge + 1]
+            var b := mesh.global_basis * points[(edge + 1) % 3 + 1]
+            var inside := mesh.global_basis * points[(edge + 2) % 3 + 1]
+            var normal := a.cross(b).normalized()
+            if normal.dot(inside) < 0:
+                normal = -normal
+            clipped = _clip_half_plane(clipped, normal)
+            if clipped.is_empty():
+                break
+        if not clipped.is_empty():
+            return null
+    # Crossing an internal open/open border collects exactly one pickup:
+    # the face under the window center (lowest ID breaks exact boundary ties).
+    var id := FaceTopology.nearest(mesh.global_basis.inverse() * center)
+    return figure.data.sides[id] if figure.data.sides[id].is_empty() else null
+
+func _clip_half_plane(polygon: PackedVector3Array, normal: Vector3) -> PackedVector3Array:
+    var result := PackedVector3Array()
+    if polygon.is_empty():
+        return result
+    var previous := polygon[polygon.size() - 1]
+    var previous_d := normal.dot(previous)
+    for current in polygon:
+        var current_d := normal.dot(current)
+        if (current_d >= 0) != (previous_d >= 0):
+            result.append(previous.lerp(current, previous_d / (previous_d - current_d)))
+        if current_d >= 0:
+            result.append(current)
+        previous = current
+        previous_d = current_d
+    return result
 
 func _physics_process(_delta: float) -> void:
     var contacts: Dictionary = {}

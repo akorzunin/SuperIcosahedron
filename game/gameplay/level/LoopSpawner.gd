@@ -10,9 +10,11 @@ class_name LoopSpawner
 @export var figureRoot: FigureRoot
 var game_over_tween: Tween
 var rng := RandomNumberGenerator.new()
+var easy_side := -1
 
 func reset(run_seed: int = -1) -> void:
     rng.seed = randi() if run_seed < 0 else run_seed
+    easy_side = -1
     if game_over_tween:
         game_over_tween.kill()
         game_over_tween = null
@@ -97,7 +99,8 @@ func spawn_figure(figure: Figure) -> void:
             var figure_data: FigureData
             if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
                 figure_data = StageGenerator.create_modifier_figure(rng,
-                    game_progress.run_state.modifier_system.pending)
+                    game_progress.run_state.modifier_system.pending, maxi(easy_side, 0),
+                    game_progress.run_state.tiers_collected)
             else:
                 spawn_type = get_spawn_type()
                 figure_data = StageGenerator.create_figure(spawn_type)
@@ -110,7 +113,25 @@ func spawn_figure(figure: Figure) -> void:
             pass
 
     figureRoot.add_figure(new_figure)
+    if new_figure.data.easy_side >= 0:
+        var controls := game_progress.loop_controls
+        controls.sync_orientation()
+        var mesh: MeshIcosahedron = new_figure.mesh_icosahedron
+        if controls.orientation_initialized:
+            mesh.basis = controls.shared_basis
+            mesh.is_alt = controls.shared_is_alt
+        if easy_side < 0:
+            var detector: EndDetector = $"../EndDetector"
+            easy_side = FaceTopology.nearest(mesh.global_basis.inverse() * (detector.global_position - mesh.global_position))
+            FaceTopology.recenter(new_figure.data, easy_side)
+            mesh.apply_side_data(new_figure.data.sides)
 
+func recenter_after_pass(side_id: int) -> void:
+    easy_side = side_id
+    for figure in figureRoot.get_live_figures():
+        if figure.data.easy_side >= 0 and not figure.mesh_icosahedron.angle_good:
+            FaceTopology.recenter(figure.data, easy_side)
+            figure.mesh_icosahedron.apply_side_data(figure.data.sides)
 
 func _on_loop_timer():
     spawn_figure(Figure.new(FigureType.ICOSAHEDRON))

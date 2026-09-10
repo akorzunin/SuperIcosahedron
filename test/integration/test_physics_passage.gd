@@ -11,6 +11,8 @@ func before_each() -> void:
     previous_data = G.data
     G.settings = SettingsConfig.config_to_dict(SettingsConfig.set_default_config_values(ConfigFile.new()))
     G.data = {}
+    # These collision fixtures explicitly place individual shells independently.
+    G.settings.SPAWN_MODE = PatternGen.SpawnMode.DEBUG
     lab = RUN_LAB.instantiate()
     add_child(lab)
     gameplay = lab.get_node("Gameplay")
@@ -72,6 +74,26 @@ func test_touching_solid_edge_of_empty_dent_ends_game() -> void:
     await _grow_through_player(figure)
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_END)
     assert_eq(gameplay.progress.figures_passed, 0)
+
+func test_adjacent_openings_allow_centered_border_commit_and_pass() -> void:
+    var figure := _replace_figure(0)
+    var neighbor := FaceTopology.neighbors(0)[0]
+    figure.data.sides[neighbor].kind = SideData.Kind.POSITIVE
+    figure.data.sides[neighbor].modifier = null
+    figure.data.sides[neighbor].modifier_entity = 0
+    figure.mesh_icosahedron.apply_side_data(figure.data.sides)
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    var edge_direction := (FaceTopology.normal(0) + FaceTopology.normal(neighbor)).normalized()
+    var toward_player := (detector.global_position - figure.global_position).normalized()
+    figure.mesh_icosahedron.global_basis = Basis(Quaternion(edge_direction, toward_player))
+    assert_not_null(detector.get_passing_side(figure), "No invisible wall between adjacent openings")
+    gameplay.controls.update_controlled_node()
+    gameplay.controls.advance_control()
+    assert_true(figure.mesh_icosahedron.angle_good)
+    await _grow_through_player(figure)
+    assert_eq(gameplay.progress.figures_passed, 1)
+    assert_eq(gameplay.progress.collected_sides.size(), 1)
+    assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
 
 func test_no_collision_before_visible_dent_reaches_player() -> void:
     var figure := gameplay.figure_root.get_live_figures()[0]

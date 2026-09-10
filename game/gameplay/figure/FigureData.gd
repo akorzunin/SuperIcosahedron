@@ -2,6 +2,8 @@ extends Resource
 class_name FigureData
 
 @export var stage := 0
+# -1 identifies fixed tutorial/debug fixtures, which are never recentered.
+@export var easy_side := -1
 @export var score := 0
 @export var sides: Array[SideData] = []
 var collected_sides: Array[SideData] = []

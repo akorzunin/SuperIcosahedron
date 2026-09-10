@@ -45,32 +45,86 @@ func test_orphans_repeated_signs_cap_death_and_restart() -> void:
     assert_eq(run.collected_sides.size(), 0)
     _collect(run, "points", 1)
 
-func test_seeded_choices_always_offer_a_base() -> void:
+func test_seeded_distance_placement_and_dynamic_easy_zone() -> void:
     var a := RandomNumberGenerator.new()
     var b := RandomNumberGenerator.new()
     a.seed = 91
     b.seed = 91
     for i in 20:
-        var first := StageGenerator.create_modifier_figure(a, i > 0)
-        var second := StageGenerator.create_modifier_figure(b, i > 0)
-        var choices := 0
+        var progress := i
+        var first := StageGenerator.create_modifier_figure(a, i > 0, i, progress)
+        var second := StageGenerator.create_modifier_figure(b, i > 0, i, progress)
+        var steps := FaceTopology.distances(i)
+        var level: Dictionary = UpgradeCatalog.data.difficulty_levels[first.stage]
+        var easy_open := 0
         var bases := 0
+        var tiers := 0
+        assert_true(first.sides[i].is_empty())
+        assert_null(first.sides[i].modifier, "Center always preserves the pending chain")
         for j in 20:
             var side := first.sides[j]
             assert_eq(side.kind, second.sides[j].kind)
-            if side.is_empty():
-                choices += 1
-                assert_eq(side.modifier.id, second.sides[j].modifier.id)
-                if side.modifier.pickup_kind == "base":
+            if side.is_empty() and steps[j] <= 1:
+                easy_open += 1
+            if side.modifier:
+                var pickup := side.modifier
+                assert_eq(pickup.id, second.sides[j].modifier.id)
+                var entry: Dictionary = UpgradeCatalog.data.pickups.filter(func(item): return item.id == pickup.id)[0]
+                assert_between(steps[j], int(entry.min_steps), int(entry.max_steps))
+                assert_eq(pickup.pickup_value, int(entry.value_by_steps[steps[j]]))
+                if pickup.pickup_kind == "base":
                     bases += 1
+                if pickup.pickup_kind == "tier":
+                    tiers += 1
                 if i == 0:
-                    assert_eq(side.modifier.pickup_kind, "base")
+                    assert_eq(pickup.pickup_kind, "base")
             else:
-                assert_null(side.modifier)
-        assert_eq(choices, int(UpgradeCatalog.data.choices_per_figure))
+                assert_null(second.sides[j].modifier)
+        assert_between(easy_open, int(level.easy_open_faces[0]), int(level.easy_open_faces[1]))
         assert_gte(bases, 1)
-        var openings := first.sides.filter(func(side): return side.is_empty())
-        for x in openings.size():
-            for y in range(x + 1, openings.size()):
-                assert_lt(openings[x].normal.dot(openings[y].normal), 0.74,
-                    "Openings must retain solid borders for single-sector clearance")
+        if i > 0:
+            assert_gte(tiers, 1)
+
+func test_difficulty_counts_only_collected_tier_units() -> void:
+    var run := RunState.new()
+    _collect(run, "points", 1)
+    for i in 10:
+        _collect(run, "green", 2 + i)
+    assert_eq(run.difficulty, 0)
+    _collect(run, "tier", 12)
+    _collect(run, "tier", 13)
+    assert_eq(run.difficulty, 0)
+    _collect(run, "tier", 14)
+    assert_eq(run.difficulty, 1)
+    _collect(run, "points", 15)
+    assert_eq(run.difficulty, 1, "Committing a chain does not reset difficulty")
+    for i in 5:
+        _collect(run, "tier", 16 + i)
+    assert_eq(run.difficulty, 2)
+    assert_eq(run.tiers_collected, 8)
+    run.reset()
+    assert_eq(run.difficulty, 0)
+    assert_eq(run.tiers_collected, 0)
+
+func test_neutral_pass_keeps_chain_and_difficulty() -> void:
+    var run := RunState.new()
+    _collect(run, "points", 1)
+    _collect(run, "tier", 2)
+    var route := SideData.new().init(0, Vector3.RIGHT, SideData.Kind.POSITIVE)
+    assert_eq(run.resolve_side(3, route), RunState.Outcome.PASSED)
+    assert_eq(run.resolve_side(3, route), RunState.Outcome.IGNORED)
+    assert_eq(run.modifier_system.tier, 2)
+    assert_eq(run.tiers_collected, 1)
+    assert_eq(run.difficulty, 0)
+    assert_eq(run.score, 0)
+
+func test_far_pickups_grant_stronger_base_and_tier_values() -> void:
+    var run := RunState.new()
+    run.modifier_system.collect(run, UpgradeCatalog.pickup("points", 4))
+    assert_eq(run.modifier_system.tier, 4)
+    run.modifier_system.collect(run, UpgradeCatalog.pickup("tier", 5))
+    assert_eq(run.modifier_system.tier, 7)
+    assert_eq(run.tiers_collected, 3)
+    run.modifier_system.collect(run, UpgradeCatalog.pickup("points", 1))
+    assert_eq(run.score, 8000)
+    assert_eq(run.modifier_system.tier, 1)

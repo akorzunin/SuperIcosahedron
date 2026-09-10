@@ -18,13 +18,22 @@ enum ControlType {FREE_SPIN, FACE_LOCK}
 const OPTION_ROTATION_TIME := 0.3
 var option_tween: Tween
 var game_over_input_delay := 0.0
+var shared_basis := Basis.IDENTITY
+var shared_is_alt := false
+var orientation_initialized := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+    # After PlayerInput; physics sync also catches FaceLock's post-process tween updates.
+    process_priority = 100
     game_state_manager.game_state_changed.connect(_on_game_state)
 
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs := GameStateManager.GameState
+    if new_state == gs.GAME_MENU:
+        orientation_initialized = false
+        shared_basis = Basis.IDENTITY
+        shared_is_alt = false
     if option_tween:
         option_tween.kill()
         option_tween = null
@@ -71,6 +80,7 @@ func advance_control() -> void:
     if detector.get_passing_side(controlledNode.icosahedron) == null:
         commit_rejected.emit(controlledNode.icosahedron)
         return
+    sync_orientation()
     controlledNode.angle_good = true
     # Freeze only orientation/visuals; growth and passage validation continue.
     controlledNode.stop_rotation()
@@ -117,8 +127,30 @@ func handle_game_over_input(event: InputEvent, is_inverted: bool):
             menu_requested.emit()
     )
 
+func sync_orientation() -> void:
+    if G.settings.SPAWN_MODE != PatternGen.SpawnMode.QUEUE:
+        return
+    if is_instance_valid(controlledNode) and not controlledNode.angle_good \
+    and controlledNode.icosahedron.data.easy_side >= 0:
+        shared_basis = controlledNode.basis.orthonormalized()
+        shared_is_alt = controlledNode.is_alt
+        orientation_initialized = true
+    if not orientation_initialized:
+        return
+    for figure in figureRoot.get_live_figures():
+        var mesh := figure.mesh_icosahedron
+        if figure.data.easy_side >= 0 and not mesh.angle_good and mesh != controlledNode:
+            mesh.basis = shared_basis
+            mesh.is_alt = shared_is_alt
+
+func _physics_process(_delta: float) -> void:
+    if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE:
+        sync_orientation()
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+    if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE:
+        sync_orientation()
     game_over_input_delay = maxf(0.0, game_over_input_delay - delta)
     figure_controller.enabled = game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
     if not controlledNode or not is_instance_valid(controlledNode):

@@ -13,6 +13,33 @@ MainScene menu-to-gameplay replay using production scenes, controllers, and inpu
 a fresh directory under `build/visual-playtest/run.*`; old evidence is never reused.
 These development scenes are excluded from exports by the existing `dev/**` filter.
 
+## Face-distance difficulty and shared steering
+
+- Before: `build/visual-playtest/run.WPri0U`; after:
+  `build/visual-playtest/run.0XxH5z`, default Vulkan Mobile, RTX 5060 Ti.
+  Reviewed all seven before/eight after contact sheets in combined overviews,
+  before full-size `modifiers_03_choices.png`, and after full-size
+  `difficulty_01_easy_zone.png`, `difficulty_03_hard_pickup.png`, and
+  `difficulty_06_open_border.png`.
+- Visible acceptance: the easy region has neutral PASS routes and a weak T1
+  pickup rather than isolated mandatory choices. Two nested shells visibly
+  turn together. A distant opening reads `TIER +2 / 4 steps`; collecting it
+  changes the HUD from one acquired tier/difficulty 1 to three/difficulty 2.
+  The next generated easy region has two openings; the centered open/open
+  border has no visible wall or rejected-clearance state. Existing rotation,
+  release/reset, burst fade, game over, restart and menu return stay consistent.
+- Intermediate `run.FmbO1F` showed overlapping multi-line pickup labels. The
+  final version suppresses intersecting labels nearest-screen-center first;
+  rotation reveals suppressed/rear choices. This is deliberately not a full
+  label layout. Existing lab-panel/top-HUD overlap remains unapproved.
+- `task test`: 54 tests / 3279 assertions passed. Rendered replay: 181 checks
+  passed, including physical hard-tier progression, shared orientation,
+  committed-shell freeze, recentering, and adjacent-opening clearance. Unit and
+  physics coverage includes all 400 recenter mappings and actual open/open
+  border passage. Lab collider colors also refresh when recentering changes
+  a face's role without replacing its collider. No balance/usability approval is implied: face alignment,
+  fixture seed selection and scale steps are scripted, and captures are sparse.
+
 ## Controlled figure outline and open-dent diamond
 
 - Before: `build/visual-playtest/run.apxGH6`; after:
@@ -105,13 +132,16 @@ These development scenes are excluded from exports by the existing `dev/**` filt
 The replay also produces `modifiers_contact_sheet.png`: generated base choices,
 base collected, tier choices, tier collected, next base, and committed effect.
 It checks physical POINTS → TIER → POINTS passage and restart cleanup. Review this
-seventh sheet for modifier changes. See [implementation and evidence](./modifier-implementation.md).
+seventh sheet for modifier changes. The eighth, `difficulty_contact_sheet.png`,
+continues that run: three-face easy zone, shared rotation, a four-step TIER +2,
+physical collection/recentering and difficulty increase, a new two-face easy
+zone, and clearance across an open/open border. See [implementation](./modifier-implementation.md).
 
 ## Evidence to inspect
 
-- `{rotation,run,mounted,fade,options,collision}_contact_sheet.png`: six checkpoints each,
+- `{rotation,run,mounted,fade,options,collision,modifiers,difficulty}_contact_sheet.png`: six checkpoints each,
   ordered left-to-right, top-to-bottom.
-- `{rotation,run,mounted,fade,options,collision}_*.png`: individual 1280×720 screenshots
+- `{rotation,run,mounted,fade,options,collision,modifiers,difficulty}_*.png`: individual 1280×720 screenshots
   for closer inspection.
 - `report.json`: automated checks, capture order/frame numbers, figure orientation,
   visibility, score, game state, and actual/project renderer names.
@@ -138,7 +168,7 @@ physical passage. The options replay captures the score, mid-rotation toward
 Restart, restarted run, score again, mid-rotation toward Exit, and returned menu.
 Options activate only after their 0.3-second turn, following the entry cooldown.
 
-**Open all six contact sheets, then inspect individual frames where needed.** Verify
+**Open all eight contact sheets, then inspect individual frames where needed.** Verify
 that rotation is visible, release stops movement, reset restores the initial
 appearance, and restarting removes the game-over presentation without stale UI or
 figures. Check clipping, missing meshes, unreadable text, and unexpected colors.
@@ -212,9 +242,13 @@ shared red/green edges can overlap. The player outline omits cap triangulation
 spokes. The built-in debug view also shows cleanup/presentation shapes; the lab
 filters those out. Neither view depicts the physics engine's numerical margin.
 
-Space checks whether **every vertex of the circular window** lies strictly inside
-an empty face's radial sector. With fixed orientation and uniform radial growth,
-these edge planes do not change, so a successful commit freezes/fades the figure
+Space checks whether the **whole circular window** fits within the union of open
+radial sectors. A single-sector fit is the fast path; otherwise the projected
+convex window polygon is clipped against all solid sectors, rejecting any
+intersection. Adjacent open/open borders therefore do not act as invisible walls.
+Multi-face passages collect only the face under the window center. With fixed
+orientation and uniform radial growth, these edge planes do not change, so a
+successful commit freezes/fades the figure
 and remains safe until passage. An incorrect commit emits
 `LoopControls.commit_rejected(figure: Icosahedron)` and otherwise does nothing:
 no fade, lock, handoff, score, sound, or immediate game over. The player can correct

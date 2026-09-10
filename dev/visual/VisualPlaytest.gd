@@ -83,14 +83,14 @@ func _modifier_sequence() -> void:
             gameplay.spawner.rng.seed = fixture_seed
             var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng,
                 gameplay.progress.run_state.modifier_system.pending)
-            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted):
+            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted and side.modifier.pickup_value == 1):
                 gameplay.spawner.rng.seed = fixture_seed
                 break
         gameplay.spawner.spawn_icosahedron()
         await _frames(2)
         var figure := gameplay.figure_root.get_live_figures()[0]
         var side: SideData = figure.data.sides.filter(
-            func(item): return item.modifier and item.modifier.id == wanted)[0]
+            func(item): return item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == 1)[0]
         _align_side(gameplay, figure, side)
         figure.scale = Vector3.ONE * 5.0
         await _frames(3)
@@ -102,12 +102,82 @@ func _modifier_sequence() -> void:
     _check(gameplay.progress.score == 250, "Points / tier / points commits T2 once")
     _check(gameplay.progress.run_state.modifier_system.tier == 1, "Commit starts fresh T1 chain")
     _save_contact_sheet("modifiers")
+    await _difficulty_sequence(gameplay)
     gameplay.restart()
     await _frames(3)
     _check(not gameplay.progress.run_state.modifier_system.pending, "Restart discards modifier chain")
     lab.queue_free()
     await _frames(3)
     G.settings.SPAWN_MODE = old_mode
+
+func _difficulty_sequence(gameplay: LoopScene) -> void:
+    # Continue the actual base/tier/base replay: one tier unit collected so far.
+    # Find a seeded hard TIER +2 layout, then collect it through physical passage.
+    for fixture_seed in range(100):
+        gameplay.spawner.rng.seed = fixture_seed
+        var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng, true,
+            gameplay.spawner.easy_side, gameplay.progress.run_state.tiers_collected)
+        if candidate.sides.any(func(side): return side.modifier and side.modifier.id == "tier" and side.modifier.pickup_value == 2):
+            gameplay.spawner.rng.seed = fixture_seed
+            break
+    gameplay.spawner.spawn_icosahedron()
+    await _frames(3)
+    var figure := gameplay.figure_root.get_live_figures()[0]
+    _align_side(gameplay, figure, figure.data.sides[figure.data.easy_side])
+    figure.scale = Vector3.ONE * 5.0
+    gameplay.controls.sync_orientation()
+    await _frames(3)
+    await _capture("difficulty", "01_easy_zone", _run_state(gameplay))
+    gameplay.spawner.spawn_icosahedron()
+    var next := gameplay.figure_root.get_live_figures()[1]
+    next.scale = Vector3.ONE * 2.5
+    gameplay.controls.figure_controller.rotate_continuous(Vector2.RIGHT, 0.15)
+    await _frames(3)
+    _check(figure.mesh_icosahedron.basis.is_equal_approx(next.mesh_icosahedron.basis), "Live figures share steering")
+    await _capture("difficulty", "02_shared_rotation", _run_state(gameplay))
+    var hard: SideData = figure.data.sides.filter(func(side): return side.modifier and side.modifier.id == "tier" and side.modifier.pickup_value == 2)[0]
+    _align_side(gameplay, figure, hard)
+    gameplay.controls.sync_orientation()
+    await _frames(3)
+    await _capture("difficulty", "03_hard_pickup", _run_state(gameplay))
+    gameplay.controls.advance_control()
+    var frozen := figure.mesh_icosahedron.basis
+    gameplay.controls.figure_controller.rotate_continuous(Vector2.LEFT, 0.15)
+    await _frames(3)
+    _check(figure.mesh_icosahedron.basis.is_equal_approx(frozen), "Committed shell ignores later shared steering")
+    await _grow_to_contact(figure)
+    await _frames(70)
+    _check(gameplay.progress.run_state.tiers_collected == 3, "Hard +2 pickup adds two difficulty units")
+    _check(gameplay.progress.run_state.difficulty == 1, "Third collected tier advances difficulty")
+    _check(next.data.easy_side == hard.id, "Upcoming easy zone recenters on passed face")
+    await _capture("difficulty", "04_recentered", _run_state(gameplay))
+    next.despawn()
+    await _frames(3)
+    for fixture_seed in range(100):
+        gameplay.spawner.rng.seed = fixture_seed
+        var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng, true,
+            gameplay.spawner.easy_side, gameplay.progress.run_state.tiers_collected)
+        var steps := FaceTopology.distances(candidate.easy_side)
+        if candidate.sides.filter(func(side): return side.is_empty() and steps[side.id] <= 1).size() == 2:
+            gameplay.spawner.rng.seed = fixture_seed
+            break
+    gameplay.spawner.spawn_icosahedron()
+    await _frames(3)
+    figure = gameplay.figure_root.get_live_figures()[0]
+    var center := figure.data.easy_side
+    _align_side(gameplay, figure, figure.data.sides[center])
+    figure.scale = Vector3.ONE * 5.0
+    await _frames(3)
+    await _capture("difficulty", "05_two_easy_routes", _run_state(gameplay))
+    var neighbor: int = FaceTopology.neighbors(center).filter(func(id): return figure.data.sides[id].is_empty())[0]
+    var edge := (FaceTopology.normal(center) + FaceTopology.normal(neighbor)).normalized()
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    var toward_player := (detector.global_position - figure.global_position).normalized()
+    figure.mesh_icosahedron.global_basis = Basis(Quaternion(edge, toward_player)).scaled(Vector3.ONE * 5.0)
+    await _frames(3)
+    _check(detector.get_passing_side(figure) != null, "Adjacent open/open border has clearance")
+    await _capture("difficulty", "06_open_border", _run_state(gameplay))
+    _save_contact_sheet("difficulty")
 
 func _rotation_replay() -> void:
     seed(SEED)
@@ -410,6 +480,9 @@ func _run_state(gameplay: LoopScene) -> Dictionary:
             "scale": [figure.scale.x, figure.scale.y, figure.scale.z],
             "opacity": figure.mesh_icosahedron.opacity,
             "committed": figure.mesh_icosahedron.angle_good,
+            "easy_side": figure.data.easy_side,
+            "layout_difficulty": figure.data.stage,
+            "open_faces": figure.data.sides.filter(func(side): return side.is_empty()).map(func(side): return side.id),
             "visible": figure.mesh_icosahedron.is_visible_in_tree(),
             "controlled": figure.mesh_icosahedron == gameplay.controls.figure_controller.target,
         })
@@ -417,6 +490,8 @@ func _run_state(gameplay: LoopScene) -> Dictionary:
     return {
         "game_state": GameStateManager.GameStateNames[gameplay.game_state_manager.game_state],
         "score": gameplay.progress.score,
+        "difficulty": gameplay.progress.run_state.difficulty,
+        "tiers_collected": gameplay.progress.run_state.tiers_collected,
         "figures_passed": gameplay.progress.figures_passed,
         "anchor_scale": [anchor_scale.x, anchor_scale.y, anchor_scale.z],
         "anchor_orientation": _quaternion(gameplay.figure_root.anchor.quaternion),

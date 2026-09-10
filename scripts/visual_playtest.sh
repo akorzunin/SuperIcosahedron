@@ -31,4 +31,4 @@ if [[ "$status" -ne 0 ]] || [[ ! -s "$output/report.json" ]] || \
     exit 1
 fi
 printf 'State checks passed; visual review is still REQUIRED.\n'
-printf 'Open %s/{rotation,run,mounted,fade,options,collision,modifiers}_contact_sheet.png and report.json\n' "$output"
+printf 'Open %s/{rotation,run,mounted,fade,options,collision,modifiers,difficulty}_contact_sheet.png and report.json\n' "$output"

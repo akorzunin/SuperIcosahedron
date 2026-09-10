@@ -5,6 +5,9 @@ class_name RunState
 enum Outcome { IGNORED, PASSED, GAME_OVER }
 
 var figures_passed := 0
+var tiers_collected := 0
+var difficulty: int:
+    get: return UpgradeCatalog.difficulty_index(tiers_collected)
 var score := 0
 var ended := false
 var collected_sides: Array[SideData] = []
@@ -13,6 +16,7 @@ var _resolved_figures: Dictionary[int, bool] = {}
 
 func reset() -> void:
     figures_passed = 0
+    tiers_collected = 0
     score = 0
     ended = false
     collected_sides.clear()

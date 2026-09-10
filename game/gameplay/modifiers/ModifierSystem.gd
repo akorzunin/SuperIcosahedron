@@ -18,7 +18,7 @@ func collect(session: Object, pickup: ModifierData) -> void:
                 session.score += delta
                 last_activation = "Activated: %+d points" % delta
             pending = true
-            tier = 1
+            tier = clampi(pickup.pickup_value, 1, UpgradeCatalog.data.points_by_tier.size())
             sign_value = 1
         "sign":
             if pending:
@@ -26,6 +26,8 @@ func collect(session: Object, pickup: ModifierData) -> void:
         "tier":
             if pending:
                 tier = mini(tier + pickup.pickup_value, UpgradeCatalog.data.points_by_tier.size())
+                # Count acquired tier units even at chain cap; chain commits never reset difficulty.
+                session.tiers_collected += pickup.pickup_value
 
 func discard_chain() -> void:
     pending = false
