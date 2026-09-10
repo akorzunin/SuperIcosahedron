@@ -30,6 +30,39 @@ func test_dent_visibility_matches_its_side() -> void:
     assert_true(dent.visible)
     dent.free()
 
+func test_burst_preserves_colliders_and_outlives_figure() -> void:
+    var root := Node3D.new()
+    add_child_autofree(root)
+    var anchor := Node3D.new()
+    root.add_child(anchor)
+    var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(StageGenerator.create_figure(4))
+    anchor.add_child(figure)
+    await wait_process_frames(1)
+    figure.mesh_icosahedron.fade_out()
+    var burst := root.get_node("DentBurst")
+    assert_eq(burst.get_child_count(), 19)
+    assert_eq(figure.mesh_icosahedron.get_node("SideColliders").get_child_count(), 20)
+    assert_false(figure.resolved)
+    figure.mesh_icosahedron.burst_dents()
+    assert_eq(root.get_child_count(), 2, "Repeated resolution must not duplicate fragments.")
+    var first: Node3D = burst.get_child(0)
+    var start := first.position
+    var start_basis := first.basis
+    await wait_seconds(0.15)
+    assert_gt(first.position.length(), start.length(), "Dent flies outward.")
+    assert_eq(first.basis, start_basis, "Dents translate without tumbling.")
+    figure.despawn()
+    await wait_process_frames(2)
+    assert_true(is_instance_valid(burst), "Fragments survive shell cleanup.")
+    await wait_seconds(0.65)
+    assert_true(is_instance_valid(burst), "Burst stays visible longer than the old effect.")
+    var material := (first as MeshInstance3D).material_override as ShaderMaterial
+    var fragment_opacity: float = material.get_shader_parameter("opacity")
+    assert_gt(fragment_opacity, 0.0, "Fragments remain visible during their fade.")
+    assert_lt(fragment_opacity, 0.7, "Fragments fade before cleanup, even after shell removal.")
+    await wait_seconds(0.5)
+    assert_false(is_instance_valid(burst), "Fragments clean themselves up.")
+
 func test_figure_is_built_from_twenty_dents_with_one_hole() -> void:
     var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(StageGenerator.create_figure(4))
     add_child_autofree(figure)

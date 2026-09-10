@@ -86,6 +86,7 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
         return
     figure.resolved = true
     figure.mesh_icosahedron.angle_good = true
+    figure.mesh_icosahedron.burst_dents()
     if outcome == RunState.Outcome.GAME_OVER:
         _game_over()
         return

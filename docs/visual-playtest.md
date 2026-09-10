@@ -13,6 +13,57 @@ MainScene menu-to-gameplay replay using production scenes, controllers, and inpu
 a fresh directory under `build/visual-playtest/run.*`; old evidence is never reused.
 These development scenes are excluded from exports by the existing `dev/**` filter.
 
+## Radial fragment fade
+
+- Before: `build/visual-playtest/run.zf1y5K`; after:
+  `build/visual-playtest/run.2RQIZi`, default Vulkan Mobile (RTX 5060 Ti).
+  Both replay checks passed; all six sheets reviewed in combined overviews,
+  plus full-size `fade_06_passed.png` before/after and after
+  `mounted_05_game_over.png`.
+- Pieces stay solid for 0.3 seconds, then fade over 0.8 seconds while continuing
+  straight outward. Late passage frames visibly show the background through
+  dissolving triangles instead of fully opaque pieces awaiting abrupt removal.
+  Impact fragments also fade behind the readable score. This uses the existing
+  grainy screen-door shader, not smooth alpha blending. Two-sided faces remain.
+- `task test`: 38 tests / 580 assertions passed, including intermediate fragment
+  opacity after the source shell is removed. Existing lab HUD overlap remains;
+  sparse captures do not validate every frame.
+
+## Simplified radial burst and two-sided faces
+
+- Before: `build/visual-playtest/run.H4yba1`; after:
+  `build/visual-playtest/run.Tkc1z6`, default Vulkan Mobile, RTX 5060 Ti.
+  Both replay checks passed. Reviewed all six sheets as combined overviews,
+  full-size `fade_03_mid.png` before/after, and after
+  `mounted_05_game_over.png`.
+- Acceptance/observations: dents retain their orientation and move directly away
+  from the center for 1.1 seconds, remaining opaque until removal. Wide, solid
+  triangles and widening gaps are clearly visible instead of tumbling slivers
+  and grainy fading. Back faces now show the shell interior through the hole and
+  during the burst. Large nearby fragments fill the screen edges; the central
+  score remains readable. Inner faces also make intact shells look fuller.
+  Existing lab-panel/HUD overlap remains unapproved.
+- `task test`: 38 tests / 578 assertions passed, including fixed orientation,
+  longer fragment lifetime, and cleanup. Sparse replay still does not validate
+  every animation frame.
+
+## Dent burst animation evidence
+
+- Before: `build/visual-playtest/run.IJk7AJ`; after:
+  `build/visual-playtest/run.bM6PBF`, default Vulkan Mobile (RTX 5060 Ti).
+  Reviewed all six contact sheets in combined overviews and full-size
+  `fade_03_mid.png` before/after and `mounted_05_game_over.png` after.
+- Acceptance: successful Space separates the visible triangular dents in distinct
+  outward directions with tumble, then fades them; solid impact leaves flying
+  fragments around the score figure rather than deleting the shell instantly.
+  The next shell and score text remain visible. Fragments deliberately travel
+  beyond the screen edges; edge-on triangles briefly appear as thin slivers.
+  Existing screen-door fading and lab-panel/HUD overlap remain.
+- `task test`: 38 tests / 576 assertions passed. Final visual replay state checks
+  passed. The baseline rendered but failed reset/restart/input checks; that run
+  is not an approved functional baseline. Sparse captures do not validate every
+  animation frame.
+
 ## Evidence to inspect
 
 - `{rotation,run,mounted,fade,options,collision}_contact_sheet.png`: six checkpoints each,

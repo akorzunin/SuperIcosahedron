@@ -48,9 +48,40 @@ func stop_rotation() -> void:
 func fade_out() -> void:
     if fade_tween:
         return
+    burst_dents()
     fade_tween = create_tween()
     fade_tween.tween_property(self, "opacity", 0.0, FADE_TIME)
     fade_tween.tween_callback(hide)
+
+func burst_dents() -> void:
+    if not visible or not _dents.any(func(dent: Dent): return dent.visible):
+        return
+    stop_rotation()
+    # Visual-only fragments: keep the original radial colliders intact for passage.
+    var fragments := Node3D.new()
+    fragments.name = "DentBurst"
+    icosahedron.get_parent().get_parent().add_child(fragments)
+    var tween := fragments.create_tween().set_parallel(true)
+    for dent in _dents:
+        if not dent.visible:
+            continue
+        var tri := _side_tris[dent.side_id]
+        var center := (tri[0] + tri[1] + tri[2]) / 3.0
+        var world_center := global_transform * center
+        var direction := (world_center - global_position).normalized()
+        var shard := MeshInstance3D.new()
+        shard.mesh = dent.mesh
+        shard.material_override = dent.material_override.duplicate()
+        shard.cast_shadow = dent.cast_shadow
+        fragments.add_child(shard)
+        shard.global_transform = dent.global_transform
+        dent.hide()
+        var distance := world_center.distance_to(global_position) * 0.8
+        tween.tween_property(shard, "global_position", shard.global_position + direction * distance, 1.1)
+        var material := shard.material_override as ShaderMaterial
+        tween.tween_method(func(value: float): material.set_shader_parameter("opacity", value),
+            opacity, 0.0, 0.8).set_delay(0.3)
+    tween.chain().tween_callback(fragments.queue_free)
 
 func set_cutplane(v: Vector4):
     cutplane = Vector3(v.x, v.y, v.z).normalized()

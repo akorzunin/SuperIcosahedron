@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_back, depth_draw_opaque;
+render_mode cull_disabled, depth_draw_opaque;
 
 uniform vec4 color : source_color = vec4(0.35, 0.85, 1.0, 1.0);
 uniform float opacity : hint_range(0.0, 1.0) = 1.0;
