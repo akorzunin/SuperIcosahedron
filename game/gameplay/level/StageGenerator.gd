@@ -23,12 +23,12 @@ static func create_modifier_figure(rng: RandomNumberGenerator, has_chain: bool,
         side.kind = SideData.Kind.SOLID
         side.modifier = null
         side.score_delta = 0
-    # The center is always a neutral route; open 1–2 of its three neighbors.
-    figure.sides[center].kind = SideData.Kind.POSITIVE
-    var neighbors := FaceTopology.neighbors(center)
+    # Sample the whole easy zone: staying centered must not guarantee passage.
+    var candidates := FaceTopology.neighbors(center)
+    candidates.append(center)
     var easy_count := rng.randi_range(int(level.easy_open_faces[0]), int(level.easy_open_faces[1]))
-    for i in easy_count - 1:
-        var id: int = neighbors.pop_at(rng.randi_range(0, neighbors.size() - 1))
+    for i in easy_count:
+        var id: int = candidates.pop_at(rng.randi_range(0, candidates.size() - 1))
         figure.sides[id].kind = SideData.Kind.POSITIVE
     # Guarantee a base (nearest eligible opening) and a route to voluntary tier progression.
     _place_required(figure, steps, "base", has_chain, rng)

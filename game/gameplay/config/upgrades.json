@@ -11,6 +11,6 @@
     {"id": "points", "title": "POINTS", "kind": "base", "value": 1, "color": "ffd166", "min_steps": 0, "max_steps": 5, "weight": 3, "value_by_steps": [1, 1, 2, 3, 4, 5]},
     {"id": "green", "title": "+ SIGN", "kind": "sign", "value": 1, "color": "72ff99", "min_steps": 0, "max_steps": 2, "weight": 1, "value_by_steps": [1, 1, 1, 1, 1, 1]},
     {"id": "red", "title": "- SIGN", "kind": "sign", "value": -1, "color": "ff8585", "min_steps": 2, "max_steps": 5, "weight": 1, "value_by_steps": [-1, -1, -1, -1, -1, -1]},
-    {"id": "tier", "title": "TIER", "kind": "tier", "value": 1, "color": "d5a6ff", "min_steps": 2, "max_steps": 5, "weight": 3, "value_by_steps": [1, 1, 1, 1, 2, 3]}
+    {"id": "tier", "title": "TIER", "kind": "tier", "value": 2, "color": "d5a6ff", "min_steps": 2, "max_steps": 5, "weight": 3, "value_by_steps": [1, 1, 1, 1, 2, 3]}
   ]
 }

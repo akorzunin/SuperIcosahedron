@@ -218,7 +218,7 @@ func test_commit_stops_in_flight_face_rotation() -> void:
     assert_true(mesh.quaternion.is_equal_approx(committed))
     assert_false(mesh.is_rotating)
 
-func test_shared_rotation_spawn_commit_and_recenter() -> void:
+func test_shared_rotation_spawn_commit_preserves_existing_layouts() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
     await wait_process_frames(2)
@@ -247,11 +247,18 @@ func test_shared_rotation_spawn_commit_and_recenter() -> void:
     assert_true(first.mesh_icosahedron.basis.is_equal_approx(frozen), "Committed shell stays safe")
     assert_true(second.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
         "FaceLock tween propagates to upcoming shells")
+    var layouts := []
+    for figure in [second, third]:
+        layouts.append([figure.data.easy_side,
+            figure.data.sides.map(func(side): return [side.kind, side.modifier])])
     await _collide_with_side(gameplay, first, true)
-    assert_eq(second.data.easy_side, passed.id)
-    assert_eq(third.data.easy_side, passed.id)
-    assert_true(second.data.sides[passed.id].is_empty())
-    assert_null(second.data.sides[passed.id].modifier)
+    assert_eq(gameplay.spawner.easy_side, passed.id)
+    for i in 2:
+        var figure: Icosahedron = [second, third][i]
+        assert_eq(figure.data.easy_side, layouts[i][0])
+        assert_eq(figure.data.sides.map(func(side): return [side.kind, side.modifier]), layouts[i][1])
+    gameplay.spawner.spawn_icosahedron()
+    assert_eq(gameplay.figure_root.get_live_figures()[-1].data.easy_side, passed.id)
     await wait_process_frames(2)
     for area in second.get_node("MeshIcosahedron/SideColliders").get_children():
         var wire: MeshInstance3D = lab.collision_debug.shapes[area.get_child(0)]

@@ -19,18 +19,15 @@ new shells inherit that orientation. Committed shells stay frozen so steering
 the next shell cannot invalidate an accepted passage.
 
 After physical passage, the passed face ID becomes the easy point for future
-shells. Existing uncommitted layouts are recentered using an exact icosahedral
-symmetry: distances, pickup values, and opening counts are preserved, while
-assignments move to matching face IDs. Live collider resources retain identity.
-Committed layouts never change. Difficulty changes affect newly generated
-layouts, not the contents/counts of already spawned shells.
+shells. Already spawned layouts never change, including uncommitted shells.
+Difficulty changes likewise affect only newly generated layouts.
 
 ## Safe routes and rewards
 
-- The center is always a neutral `PASS` route. It neither scores nor changes the
-  pending chain.
-- Each difficulty profile opens 2–3 of the center-plus-three-neighbor easy zone.
-  The center accounts for one; remaining openings are sampled among neighbors.
+- When open, the center is a neutral `PASS` route: no score or chain change.
+- Each difficulty profile opens 2–3 faces sampled from the entire
+  center-plus-three-neighbor easy zone. The center can be blocked, so staying
+  still does not guarantee passage.
 - A base is placed at the nearest eligible opening. With a pending chain, a tier
   pickup is also placed at the nearest eligible available face. Additional
   pickups are sampled with JSON probabilities and weights.

@@ -130,6 +130,8 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     await _capture("difficulty", "01_easy_zone", _run_state(gameplay))
     gameplay.spawner.spawn_icosahedron()
     var next := gameplay.figure_root.get_live_figures()[1]
+    var next_center := next.data.easy_side
+    var next_layout := next.data.sides.map(func(side): return [side.kind, side.modifier])
     next.scale = Vector3.ONE * 2.5
     gameplay.controls.figure_controller.rotate_continuous(Vector2.RIGHT, 0.15)
     await _frames(3)
@@ -149,8 +151,11 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     await _frames(70)
     _check(gameplay.progress.run_state.tiers_collected == 3, "Hard +2 pickup adds two difficulty units")
     _check(gameplay.progress.run_state.difficulty == 1, "Third collected tier advances difficulty")
-    _check(next.data.easy_side == hard.id, "Upcoming easy zone recenters on passed face")
-    await _capture("difficulty", "04_recentered", _run_state(gameplay))
+    _check(gameplay.spawner.easy_side == hard.id, "Future spawns use passed face as easy point")
+    _check(next.data.easy_side == next_center and
+        next.data.sides.map(func(side): return [side.kind, side.modifier]) == next_layout,
+        "Already spawned dent layouts stay unchanged after passage")
+    await _capture("difficulty", "04_unchanged", _run_state(gameplay))
     next.despawn()
     await _frames(3)
     for fixture_seed in range(100):

@@ -26,6 +26,7 @@ var _side_tris: Array[PackedVector3Array] = []
 var _controlled := false
 var _dent_marker: MeshInstance3D
 var _pickup_labels: Array[Label3D] = []
+var _passage_faces: Array[MeshInstance3D] = []
 
 func _ready() -> void:
     _build_dents()
@@ -110,6 +111,8 @@ func burst_dents() -> void:
         return
     stop_rotation()
     set_controlled(false)
+    for face in _passage_faces:
+        face.hide()
     # Visual-only fragments: keep the original radial colliders intact for passage.
     var fragments := Node3D.new()
     fragments.name = "DentBurst"
@@ -164,12 +167,41 @@ func apply_side_data(sides: Array[SideData]) -> void:
     for label in _pickup_labels:
         label.free()
     _pickup_labels.clear()
+    for face in _passage_faces:
+        face.free()
+    _passage_faces.clear()
     for side in sides:
         if side.id >= 0 and side.id < _dents.size():
             _dents[side.id].apply_data(side)
-            if side.is_empty() and icosahedron.data and icosahedron.data.easy_side >= 0:
+            if side.is_empty():
+                var face := MeshInstance3D.new()
+                var surface := SurfaceTool.new()
+                surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+                var triangle := _side_tris[side.id]
+                var center := (triangle[0] + triangle[1] + triangle[2]) / 3.0
+                var face_basis := _basis_for_triangle(triangle)
+                var radius := triangle[0].distance_to(center)
+                for vertex in triangle:
+                    var local := face_basis.inverse() * (vertex - center)
+                    surface.set_uv(Vector2(local.x, local.y) / (2.0 * radius) + Vector2(0.5, 0.5))
+                    surface.add_vertex(vertex)
+                face.mesh = surface.commit()
+                var material := ShaderMaterial.new()
+                material.shader = preload("res://game/gameplay/figure/shaders/passage_face.gdshader")
+                material.set_shader_parameter("noise_texture", preload("res://game/gameplay/figure/assets/passage_noise.png"))
+                if side.modifier:
+                    material.set_shader_parameter("tint", side.modifier.pickup_color)
+                    for entry in UpgradeCatalog.data.pickups:
+                        if entry.id == side.modifier.id:
+                            material.set_shader_parameter("vortex", entry.value > 1)
+                            break
+                face.material_override = material
+                face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+                add_child(face)
+                _passage_faces.append(face)
+            if side.is_empty() and side.modifier and icosahedron.data and icosahedron.data.easy_side >= 0:
                 var label := Label3D.new()
-                label.text = side.modifier.title if side.modifier else "PASS"
+                label.text = "◆"
                 label.modulate = side.modifier.pickup_color if side.modifier else Color.WHITE
                 label.font_size = 48
                 label.outline_size = 10

@@ -45,6 +45,17 @@ func test_orphans_repeated_signs_cap_death_and_restart() -> void:
     assert_eq(run.figures_passed, 0)
     _collect(run, "points", 1)
 
+func test_easy_point_is_sometimes_open_and_sometimes_blocked() -> void:
+    var rng := RandomNumberGenerator.new()
+    rng.seed = 91
+    for center in 20:
+        var open_count := 0
+        for i in 100:
+            var figure := StageGenerator.create_modifier_figure(rng, true, center, i)
+            if figure.sides[center].is_empty():
+                open_count += 1
+        assert_between(open_count, 1, 99, "No center guarantees AFK passage")
+
 func test_seeded_distance_placement_and_dynamic_easy_zone() -> void:
     var a := RandomNumberGenerator.new()
     var b := RandomNumberGenerator.new()
@@ -59,8 +70,7 @@ func test_seeded_distance_placement_and_dynamic_easy_zone() -> void:
         var easy_open := 0
         var bases := 0
         var tiers := 0
-        assert_true(first.sides[i].is_empty())
-        assert_null(first.sides[i].modifier, "Center always preserves the pending chain")
+        assert_null(first.sides[i].modifier, "An open center preserves the pending chain")
         for j in 20:
             var side := first.sides[j]
             assert_eq(side.kind, second.sides[j].kind)

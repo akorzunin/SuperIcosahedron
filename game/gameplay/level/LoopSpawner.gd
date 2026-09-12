@@ -129,11 +129,8 @@ func spawn_figure(figure: Figure) -> void:
             mesh.apply_side_data(new_figure.data.sides)
 
 func recenter_after_pass(side_id: int) -> void:
+    # Only future spawns use this center; visible layouts stay fixed.
     easy_side = side_id
-    for figure in figureRoot.get_live_figures():
-        if figure.data.easy_side >= 0 and not figure.mesh_icosahedron.angle_good:
-            FaceTopology.recenter(figure.data, easy_side)
-            figure.mesh_icosahedron.apply_side_data(figure.data.sides)
 
 func _on_loop_timer():
     spawn_figure(Figure.new(FigureType.ICOSAHEDRON))
