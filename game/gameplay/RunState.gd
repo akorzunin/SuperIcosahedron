@@ -10,7 +10,6 @@ var difficulty: int:
     get: return UpgradeCatalog.difficulty_index(tiers_collected)
 var score := 0
 var ended := false
-var collected_sides: Array[SideData] = []
 var modifier_system := ModifierSystem.new()
 var _resolved_figures: Dictionary[int, bool] = {}
 
@@ -19,7 +18,6 @@ func reset() -> void:
     tiers_collected = 0
     score = 0
     ended = false
-    collected_sides.clear()
     _resolved_figures.clear()
     modifier_system.reset()
 
@@ -27,6 +25,12 @@ func register_figure(figure: FigureData) -> void:
     for side in figure.sides:
         if side.modifier:
             side.modifier_entity = modifier_system.register_modifier(side.modifier)
+
+func unregister_figure(figure_id: int, figure: FigureData) -> void:
+    _resolved_figures.erase(figure_id)
+    for side in figure.sides:
+        modifier_system.world.components.erase(side.modifier_entity)
+        side.modifier_entity = 0
 
 func resolve_side(figure_id: int, side: SideData) -> Outcome:
     if ended or not side or _resolved_figures.has(figure_id) or side.collected:
@@ -37,7 +41,6 @@ func resolve_side(figure_id: int, side: SideData) -> Outcome:
         modifier_system.discard_chain()
         return Outcome.GAME_OVER
     side.collected = true
-    collected_sides.append(side)
     modifier_system.apply_to(self, side.modifier_entity)
     figures_passed += 1
     return Outcome.PASSED

@@ -92,7 +92,7 @@ func test_adjacent_openings_allow_centered_border_commit_and_pass() -> void:
     assert_true(figure.mesh_icosahedron.angle_good)
     await _grow_through_player(figure)
     assert_eq(gameplay.progress.figures_passed, 1)
-    assert_eq(gameplay.progress.collected_sides.size(), 1)
+    assert_eq(gameplay.progress.figures_passed, 1)
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
 
 func test_no_collision_before_visible_dent_reaches_player() -> void:
@@ -153,8 +153,6 @@ func test_sustained_overlapping_passes_do_not_auto_fail() -> void:
             break
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
     assert_eq(gameplay.progress.figures_passed, 24)
-    assert_eq(gameplay.progress.collected_sides.size(), 24,
-        "Each physical passage collects exactly once; modifier chains determine score.")
 
 func test_off_center_hole_clearance(sample = use_parameters([
     [0, 0.35, true], [7, 0.35, true], [14, 0.35, true],

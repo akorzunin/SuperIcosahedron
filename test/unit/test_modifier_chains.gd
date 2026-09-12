@@ -42,7 +42,7 @@ func test_orphans_repeated_signs_cap_death_and_restart() -> void:
     run.reset()
     assert_eq(run.modifier_system.last_activation, "")
     assert_eq(run.modifier_system.tier, 1)
-    assert_eq(run.collected_sides.size(), 0)
+    assert_eq(run.figures_passed, 0)
     _collect(run, "points", 1)
 
 func test_seeded_distance_placement_and_dynamic_easy_zone() -> void:

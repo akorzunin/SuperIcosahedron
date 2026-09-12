@@ -112,6 +112,8 @@ func spawn_figure(figure: Figure) -> void:
         FigureType.OCTAHEDRON:
             pass
 
+    new_figure.tree_exiting.connect(game_progress.run_state.unregister_figure.bind(
+        new_figure.get_instance_id(), new_figure.data), CONNECT_ONE_SHOT)
     figureRoot.add_figure(new_figure)
     if new_figure.data.easy_side >= 0:
         var controls := game_progress.loop_controls

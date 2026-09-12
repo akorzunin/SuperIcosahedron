@@ -23,8 +23,6 @@ var time_passed_formated: String:
     get:
         return loop_timer.get_elapsed_time()
 var max_reached_level := 0
-var collected_sides: Array[SideData]:
-    get: return run_state.collected_sides
 
 
 func _update_level():

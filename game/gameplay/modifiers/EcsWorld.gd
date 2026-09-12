@@ -30,5 +30,5 @@ func query(required: Array[StringName]) -> Array[int]:
     return out
 
 func clear() -> void:
-    _next_id = 1
+    # Keep IDs unique across resets: queued old figures may still unregister.
     components.clear()
