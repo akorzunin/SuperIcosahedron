@@ -40,6 +40,7 @@ func set_window_settings():
             P.MOBILE:
                 DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
+    V.scaling_3d_scale = G.settings.get("RENDER_SCALE_PERCENT", 100) / 100.0
     V.use_debanding = true
 
     if Utils.get_render_method() == R.FORWARD_PLUS:

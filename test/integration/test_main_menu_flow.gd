@@ -76,14 +76,33 @@ func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
 
     _open_invert_x_options(menu_scene)
 
-    var selected: Variant = await _wait_for_selected_menu_item(menu_scene, "settings_invert_x")
+    var selected: Variant = await _wait_for_selected_menu_item(menu_scene, "settings_not_invert_x")
     assert_not_null(selected, "The opened setting option has a selected menu item.")
-    assert_eq(selected.get("action"), "settings_invert_x")
+    assert_eq(selected.get("action"), "settings_not_invert_x",
+        "The current false value is selected when the option opens.")
+    var current_item: MenuItem
+    for item in menu_scene.get_tree().get_nodes_in_group("menu_item"):
+        if item.items.get("is_current", false):
+            current_item = item
+            break
+    assert_not_null(current_item, "The current setting option is marked.")
+    assert_eq(current_item.label_3d.modulate, MenuItem.CURRENT_OPTION_COLOR)
 
+    await wait_process_frames(50)
+    await _tap_action(&"ui_right")
+    selected = await _wait_for_selected_menu_item(menu_scene, "settings_invert_x")
+    assert_eq(selected.get("action"), "settings_invert_x")
     await _tap_action(&"ui_accept")
     await wait_process_frames(2)
 
     assert_true(G.settings.IS_CONTROL_INVERTED, "Accepting the menu option updates runtime settings.")
+    var highlighted_action := ""
+    for item in menu_scene.get_tree().get_nodes_in_group("menu_item"):
+        if item.label_3d.modulate == MenuItem.CURRENT_OPTION_COLOR:
+            highlighted_action = item.action
+            break
+    assert_eq(highlighted_action, "settings_invert_x",
+        "The highlighted option follows the saved value.")
 
     var cfg := ConfigFile.new()
     assert_eq(cfg.load(SETTINGS_FILE), OK, "Settings ini file exists after the menu setting change.")
@@ -91,6 +110,29 @@ func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
         cfg.get_value("user_settings", "IS_CONTROL_INVERTED"),
         "Accepting the menu option serializes IS_CONTROL_INVERTED to user://settings.cfg."
     )
+
+func test_video_render_scale_cycles_and_persists() -> void:
+    var previous_scale := get_viewport().scaling_3d_scale
+    var main_scene := await _load_main_scene()
+    var menu_scene: Node = main_scene.scenes.MenuScene
+    var actions: MenuActions = menu_scene.get_node("MenuActions")
+    var item: MenuItem = autofree(MenuItem.new().init({
+        pos = 3, val = MenuStruct.settings_items[3].items[3]
+    }))
+    assert_eq(item.action, "settings_cycle_render_scale")
+    assert_eq(G.settings.RENDER_SCALE_PERCENT, 100)
+    for percent in range(90, 0, -10):
+        actions.call(item.action)
+        assert_eq(G.settings.RENDER_SCALE_PERCENT, percent)
+        assert_almost_eq(get_viewport().scaling_3d_scale, percent / 100.0, 0.001)
+        assert_eq(SettingsConfig.load_gs(SETTINGS_FILE).RENDER_SCALE_PERCENT, percent)
+    main_scene.change_scene("LoopScene")
+    assert_almost_eq(get_viewport().scaling_3d_scale, 0.1, 0.001)
+    main_scene.change_scene("MenuScene")
+    actions.call(item.action)
+    assert_eq(G.settings.RENDER_SCALE_PERCENT, 100, "10% wraps back to 100%.")
+    assert_almost_eq(get_viewport().scaling_3d_scale, 1.0, 0.001)
+    get_viewport().scaling_3d_scale = previous_scale
 
 func _load_main_scene() -> Node:
     _main_scene = MAIN_SCENE.instantiate()

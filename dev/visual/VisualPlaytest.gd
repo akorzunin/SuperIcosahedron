@@ -301,8 +301,44 @@ func _mounted_gameplay_sequence() -> void:
     await _capture("mounted", "06_menu_return", {})
     _save_contact_sheet("mounted")
     await _transition_sequence(main)
+    await _video_scale_sequence(main)
     main.queue_free()
     await _frames(3)
+
+func _video_scale_sequence(main: Node) -> void:
+    var config: Config = main.get_node("Config")
+    var previous_path := config.config
+    var previous_percent: int = G.settings.get("RENDER_SCALE_PERCENT", 100)
+    var previous_scale := get_viewport().scaling_3d_scale
+    config.config = "user://visual_render_scale.cfg"
+    SettingsConfig.load_gs(config.config)
+    config.set_render_scale(100)
+    var menu: Node = main.scenes.MenuScene
+    var controls: MenuControls = menu.get_node("MenuControls")
+    var spawner: MenuSpawner = menu.get_node("MenuSpawner")
+    controls.check_controlled_node()
+    spawner.open_menu_section(controls.controlledNode, MenuStruct.settings_items[3].duplicate(true))
+    await _frames(30)
+    var turn := Quats.menu_quat_left()
+    controls.change_selection((turn * turn).inverse(), true)
+    await _frames(30)
+    var checkpoint := 0
+    for percent in [100, 90, 70, 50, 10, 100]:
+        if checkpoint > 0:
+            for _step in range(10):
+                if G.settings.RENDER_SCALE_PERCENT == percent:
+                    break
+                await _tap_accept()
+        await _frames(3)
+        _check(is_equal_approx(get_viewport().scaling_3d_scale, percent / 100.0),
+            "Video scale applies %d%%" % percent)
+        checkpoint += 1
+        await _capture("video_scale", "%02d_%d" % [checkpoint, percent], {"percent": percent})
+    _save_contact_sheet("video_scale")
+    config.set_render_scale(previous_percent)
+    get_viewport().scaling_3d_scale = previous_scale
+    DirAccess.remove_absolute(ProjectSettings.globalize_path(config.config))
+    config.config = previous_path
 
 func _transition_sequence(main: Node) -> void:
     main.change_scene("LoopScene")

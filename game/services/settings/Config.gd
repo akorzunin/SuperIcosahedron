@@ -51,14 +51,20 @@ func set_music_state(state: bool):
     SettingsConfig.write_key(config, "user_settings", "MUSIC_ENABLED", state)
 
 func set_fullscreen_state(state: int):
-    G.settings.FULLSCREEN_ENABLED = state
-    SettingsConfig.write_key(config, "user_settings", "FULLSCREEN_ENABLED", \
-        true if state > 2 else false)
+    var enabled := state > 2
+    G.settings.FULLSCREEN_ENABLED = enabled
+    SettingsConfig.write_key(config, "user_settings", "FULLSCREEN_ENABLED", enabled)
 
 func set_vsync_state(state: int):
-    G.settings.VSYNC_ENABLED = state
-    SettingsConfig.write_key(config, "user_settings", "VSYNC_ENABLED", \
-        true if state > 0 else false)
+    var enabled := state > 0
+    G.settings.VSYNC_ENABLED = enabled
+    SettingsConfig.write_key(config, "user_settings", "VSYNC_ENABLED", enabled)
+
+func set_render_scale(percent: int):
+    percent = clampi(roundi(percent / 10.0) * 10, 10, 100)
+    G.settings.RENDER_SCALE_PERCENT = percent
+    get_viewport().scaling_3d_scale = percent / 100.0
+    SettingsConfig.write_key(config, "user_settings", "RENDER_SCALE_PERCENT", percent)
 
 func set_control_type(new_type: LoopControls.ControlType):
     var str_type: String = LoopControls.ControlType.keys()[new_type]

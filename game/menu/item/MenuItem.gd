@@ -5,6 +5,7 @@ class_name MenuItem
 
 const HEX_FONT := preload("res://game/game-assets/fonts/plastic-bag/Plastic Bag.otf")
 const EMOJI_FONT := preload("res://game/game-assets/fonts/noto-color-emoji/NotoColorEmoji-Regular.ttf")
+const CURRENT_OPTION_COLOR := Color(1.0, 0.8, 0.2, 1.0)
 
 var pos: int
 var label_text: String
@@ -24,7 +25,10 @@ func _ready() -> void:
     G.font_changed.connect(_on_font_changed)
     self.add_to_group("menu_item")
     label_3d.text = label_text
+    _update_render_scale_label()
     label_3d.font = HEX_FONT
+    if items.get("is_current", false):
+        label_3d.modulate = CURRENT_OPTION_COLOR
     var t = Quats.menu_quat_left()
     var y = Quats.menu_quat_down().inverse()
     match pos:
@@ -42,6 +46,18 @@ func _ready() -> void:
             transform.basis = Basis(y)
         7:
             transform.basis = Basis(Quats.easter_egg_quat)
+
+func _update_render_scale_label() -> void:
+    if action == "settings_cycle_render_scale":
+        label_3d.text = "3d scale\n%d%%" % G.settings.get("RENDER_SCALE_PERCENT", 100)
+
+func _process(_delta: float) -> void:
+    _update_render_scale_label()
+    var setting: String = items.get("setting", "")
+    if setting.is_empty() or not G.settings.has(setting):
+        return
+    label_3d.modulate = CURRENT_OPTION_COLOR if \
+        items.get("value", null) == G.settings[setting] else Color.WHITE
 
 func _on_font_changed(new_font: G.FontType):
     match new_font:

@@ -8,26 +8,32 @@ static var settings_items := {
         items = {
             1: {
                 name = "control\ntype",
+                setting = "CONTROL_TYPE",
                 options = {
                     1: {
                         name = "FreeSpin",
+                        value = "FREE_SPIN",
                         action = "settings_set_control_free_spin",
                     },
                     2: {
                         name = "FaceLock",
+                        value = "FACE_LOCK",
                         action = "settings_set_control_face_lock",
                     },
                 },
             },
             2: {
                 name = "invert\nx-axis",
+                setting = "IS_CONTROL_INVERTED",
                 options = {
                     1: {
                         name = "on",
+                        value = true,
                         action = "settings_invert_x",
                     },
                     2: {
                         name = "off",
+                        value = false,
                         action = "settings_not_invert_x",
                     },
                 },
@@ -40,26 +46,32 @@ static var settings_items := {
         items = {
             1: {
                 name = "fps\ncounter",
+                setting = "FPS_COUNTER_ENABLED",
                 options = {
                     1: {
                         name = "on",
+                        value = true,
                         action = "settings_fps_counter_on"
                     },
                     2: {
                         name = "off",
+                        value = false,
                         action = "settings_fps_counter_off"
                     },
                 },
             },
             2: {
                 name = "display\ndebug\nstats",
+                setting = "SHOW_DEBUG_STATS",
                 options = {
                     1: {
                         name = "on",
+                        value = true,
                         action = "settings_display_debug_stats_on"
                     },
                     2: {
                         name = "off",
+                        value = false,
                         action = "settings_display_debug_stats_off"
                     },
                 },
@@ -71,30 +83,41 @@ static var settings_items := {
         items = {
             1: {
                 name = "window mode",
+                setting = "FULLSCREEN_ENABLED",
                 options = {
                     1: {
                         name = "fullscreen",
+                        value = true,
                         action = "settings_fullscreen"
                     },
                     2: {
                         name = "bordered",
+                        value = false,
                         action = "settings_bordered"
                     },
                 },
             },
             2: {
                 name = "v-sync",
+                setting = "VSYNC_ENABLED",
                 options = {
                     1: {
                         name = "on",
+                        value = true,
                         action = "settings_vsync_on"
                     },
                     2: {
                         name = "off",
+                        value = false,
                         action = "settings_vsync_off"
                     },
                 },
-            }
+            },
+            3: {
+                name = "3d scale",
+                setting = "RENDER_SCALE_PERCENT",
+                action = "settings_cycle_render_scale",
+            },
         }
     },
     4: {
@@ -102,26 +125,32 @@ static var settings_items := {
         items = {
             1: {
                 name = "music",
+                setting = "MUSIC_ENABLED",
                 options = {
                     1: {
                         name = "on",
+                        value = true,
                         action = "settings_music_on"
                     },
                     2: {
                         name = "off",
+                        value = false,
                         action = "settings_music_off"
                     },
                 },
             },
             2: {
                 name = "sfx",
+                setting = "SFX_ENABLED",
                 options = {
                     1: {
                         name = "on",
+                        value = true,
                         action = "settings_sfx_on"
                     },
                     2: {
                         name = "off",
+                        value = false,
                         action = "settings_sfx_off"
                     },
                 },

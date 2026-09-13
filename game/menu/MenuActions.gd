@@ -54,6 +54,10 @@ func settings_vsync_off():
     config.set_vsync_state(state)
     Utils.set_vsync(state)
 
+func settings_cycle_render_scale():
+    var percent: int = G.settings.get("RENDER_SCALE_PERCENT", 100)
+    config.set_render_scale(100 if percent <= 10 else percent - 10)
+
 func settings_music_on():
     sfx_player.toggle_music.emit(true)
 

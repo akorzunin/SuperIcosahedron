@@ -41,11 +41,32 @@ func open_menu_section(node, items):
     pass
 
 func open_options_section(node: Node3D, items: Dictionary):
-    var options = items.options
+    var options: Dictionary = items.options.duplicate(true)
+    _put_current_option_first(options, items.get("setting", ""))
     clean_menu_items(node)
     add_back_to_options(options)
     add_option_name(options, items.name)
     add_menu_items(node, {items = options})
+
+func _put_current_option_first(options: Dictionary, setting: String) -> void:
+    if setting.is_empty() or not G.settings.has(setting):
+        return
+
+    var current_option := -1
+    for key in options:
+        options[key]["setting"] = setting
+        if current_option < 1 and options[key].get("value", null) == G.settings[setting]:
+            current_option = key
+    if current_option < 1:
+        return
+
+    options[current_option]["is_current"] = true
+    if current_option == 1:
+        return
+
+    var first_option = options[1]
+    options[1] = options[current_option]
+    options[current_option] = first_option
 
 func add_back_button(d: Dictionary) -> Dictionary:
     if not d.get("items"):
