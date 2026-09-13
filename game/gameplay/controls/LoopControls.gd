@@ -89,6 +89,11 @@ func advance_control() -> void:
     update_controlled_node()
 
 func _input(event: InputEvent) -> void:
+    if game_state_manager.tutorial_waiting:
+        if event.is_action_pressed('ui_accept') and not event.is_echo():
+            game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
+        get_viewport().set_input_as_handled()
+        return
     var is_inverted = G.settings.IS_CONTROL_INVERTED
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         handle_game_over_input(event, is_inverted)

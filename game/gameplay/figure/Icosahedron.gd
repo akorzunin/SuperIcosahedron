@@ -47,6 +47,8 @@ func _ready() -> void:
     if not data:
         data = StageGenerator.create_figure(shader_type if shader_type >= 0 else 0)
     mesh_icosahedron.apply_side_data(data.sides)
+    if data.easy_side >= 0:
+        mesh_icosahedron.set_difficulty_color(data.stage)
     _build_side_colliders()
 
 func _on_scale_tick() -> void:

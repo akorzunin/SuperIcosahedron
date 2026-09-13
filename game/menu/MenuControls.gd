@@ -41,6 +41,7 @@ func call_menu_action():
     if action == "menu_start_game":
         sfx_player.on_action_select.emit()
         G.data.level = selected.items.level
+        G.data.selected_difficulty = selected.items.level
     else:
         sfx_player.on_section_select.emit()
     if action == "menu_level_select":
@@ -48,7 +49,7 @@ func call_menu_action():
             controlledNode,
             {
                 items = LevelPatterns.get_menu_levels(
-                    clampi(G.settings.MAX_LEVEL, 0, LevelPatterns.levels.size() - 1)
+                    G.unlocked_difficulty
                 )
             }
         )

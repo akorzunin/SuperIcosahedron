@@ -1,7 +1,7 @@
 extends Node
 class_name PatternGen
 
-const MAX_LEVEL := 10
+const MAX_LEVEL := 3
 enum SpawnMode {TUTORIAL, DEBUG, QUEUE}
 
 @export var level: int = 0:
@@ -13,7 +13,7 @@ var level_queue := LevelQueue.new()
 func _ready():
     G.level_changed.connect(_on_level_changed)
     var l = G.data.get("level")
-    if l:
+    if l and not G.data.has("selected_difficulty"):
         level = l
     add_patterns()
 
@@ -23,7 +23,8 @@ func reset(start_level: int) -> void:
     add_patterns()
 
 func _on_level_changed(new_level: int):
-    var new_gs = LevelPatterns.levels[new_level].get("game_speed")
+    level = new_level
+    var new_gs = LevelPatterns.levels[level].get("game_speed")
     if new_gs:
         G.settings.GAME_SPEED = new_gs
         G.reload_settings.emit()

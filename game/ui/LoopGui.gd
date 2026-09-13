@@ -8,18 +8,28 @@ class_name LoopGui
 @onready var debug_stats_container: DebugStatsContainer = %DebugStatsContainer
 @onready var common_controls: CommonControls = %CommonControls
 @onready var loop_ui: Control = $LoopUi
+@onready var tutorial_hint: Label = $LoopUi/TutorialHint
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
     common_controls.toggle_debug_stats.connect(_on_debug_stats_toggle)
+    tutorial_hint.text = tutorial_instructions(Utils.get_platform() == Utils.Platform.MOBILE)
+    tutorial_hint.visible = game_state_manager.tutorial_waiting
     if G.settings.SHOW_DEBUG_STATS:
         debug_stats_container.show()
     else:
         debug_stats_container.hide()
 
 func _physics_process(delta: float) -> void:
+    tutorial_hint.visible = game_state_manager.tutorial_waiting
     timer_rich_text_label.set_text(loop_timer.get_elapsed_time())
     pass
+
+static func tutorial_instructions(mobile: bool) -> String:
+    if mobile:
+        return "TUTORIAL — PAUSED\n\nUse the four direction buttons to rotate the figure.\nAlign the open gap, then tap the central buttons to pass through.\n\nTap a central button to start playing."
+    return "TUTORIAL — PAUSED\n\nUse W, A, S, D or the arrow keys to rotate the figure.\nAlign the open gap, then press Space or Enter to pass through.\n\nPress Space or Enter to start playing."
+
 
 func _on_debug_stats_toggle(v: bool):
     DebugStatsContainer.toggle(v, debug_stats_container)

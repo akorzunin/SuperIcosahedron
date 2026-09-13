@@ -1,0 +1,5 @@
+- fix font, make it more readable or pick another one
+- setup deploy proiperly (gh actions + upload to ws)
+- unify UI (where buttons autoclick, where submunu title lives, where esc works and how it works)
+- parrallel tests execution + less test output (only for fails)
+- more mechanics: harder levelup condition, more different mods

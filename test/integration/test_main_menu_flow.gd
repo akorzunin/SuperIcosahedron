@@ -8,9 +8,17 @@ var _saved_settings_file: PackedByteArray
 var _had_settings_file := false
 var _previous_settings: Dictionary
 var _previous_data: Dictionary
+var _previous_unlocked: int
+var _saved_progress: PackedByteArray
+var _had_progress := false
 
 func before_each() -> void:
     _release_all_actions()
+    _previous_unlocked = G.unlocked_difficulty
+    G.unlocked_difficulty = 0
+    _had_progress = FileAccess.file_exists(G.PROGRESS_PATH)
+    if _had_progress:
+        _saved_progress = FileAccess.get_file_as_bytes(G.PROGRESS_PATH)
     _previous_settings = G.settings
     _previous_data = G.data
     G.settings = {}
@@ -32,6 +40,13 @@ func after_each() -> void:
         file.close()
     elif FileAccess.file_exists(SETTINGS_FILE):
         DirAccess.remove_absolute(ProjectSettings.globalize_path(SETTINGS_FILE))
+    G.unlocked_difficulty = _previous_unlocked
+    if _had_progress:
+        var progress_file := FileAccess.open(G.PROGRESS_PATH, FileAccess.WRITE)
+        progress_file.store_buffer(_saved_progress)
+        progress_file.close()
+    elif FileAccess.file_exists(G.PROGRESS_PATH):
+        DirAccess.remove_absolute(ProjectSettings.globalize_path(G.PROGRESS_PATH))
     G.settings = _previous_settings
     G.data = _previous_data
 
@@ -68,6 +83,48 @@ func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void
         "Returning to menu restores its close-up camera.")
     main_scene.change_scene("LoopScene")
     assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"))
+
+func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
+    var main := await _load_main_scene()
+    var loop: LoopScene = main.scenes.LoopScene
+    G.data.selected_difficulty = 0
+    main.change_scene("LoopScene")
+    assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.TUTORIAL)
+    loop.progress.run_state.figures_passed = 11
+    loop.progress._update_level()
+    await wait_process_frames(3)
+    assert_eq(G.unlocked_difficulty, 1)
+    assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.QUEUE)
+    assert_eq(loop.progress.score, 0)
+    assert_eq(loop.progress.run_state.difficulty, 0)
+    G.unlock_difficulty(3)
+    G.unlock_difficulty(1)
+    var saved := ConfigFile.new()
+    assert_eq(saved.load(G.PROGRESS_PATH), OK)
+    assert_eq(saved.get_value("progress", "unlocked_difficulty"), 3)
+    var entries: Dictionary = LevelPatterns.get_menu_levels(G.unlocked_difficulty)
+    assert_eq(entries[1].level, 1)
+    assert_eq(entries.size(), 4)
+    assert_eq(entries[6].level, 0)
+    G.data.selected_difficulty = 3
+    loop.restart()
+    assert_eq(loop.progress.run_state.tiers_collected, 8)
+    assert_eq(loop.progress.score, 0)
+    assert_false(loop.progress.run_state.modifier_system.pending)
+    var figure: Icosahedron = loop.figure_root.get_live_figures()[0]
+    assert_eq(figure.data.stage, 2)
+    var material: ShaderMaterial = figure.mesh_icosahedron._materials[0]
+    var rgb: Array = TwColors.tw.orange._400
+    assert_eq(material.get_shader_parameter("color"), Color(rgb[0], rgb[1], rgb[2]))
+    loop.progress.run_state.tiers_collected = 16
+    assert_eq(figure.data.stage, 2, "Existing figure retains its generated difficulty")
+    assert_eq(material.get_shader_parameter("color"), Color(rgb[0], rgb[1], rgb[2]))
+    G.unlock_difficulty(4)
+    G.data.selected_difficulty = 4
+    G.data.level = 4
+    loop.restart()
+    assert_eq(loop.progress.run_state.difficulty, 3, "Level 4 starts without indexing legacy patterns")
+    assert_eq(loop.get_node("PatternGen").level, 0)
 
 func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
     var main_scene := await _load_main_scene()

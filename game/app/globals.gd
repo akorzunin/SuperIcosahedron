@@ -11,6 +11,35 @@ var data := {}
 ## has to be empty
 var settings := {}
 
+const PROGRESS_PATH := "user://progress.cfg"
+var unlocked_difficulty := 0
+
+func _ready() -> void:
+    var saved := ConfigFile.new()
+    if saved.load(PROGRESS_PATH) == OK:
+        unlocked_difficulty = clampi(int(saved.get_value("progress", "unlocked_difficulty", 0)), 0, UpgradeCatalog.data.difficulty_levels.size())
+
+func unlock_difficulty(level: int) -> void:
+    level = clampi(level, 0, UpgradeCatalog.data.difficulty_levels.size())
+    if level <= unlocked_difficulty:
+        return
+    unlocked_difficulty = level
+    var saved := ConfigFile.new()
+    saved.set_value("progress", "unlocked_difficulty", unlocked_difficulty)
+    var error := saved.save(PROGRESS_PATH)
+    if error != OK:
+        push_warning("Could not save difficulty progress: %s" % error)
+
+func reset_progress(path := PROGRESS_PATH) -> Error:
+    var saved := ConfigFile.new()
+    saved.set_value("progress", "unlocked_difficulty", 0)
+    var error := saved.save(path)
+    if error != OK:
+        return error
+    unlocked_difficulty = 0
+    data.clear()
+    return OK
+
 # global signals
 enum FontType {HEX, EMOJI}
 @warning_ignore("unused_signal")

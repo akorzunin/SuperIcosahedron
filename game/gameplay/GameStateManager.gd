@@ -13,6 +13,7 @@ const GameStateNames = {
 }
 
 @export var game_state := GameState.GAME_MENU
+var tutorial_waiting := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -21,11 +22,19 @@ func _ready() -> void:
 func change_state(new_state: GameState) -> void:
     if game_state == new_state:
         return
+    if new_state != GameState.GAME_PAUSED:
+        tutorial_waiting = false
     var old_state := game_state
     game_state = new_state
     game_state_changed.emit(old_state, new_state)
 
+func pause_for_tutorial() -> void:
+    tutorial_waiting = true
+    change_state(GameState.GAME_PAUSED)
+
 func toggle_pause() -> void:
+    if tutorial_waiting:
+        return
     if game_state == GameState.GAME_ACTIVE:
         change_state(GameState.GAME_PAUSED)
     elif game_state == GameState.GAME_PAUSED:

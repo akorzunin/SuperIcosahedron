@@ -65,6 +65,8 @@ func _run() -> void:
     get_tree().quit(1 if failed else 0)
 
 func _modifier_sequence() -> void:
+    var old_data := G.data
+    G.data = {} # Direct lab starts must not inherit a previously selected menu difficulty.
     var old_mode: int = G.settings.SPAWN_MODE
     G.settings.SPAWN_MODE = PatternGen.SpawnMode.QUEUE
     var lab := RUN_LAB.instantiate()
@@ -109,6 +111,7 @@ func _modifier_sequence() -> void:
     lab.queue_free()
     await _frames(3)
     G.settings.SPAWN_MODE = old_mode
+    G.data = old_data
 
 func _difficulty_sequence(gameplay: LoopScene) -> void:
     # Continue the actual base/tier/base replay: one tier unit collected so far.
@@ -182,6 +185,15 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     await _frames(3)
     _check(detector.get_passing_side(figure) != null, "Adjacent open/open border has clearance")
     await _capture("difficulty", "06_open_border", _run_state(gameplay))
+    for stage in [2, 3]:
+        gameplay.figure_root.clean_all(true)
+        gameplay.progress.run_state.tiers_collected = int(UpgradeCatalog.data.difficulty_levels[stage].tiers_required)
+        gameplay.spawner.spawn_icosahedron()
+        figure = gameplay.figure_root.get_live_figures()[0]
+        _align_side(gameplay, figure, figure.data.sides[figure.data.easy_side])
+        figure.scale = Vector3.ONE * 5.0
+        await _frames(3)
+        await _capture("difficulty", "%02d_palette_level_%d" % [stage + 5, stage + 1], _run_state(gameplay))
     _save_contact_sheet("difficulty")
 
 func _rotation_replay() -> void:

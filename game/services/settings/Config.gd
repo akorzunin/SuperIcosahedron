@@ -34,6 +34,14 @@ func _on_reload_settings():
     var gs = SettingsConfig.load_gs(config)
     G.settings = gs
 
+func reset_user_settings() -> Error:
+    var defaults := SettingsConfig.dict_to_config(DafaultConfig.settings)
+    var error := defaults.save(config)
+    if error != OK:
+        return error
+    _on_reload_settings()
+    return OK
+
 func _on_fps_counter_state(state: bool):
     G.settings.FPS_COUNTER_ENABLED = state
     SettingsConfig.write_key(config, "user_settings", "FPS_COUNTER_ENABLED", state)

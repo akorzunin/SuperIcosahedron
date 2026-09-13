@@ -8,6 +8,25 @@ func _collect(run: RunState, id: String, figure_id: int) -> void:
     assert_eq(run.resolve_side(figure_id, side), RunState.Outcome.PASSED)
     assert_eq(run.resolve_side(figure_id, side), RunState.Outcome.IGNORED)
 
+func test_pickup_messages_describe_effect_and_use_config_color() -> void:
+    var run := RunState.new()
+    var messages: Array[String] = []
+    var colors: Array[Color] = []
+    run.modifier_system.pickup_collected.connect(func(message: String, color: Color):
+        messages.append(message)
+        colors.append(color))
+    var ids := ["tier", "points", "tier", "red", "green", "points"]
+    for i in ids.size():
+        _collect(run, ids[i], i + 1)
+        assert_eq(colors[i], UpgradeCatalog.pickup(ids[i]).pickup_color)
+    assert_eq(messages.size(), 6, "Duplicate resolutions must not repeat feedback")
+    assert_eq(messages[0], "No effect · Collect POINTS first")
+    assert_eq(messages[1], "Chain started · +100 pending")
+    assert_eq(messages[2], "Tier +2 · +500 pending")
+    assert_eq(messages[3], "Sign → negative · -500 pending")
+    assert_eq(messages[4], "Sign → positive · +500 pending")
+    assert_eq(messages[5], "+500 scored · +100 pending")
+
 func test_commit_applies_previous_chain_then_resets() -> void:
     var run := RunState.new()
     _collect(run, "points", 1)
@@ -15,12 +34,12 @@ func test_commit_applies_previous_chain_then_resets() -> void:
     _collect(run, "red", 3)
     assert_eq(run.score, 0)
     _collect(run, "points", 4)
-    assert_eq(run.score, -250)
+    assert_eq(run.score, -500)
     assert_true(run.modifier_system.pending)
     assert_eq(run.modifier_system.tier, 1)
     assert_eq(run.modifier_system.sign_value, 1)
     _collect(run, "points", 5)
-    assert_eq(run.score, -150)
+    assert_eq(run.score, -400)
 
 func test_orphans_repeated_signs_cap_death_and_restart() -> void:
     var run := RunState.new()
@@ -102,16 +121,19 @@ func test_difficulty_counts_only_collected_tier_units() -> void:
         _collect(run, "green", 2 + i)
     assert_eq(run.difficulty, 0)
     _collect(run, "tier", 12)
-    _collect(run, "tier", 13)
+    assert_eq(run.tiers_collected, 2)
     assert_eq(run.difficulty, 0)
+    _collect(run, "tier", 13)
+    assert_eq(run.tiers_collected, 4)
+    assert_eq(run.difficulty, 1)
     _collect(run, "tier", 14)
     assert_eq(run.difficulty, 1)
     _collect(run, "points", 15)
     assert_eq(run.difficulty, 1, "Committing a chain does not reset difficulty")
     for i in 5:
         _collect(run, "tier", 16 + i)
-    assert_eq(run.difficulty, 2)
-    assert_eq(run.tiers_collected, 8)
+    assert_eq(run.difficulty, 3)
+    assert_eq(run.tiers_collected, 16, "Tier units count even after the pending chain reaches its cap")
     run.reset()
     assert_eq(run.difficulty, 0)
     assert_eq(run.tiers_collected, 0)
@@ -123,8 +145,8 @@ func test_neutral_pass_keeps_chain_and_difficulty() -> void:
     var route := SideData.new().init(0, Vector3.RIGHT, SideData.Kind.POSITIVE)
     assert_eq(run.resolve_side(3, route), RunState.Outcome.PASSED)
     assert_eq(run.resolve_side(3, route), RunState.Outcome.IGNORED)
-    assert_eq(run.modifier_system.tier, 2)
-    assert_eq(run.tiers_collected, 1)
+    assert_eq(run.modifier_system.tier, 3)
+    assert_eq(run.tiers_collected, 2)
     assert_eq(run.difficulty, 0)
     assert_eq(run.score, 0)
 

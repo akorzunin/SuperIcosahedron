@@ -14,6 +14,8 @@ signal sound_requested(event: StringName)
 
 var run_state := RunState.new()
 var modifier_hud: Label
+var pickup_message: Label
+var pickup_message_time := 0.0
 var figures_passed: int:
     get: return run_state.figures_passed
 var score: int:
@@ -26,11 +28,18 @@ var max_reached_level := 0
 
 
 func _update_level():
-    if G.settings.SPAWN_MODE != PatternGen.SpawnMode.QUEUE and LevelPatterns.is_level_up(figures_passed, pattern_gen.level):
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and LevelPatterns.is_level_up(figures_passed, 0):
+        # Restart after the current collision callback has finished resolving its figure.
+        (get_parent() as LoopScene).complete_tutorial.call_deferred()
+    elif G.settings.SPAWN_MODE != PatternGen.SpawnMode.QUEUE and LevelPatterns.is_level_up(figures_passed, pattern_gen.level):
         G.level_changed.emit(pattern_gen.level + 1)
 
 func reset():
     run_state.reset()
+    pickup_message_time = 0.0
+    if is_instance_valid(pickup_message):
+        pickup_message.hide()
+        pickup_message.text = ""
     time_passed = 0
 
 func _ready() -> void:
@@ -48,8 +57,21 @@ func _ready() -> void:
     modifier_hud.add_theme_constant_override("shadow_offset_y", 2)
     modifier_hud.add_theme_font_size_override("font_size", 20)
     layer.add_child(modifier_hud)
+    pickup_message = modifier_hud.duplicate() as Label
+    pickup_message.offset_top = -160
+    pickup_message.offset_bottom = -96
+    pickup_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    pickup_message.hide()
+    layer.add_child(pickup_message)
+    run_state.modifier_system.pickup_collected.connect(_on_pickup_collected)
     game_state_manager.game_state_changed.connect(_on_game_state)
     G.level_changed.connect(_on_level_changed)
+
+func _on_pickup_collected(message: String, color: Color) -> void:
+    pickup_message.text = message
+    pickup_message.add_theme_color_override("font_color", color)
+    pickup_message_time = 2.0
+    pickup_message.visible = modifier_hud.visible
 
 func start():
     gui.show_stats_panel(true)
@@ -57,6 +79,8 @@ func start():
 func end():
     time_passed = loop_timer.get_raw_elapsed_time()
     gui.show_stats_panel(false)
+    pickup_message_time = 0.0
+    pickup_message.hide()
 
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs := GameStateManager.GameState
@@ -77,6 +101,8 @@ func _physics_process(delta: float) -> void:
     gui.game_state_label.set_text(str(figures_passed))
     modifier_hud.visible = G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and \
         game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
+    pickup_message_time = maxf(0.0, pickup_message_time - delta)
+    pickup_message.visible = modifier_hud.visible and pickup_message_time > 0.0
     modifier_hud.text = "Score: %d | Difficulty: %d | Tiers collected: %d\n%s\n%s" % [score,
         run_state.difficulty + 1, run_state.tiers_collected,
         run_state.modifier_system.summary(), run_state.modifier_system.last_activation]
@@ -111,6 +137,7 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
         return
     if figure.data.easy_side >= 0:
         loop_controls.loop_spawner.recenter_after_pass(side.id)
+        G.unlock_difficulty(run_state.difficulty + 1)
         level_changed.emit(run_state.difficulty + 1)
     sound_requested.emit(&"on_node_passed")
     _update_level()

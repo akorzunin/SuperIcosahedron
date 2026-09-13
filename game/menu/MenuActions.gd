@@ -19,6 +19,25 @@ func menu_level_select():
     # handeled in MenuControls.call_menu_action
     return
 
+func settings_reset_progress():
+    var error := G.reset_progress()
+    if error != OK:
+        push_error("Could not reset progress: %s" % error_string(error))
+        return
+    menu_back()
+
+func settings_reset_defaults():
+    var error := config.reset_user_settings()
+    if error != OK:
+        push_error("Could not restore settings: %s" % error_string(error))
+        return
+    $"/root/MainScene/GameSettings".set_window_settings()
+    SfxPlayer.enable_bus("Music", G.settings.MUSIC_ENABLED)
+    SfxPlayer.enable_bus("sfx", G.settings.SFX_ENABLED)
+    config.set_fps_counter_state.emit(G.settings.FPS_COUNTER_ENABLED)
+    common_controls.toggle_debug_stats.emit(G.settings.SHOW_DEBUG_STATS)
+    menu_back()
+
 func settings_fps_counter_on():
     config.set_fps_counter_state.emit(true)
 

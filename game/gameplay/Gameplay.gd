@@ -33,10 +33,23 @@ func restart() -> void:
     game_state_manager.change_state(GameStateManager.GameState.GAME_MENU)
     figure_root.clean_all(true)
     spawner.reset()
-    %PatternGen.reset(int(G.data.get("level", 0)))
+    %PatternGen.reset(0 if G.data.has("selected_difficulty") else int(G.data.get("level", 0)))
     progress.reset()
+    if G.data.has("selected_difficulty"):
+        var selected := clampi(int(G.data.selected_difficulty), 0, G.unlocked_difficulty)
+        G.settings.SPAWN_MODE = PatternGen.SpawnMode.TUTORIAL if selected == 0 else PatternGen.SpawnMode.QUEUE
+        if selected > 0:
+            progress.run_state.tiers_collected = int(UpgradeCatalog.data.difficulty_levels[selected - 1].tiers_required)
     game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
     spawner.spawn_icosahedron()
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
+        game_state_manager.pause_for_tutorial()
+
+func complete_tutorial() -> void:
+    G.unlock_difficulty(1)
+    G.data.selected_difficulty = 1
+    G.data.level = 1
+    restart()
 
 func toggle_pause() -> void:
     game_state_manager.toggle_pause()

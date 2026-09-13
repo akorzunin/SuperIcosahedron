@@ -157,6 +157,18 @@ static var settings_items := {
             }
         }
     },
+    6: {
+        name = "reset\nprogress",
+        items = {
+            1: {name = "erase all\nprogress", action = "settings_reset_progress"},
+        },
+    },
+    7: {
+        name = "restore\ndefaults",
+        items = {
+            1: {name = "reset all\nsettings", action = "settings_reset_defaults"},
+        },
+    },
 }
 
 static var menu_items := {

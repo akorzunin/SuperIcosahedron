@@ -147,6 +147,13 @@ func set_color(c: Variant):
     for material in _materials:
         material.set_shader_parameter("color", color)
 
+const DIFFICULTY_COLORS := [TwColors.tw.cyan._400, TwColors.tw.blue._500,
+    TwColors.tw.orange._400, TwColors.tw.rose._500]
+
+func set_difficulty_color(stage: int) -> void:
+    var rgb: Array = DIFFICULTY_COLORS[clampi(stage, 0, DIFFICULTY_COLORS.size() - 1)]
+    set_color(Color(rgb[0], rgb[1], rgb[2]))
+
 func set_type(type: int):
     currnt_type = type
     var variant: Vector4 = IcosahedronVarints.figure_variants_v2.get(type, Vector4(1, 0, 0, 0))
