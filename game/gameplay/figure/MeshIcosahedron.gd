@@ -213,6 +213,16 @@ func apply_side_data(sides: Array[SideData]) -> void:
             if side.is_empty() and side.modifier and icosahedron.data and icosahedron.data.easy_side >= 0:
                 var label := Label3D.new()
                 label.text = "◆"
+                if side.modifier.pickup_kind == "forge":
+                    label.text = "\n" + "□".repeat(side.modifier.pickup_value + 1)
+                    var icon := Sprite3D.new()
+                    icon.texture = preload("res://game/gameplay/figure/assets/forge.svg")
+                    icon.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+                    icon.no_depth_test = true
+                    icon.fixed_size = true
+                    icon.pixel_size = 0.0006
+                    icon.modulate = side.modifier.pickup_color
+                    label.add_child(icon)
                 label.modulate = side.modifier.pickup_color if side.modifier else Color.WHITE
                 label.font_size = 48
                 label.outline_size = 10

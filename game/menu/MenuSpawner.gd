@@ -34,19 +34,33 @@ func clean_menu_items(node: Node3D):
             i.queue_free()
     pass
 
-func open_menu_section(node, items):
-    add_back_button(items)
-    clean_menu_items(node)
-    add_menu_items(node, items)
-    pass
+func open_menu_section(node: Node3D, items: Dictionary):
+    if menu_state.forth(items, node.quaternion) == OK:
+        show_section(node, items)
 
 func open_options_section(node: Node3D, items: Dictionary):
-    var options: Dictionary = items.options.duplicate(true)
-    _put_current_option_first(options, items.get("setting", ""))
+    open_menu_section(node, items)
+
+func show_section(node: Node3D, section: Dictionary):
+    var layer: Dictionary
+    if section.has("options"):
+        var options: Dictionary = section.options.duplicate(true)
+        _put_current_option_first(options, section.get("setting", ""))
+        layer = {items = options}
+    else:
+        layer = section.duplicate(true)
+    if not menu_state.history.is_empty():
+        add_back_button(layer)
     clean_menu_items(node)
-    add_back_to_options(options)
-    add_option_name(options, items.name)
-    add_menu_items(node, {items = options})
+    add_menu_items(node, layer)
+    gui.get_node("SectionTitle").text = str(section.get("name", "")).replace("\n", " ") if not menu_state.history.is_empty() else ""
+
+func go_back():
+    if menu_state.history.is_empty():
+        return
+    var section := menu_state.back()
+    show_section(anchor, section)
+    menu_controls.change_selection(menu_state.restored_rotation, true)
 
 func _put_current_option_first(options: Dictionary, setting: String) -> void:
     if setting.is_empty() or not G.settings.has(setting):
@@ -75,20 +89,6 @@ func add_back_button(d: Dictionary) -> Dictionary:
         return d
     d.items[5] = {
         name = "back",
-        action = "menu_back",
-    }
-    return d
-
-func add_back_to_options(d: Dictionary) -> Dictionary:
-    d[5] = {
-        name = "back",
-        action = "menu_back",
-    }
-    return d
-
-func add_option_name(d: Dictionary, _name: String) -> Dictionary:
-    d[6] = {
-        name = _name,
         action = "menu_back",
     }
     return d

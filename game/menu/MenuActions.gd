@@ -89,6 +89,14 @@ func settings_sfx_on():
 func settings_sfx_off():
     sfx_player.toggle_sfx.emit(false)
 
+var modifier_library: ModifierLibrary
+
+func menu_modifier_library():
+    if is_instance_valid(modifier_library):
+        return
+    modifier_library = ModifierLibrary.new()
+    add_child(modifier_library)
+
 func menu_show_achivemets():
     pass
 
@@ -96,16 +104,23 @@ func menu_show_credits():
     pass
 
 func menu_exit_game():
+    menu_spawner.open_menu_section(menu_controls.controlledNode, {
+        name = "Quit game?",
+        confirm_quit = true,
+        items = {
+            1: {name = "quit", action = "menu_confirm_exit"},
+        },
+    })
+
+func menu_confirm_exit():
     get_tree().quit()
 
 func menu_back():
-    var selected = menu_selector.get_selected_item()
-    menu_spawner.open_menu_section(menu_controls.controlledNode, menu_state.back())
-    return
+    menu_spawner.go_back()
 
 func menu_easter_egg():
     menu_state.toggle_easter_egg_state()
-    menu_spawner.open_menu_section(menu_controls.controlledNode, menu_state.state)
+    menu_spawner.show_section(menu_controls.controlledNode, menu_state.state)
 
 func settings_set_control_free_spin():
     config.set_control_type(LoopControls.ControlType.FREE_SPIN)

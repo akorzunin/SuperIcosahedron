@@ -100,7 +100,7 @@ func spawn_figure(figure: Figure) -> void:
             if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
                 figure_data = StageGenerator.create_modifier_figure(rng,
                     game_progress.run_state.modifier_system.pending, maxi(easy_side, 0),
-                    game_progress.run_state.tiers_collected)
+                    int(UpgradeCatalog.data.difficulty_levels[game_progress.run_state.difficulty].tiers_required))
             else:
                 spawn_type = get_spawn_type()
                 figure_data = StageGenerator.create_figure(spawn_type)

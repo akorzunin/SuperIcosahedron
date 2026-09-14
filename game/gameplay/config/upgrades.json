@@ -1,5 +1,7 @@
 {
   "schema_version": 2,
+  "controls_required_for_level_1": 10,
+  "chains_required_for_level_2": 10,
   "points_by_tier": [100, 250, 500, 1000, 2000, 4000, 8000],
   "difficulty_levels": [
     {
@@ -29,8 +31,21 @@
   ],
   "pickups": [
     {
+      "id": "forge",
+      "title": "FORGE",
+      "description": "Store 2 or 3 matching POINTS or TIER ingredients to activate at ×4 or ×8 strength. The first ingredient sets the strength.",
+      "kind": "forge",
+      "value": 1,
+      "color": "ffbe85",
+      "min_steps": 2,
+      "max_steps": 5,
+      "weight": 1,
+      "value_by_steps": [1, 1, 1, 1, 2, 2]
+    },
+    {
       "id": "points",
       "title": "POINTS",
+      "description": "Start a points chain. Collect POINTS again to score the pending chain and start a new one. More distant pickups start at a higher tier.",
       "kind": "points",
       "value": 1,
       "color": "ffd166",
@@ -42,6 +57,7 @@
     {
       "id": "green",
       "title": "+ SIGN",
+      "description": "Set the pending chain to positive points.",
       "kind": "sign",
       "value": 1,
       "color": "72ff99",
@@ -53,6 +69,7 @@
     {
       "id": "red",
       "title": "- SIGN",
+      "description": "Set the pending chain to negative points. Change its sign before scoring it!",
       "kind": "sign",
       "value": -1,
       "color": "ff8585",
@@ -64,6 +81,7 @@
     {
       "id": "tier",
       "title": "TIER",
+      "description": "Increase the pending chain's tier, up to the maximum. More distant pickups grant more tiers.",
       "kind": "tier",
       "value": 2,
       "color": "d5a6ff",
@@ -72,8 +90,41 @@
       "weight": 3,
       "value_by_steps": [1, 1, 1, 1, 2, 3]
     },
-    {"id": "echo", "title": "ЭХО", "kind": "echo", "value": 2, "color": "70dcff", "min_steps": 2, "max_steps": 5, "weight": 1, "value_by_steps": [2, 2, 2, 2, 2, 2]},
-    {"id": "all_in", "title": "ВА-БАНК", "kind": "all_in", "value": 1, "color": "ffad66", "min_steps": 2, "max_steps": 5, "weight": 1, "value_by_steps": [1, 1, 1, 1, 1, 1]},
-    {"id": "inversion", "title": "ИНВЕРСИЯ", "kind": "inversion", "value": 2, "color": "ffa6df", "min_steps": 2, "max_steps": 5, "weight": 1, "value_by_steps": [2, 2, 2, 2, 2, 2]}
+    {
+      "id": "echo",
+      "title": "ЭХО",
+      "description": "Repeat the next SIGN or TIER activation twice. Requires a pending chain.",
+      "kind": "echo",
+      "value": 2,
+      "color": "70dcff",
+      "min_steps": 2,
+      "max_steps": 5,
+      "weight": 1,
+      "value_by_steps": [2, 2, 2, 2, 2, 2]
+    },
+    {
+      "id": "all_in",
+      "title": "ВА-БАНК",
+      "description": "Double pending points, but the next shell must provide POINTS or the chain is lost.",
+      "kind": "all_in",
+      "value": 1,
+      "color": "ffad66",
+      "min_steps": 2,
+      "max_steps": 5,
+      "weight": 1,
+      "value_by_steps": [1, 1, 1, 1, 1, 1]
+    },
+    {
+      "id": "inversion",
+      "title": "ИНВЕРСИЯ",
+      "description": "Flip the pending chain's sign. If it becomes positive, also gain one tier.",
+      "kind": "inversion",
+      "value": 2,
+      "color": "ffa6df",
+      "min_steps": 2,
+      "max_steps": 5,
+      "weight": 1,
+      "value_by_steps": [2, 2, 2, 2, 2, 2]
+    }
   ]
 }

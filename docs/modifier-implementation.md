@@ -59,6 +59,47 @@ Add more profiles to extend progression. Death discards the pending chain withou
 committing it; restart resets score, cumulative tier units, easy point, and shared
 orientation. Negative scores are allowed: points are not health.
 
+## Automatic lesson transitions
+
+Level 1 advances automatically after `chains_required_for_level_2` completed
+Points → Tier → Points chains (default 3), configured in
+`game/gameplay/config/upgrades.json`. The counter cap, HUD denominator, and
+completion check all use this positive integer CMS field. Merely passing nodes
+or collecting multiple Tier pickups in one chain does not satisfy extra chains.
+
+After the final pickup resolves, the next level is unlocked and a deferred
+transition starts a fresh level 2: score, modifiers, counters, and old shells
+are cleared. There is no Enter-next-level button. The controls tutorial also
+advances automatically after its three completed control exercises. Level 2
+has no automatic transition to an unfinished level 3.
+
+## Forge (level 2+)
+
+Forge uses an anvil icon with two or three slots (internal values 1/2).
+Two matching ingredients produce ×4; three produce ×8. The first POINTS or
+TIER ingredient chooses the recipe and its base strength. Later ingredients
+match by kind, even if their strengths differ. The HUD shows filled slots,
+remaining ingredients, and the result multiplier; stored pickups do not activate.
+
+Crafted POINTS commits the old chain normally, then starts a new chain at the
+first ingredient's tier with a ×4/×8 score multiplier. It pays only on the next
+POINTS activation. Crafted TIER applies the first ingredient's tier increment
+×4/×8, subject to the existing tier cap. Nonmatching pickups activate normally.
+Sign is binary, so Sign, Echo, All-in, Inversion, and Forge are not ingredients.
+A second Forge keeps the current recipe rather than replacing or nesting it.
+
+Echo is consumed only by a SIGN/TIER activation, not by storing ingredients;
+a nonmatching eligible activation may consume it before the craft finishes.
+POINTS activation still resets Echo as part of its normal chain reset. All-in
+retains its next-shell rule: Points ingredients preserve it, but neutral or
+non-Points pickups (including Forge) lose the chain. Losing a chain to All-in
+does not erase the independent recipe. Death and restart discard both.
+
+Forge is sampled only in difficulty profile 2 or higher, including without a
+pending chain. Profile 1 remains unchanged. There is no scripted introductory
+pickup sequence or ingredient flight animation yet; feedback uses the persistent
+text tray and collection messages.
+
 ## Central JSON / CMS handoff
 
 Edit **`game/gameplay/config/upgrades.json`**, schema version **2**.
@@ -74,7 +115,7 @@ profile, distance-based probabilities, and required pickups.
 | `difficulty_levels[].open_chance_by_steps` | Six probabilities indexed 0–5; indices 2–5 control optional far openings; 0–1 are ignored in favor of the easy-zone rule |
 | `pickups[].id` | Unique stable identifier |
 | `pickups[].title` | Short display name; generated labels append strength and distance |
-| `pickups[].kind` | `base`, `sign`, or `tier` |
+| `pickups[].kind` | `points`, `sign`, `tier`, `echo`, `all_in`, `inversion`, or `forge` |
 | `pickups[].min_steps`, `max_steps` | Inclusive integer acquisition-distance bounds, 0–5 |
 | `pickups[].weight` | Positive relative weight among eligible entries at that distance |
 | `pickups[].value_by_steps` | Six integer values indexed 0–5, including unused distances |

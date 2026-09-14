@@ -299,6 +299,9 @@ func test_end_game_rotates_before_activating_option(inverted = use_parameters([f
     controls.handle_game_over_input(event, inverted)
     assert_signal_not_emitted(controls, "menu_requested")
     await wait_seconds(LoopControls.OPTION_ROTATION_TIME + 0.05)
+    assert_signal_not_emitted(controls, "menu_requested")
+    event.action = &"ui_accept"
+    controls.handle_game_over_input(event, inverted)
     assert_signal_emit_count(controls, "menu_requested", 1)
 
 func test_restart_cancels_pending_end_game_selection() -> void:

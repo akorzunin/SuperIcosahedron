@@ -41,7 +41,7 @@ static func create_modifier_figure(rng: RandomNumberGenerator, has_chain: bool,
         var chance := float(level.easy_pickup_chance) if distance <= 1 else float(level.open_chance_by_steps[distance])
         if distance <= 1 and not side.is_empty():
             continue
-        var pool := UpgradeCatalog.eligible(distance, has_chain)
+        var pool := UpgradeCatalog.eligible(distance, has_chain, figure.stage)
         if not pool.is_empty() and rng.randf() < chance:
             _set_pickup(side, UpgradeCatalog.choose(pool, rng), distance)
     return figure
@@ -54,7 +54,7 @@ static func _place_required(figure: FigureData, steps: Array[int], kind: String,
         has_chain: bool, rng: RandomNumberGenerator) -> void:
     for distance in 6:
         var candidates: Array[int] = []
-        var pool := UpgradeCatalog.eligible(distance, has_chain).filter(func(entry): return entry.kind == kind)
+        var pool := UpgradeCatalog.eligible(distance, has_chain, figure.stage).filter(func(entry): return entry.kind == kind)
         if pool.is_empty():
             continue
         for side in figure.sides:

@@ -9,10 +9,18 @@ class_name LoopGui
 @onready var common_controls: CommonControls = %CommonControls
 @onready var loop_ui: Control = $LoopUi
 @onready var tutorial_hint: Label = $LoopUi/TutorialHint
+@onready var pause_menu: Control = $PauseMenu
+@onready var controls: LoopControls = %LoopControls
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
     common_controls.toggle_debug_stats.connect(_on_debug_stats_toggle)
+    $PauseMenu/Options/Resume.pressed.connect(close_pause_menu)
+    $PauseMenu/Options/ReturnToMenu.pressed.connect(func(): controls.menu_requested.emit())
+    game_state_manager.game_state_changed.connect(func(_old, state):
+        if state != GameStateManager.GameState.GAME_PAUSED:
+            hide_pause_menu()
+    )
     tutorial_hint.text = tutorial_instructions(Utils.get_platform() == Utils.Platform.MOBILE)
     tutorial_hint.visible = game_state_manager.tutorial_waiting
     if G.settings.SHOW_DEBUG_STATS:
@@ -21,9 +29,28 @@ func _ready():
         debug_stats_container.hide()
 
 func _physics_process(delta: float) -> void:
-    tutorial_hint.visible = game_state_manager.tutorial_waiting
+    tutorial_hint.visible = game_state_manager.tutorial_waiting and not pause_menu.visible
     timer_rich_text_label.set_text(loop_timer.get_elapsed_time())
     pass
+
+func open_pause_menu() -> void:
+    game_state_manager.change_state(GameStateManager.GameState.GAME_PAUSED)
+    pause_menu.show()
+    $ControlsContainer.hide()
+    $PauseMenu/Options/Resume.grab_focus()
+
+func hide_pause_menu() -> void:
+    var focus := get_viewport().gui_get_focus_owner()
+    if focus and pause_menu.is_ancestor_of(focus):
+        focus.release_focus()
+    pause_menu.hide()
+    $ControlsContainer.show()
+
+func close_pause_menu() -> void:
+    hide_pause_menu()
+    # Resuming the tutorial returns to its instructions, not straight into play.
+    if not game_state_manager.tutorial_waiting:
+        game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
 
 static func tutorial_instructions(mobile: bool) -> String:
     if mobile:

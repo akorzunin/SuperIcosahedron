@@ -8,6 +8,10 @@ static func _load_data() -> Dictionary:
     var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(PATH))
     assert(parsed is Dictionary, "Invalid upgrade catalog JSON")
     assert(parsed.get("schema_version") == 2, "Unsupported upgrade catalog version")
+    assert(parsed.controls_required_for_level_1 > 0 and parsed.controls_required_for_level_1 == floor(parsed.controls_required_for_level_1),
+        "Level 1 requires a positive integer control demonstration count")
+    assert(parsed.chains_required_for_level_2 > 0 and parsed.chains_required_for_level_2 == floor(parsed.chains_required_for_level_2),
+        "Level 2 requires a positive integer chain count")
     assert(parsed.points_by_tier.size() > 0, "Upgrade tiers cannot be empty")
     var previous := -1
     for level in parsed.difficulty_levels:
@@ -29,7 +33,7 @@ static func _load_data() -> Dictionary:
     for entry in parsed.pickups:
         assert(not ids.has(entry.id), "Duplicate upgrade ID")
         ids[entry.id] = true
-        assert(entry.kind in ["points", "sign", "tier", "echo", "all_in", "inversion"], "Unknown pickup kind")
+        assert(entry.kind in ["points", "sign", "tier", "echo", "all_in", "inversion", "forge"], "Unknown pickup kind")
         assert(Color.html_is_valid(entry.color), "Invalid pickup color")
         assert(entry.min_steps == floor(entry.min_steps) and entry.max_steps == floor(entry.max_steps))
         assert(entry.min_steps >= 0 and entry.max_steps <= 5 and entry.min_steps <= entry.max_steps)
@@ -42,6 +46,8 @@ static func _load_data() -> Dictionary:
                 assert(value > 0)
                 if entry.kind == "points":
                     assert(value <= parsed.points_by_tier.size())
+                elif entry.kind == "forge":
+                    assert(int(value) in [1, 2])
         if entry.kind == "points":
             assert(entry.max_steps >= 1, "Center is neutral; base needs a non-center placement")
             bases += 1
@@ -63,6 +69,8 @@ static func pickup(id: String, steps: int = -1) -> ModifierData:
             result.pickup_kind = entry.kind
             result.pickup_value = int(entry.value if steps < 0 else entry.value_by_steps[steps])
             result.pickup_color = Color(entry.color)
+            if entry.kind == "forge":
+                result.title += " · %d slots" % (result.pickup_value + 1)
             if steps >= 0:
                 if entry.kind == "points":
                     result.title += " T%d" % result.pickup_value
@@ -86,9 +94,10 @@ static func difficulty_index(tiers_collected: int) -> int:
             result = i
     return result
 
-static func eligible(steps: int, has_chain: bool) -> Array:
+static func eligible(steps: int, has_chain: bool, difficulty: int = 0) -> Array:
     return data.pickups.filter(func(entry): return steps >= int(entry.min_steps) \
-        and steps <= int(entry.max_steps) and (has_chain or entry.kind == "points"))
+        and steps <= int(entry.max_steps) and (has_chain or entry.kind in ["points", "forge"]) \
+        and (entry.kind != "forge" or difficulty >= 1))
 
 static func choose(pool: Array, rng: RandomNumberGenerator) -> String:
     var total := 0.0

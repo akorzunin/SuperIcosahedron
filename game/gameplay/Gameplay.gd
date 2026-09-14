@@ -36,10 +36,10 @@ func restart() -> void:
     %PatternGen.reset(0 if G.data.has("selected_difficulty") else int(G.data.get("level", 0)))
     progress.reset()
     if G.data.has("selected_difficulty"):
-        var selected := clampi(int(G.data.selected_difficulty), 0, G.unlocked_difficulty)
+        var selected := clampi(int(G.data.selected_difficulty), 0, mini(G.unlocked_difficulty, 2))
         G.settings.SPAWN_MODE = PatternGen.SpawnMode.TUTORIAL if selected == 0 else PatternGen.SpawnMode.QUEUE
         if selected > 0:
-            progress.run_state.tiers_collected = int(UpgradeCatalog.data.difficulty_levels[selected - 1].tiers_required)
+            progress.run_state.difficulty = selected - 1
     game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
     spawner.spawn_icosahedron()
     if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
@@ -47,8 +47,24 @@ func restart() -> void:
 
 func complete_tutorial() -> void:
     G.unlock_difficulty(1)
-    G.data.selected_difficulty = 1
-    G.data.level = 1
+
+func enter_next_level() -> void:
+    # Recheck after deferred passage handling: restart/death may have cancelled completion.
+    if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
+        return
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
+        if progress.run_state.controls_completed < RunState.required_controls():
+            return
+    elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
+        if progress.run_state.difficulty != 0 or progress.run_state.charges_completed < RunState.required_charges():
+            return
+    else:
+        return
+    var next := 1 if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL else progress.run_state.difficulty + 2
+    if next > mini(G.unlocked_difficulty, 2):
+        return
+    G.data.selected_difficulty = next
+    G.data.level = next
     restart()
 
 func toggle_pause() -> void:

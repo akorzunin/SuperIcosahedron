@@ -18,6 +18,8 @@ enum ControlType {FREE_SPIN, FACE_LOCK}
 const OPTION_ROTATION_TIME := 0.3
 var option_tween: Tween
 var game_over_input_delay := 0.0
+var game_over_menu_selected := false
+@onready var gui: LoopGui = $"../Gui"
 var shared_basis := Basis.IDENTITY
 var shared_is_alt := false
 var orientation_initialized := false
@@ -38,6 +40,7 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
         option_tween.kill()
         option_tween = null
     game_over_input_delay = 1.0 if new_state == gs.GAME_END else 0.0
+    game_over_menu_selected = false
     if new_state != gs.GAME_ACTIVE:
         controlledNode = null
         figure_controller.target = null
@@ -80,6 +83,8 @@ func advance_control() -> void:
     if detector.get_passing_side(controlledNode.icosahedron) == null:
         commit_rejected.emit(controlledNode.icosahedron)
         return
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
+        game_progress.run_state.tutorial_commits[controlledNode.icosahedron.get_instance_id()] = true
     sync_orientation()
     controlledNode.angle_good = true
     # Freeze only orientation/visuals; growth and passage validation continue.
@@ -89,19 +94,29 @@ func advance_control() -> void:
     update_controlled_node()
 
 func _input(event: InputEvent) -> void:
+    if event.is_echo():
+        get_viewport().set_input_as_handled()
+        return
+    if gui.pause_menu.visible:
+        if event.is_action_pressed('ui_cancel') or event.is_action_pressed('ui_pause'):
+            gui.close_pause_menu()
+            get_viewport().set_input_as_handled()
+        return
+    if game_state_manager.game_state != GameStateManager.GameState.GAME_END \
+    and (event.is_action_pressed('ui_pause') or event.is_action_pressed('ui_cancel')):
+        gui.open_pause_menu()
+        sound_requested.emit(&"on_section_select")
+        get_viewport().set_input_as_handled()
+        return
     if game_state_manager.tutorial_waiting:
         if event.is_action_pressed('ui_accept') and not event.is_echo():
             game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
-        get_viewport().set_input_as_handled()
+        if event is InputEventKey or event is InputEventAction:
+            get_viewport().set_input_as_handled()
         return
     var is_inverted = G.settings.IS_CONTROL_INVERTED
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         handle_game_over_input(event, is_inverted)
-        return
-    if event.is_action_pressed('ui_pause') or event.is_action_pressed('ui_cancel'):
-        game_state_manager.toggle_pause()
-        sound_requested.emit(&"on_section_select")
-        get_viewport().set_input_as_handled()
         return
     if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE \
     and event.is_action_pressed('ui_accept'):
@@ -113,10 +128,16 @@ func handle_game_over_input(event: InputEvent, is_inverted: bool):
         return
     var restart_action := 'ui_left' if is_inverted else 'ui_right'
     var menu_action := 'ui_right' if is_inverted else 'ui_left'
-    var restart_selected := event.is_action_pressed('ui_accept') or event.is_action_pressed(restart_action)
-    var menu_selected := event.is_action_pressed('ui_cancel') or event.is_action_pressed(menu_action)
+    var accept := event.is_action_pressed('ui_accept')
+    var restart_selected := event.is_action_pressed(restart_action) or (accept and not game_over_menu_selected)
+    var menu_selected := event.is_action_pressed(menu_action)
+    if event.is_action_pressed('ui_cancel') or (accept and game_over_menu_selected):
+        get_viewport().set_input_as_handled()
+        menu_requested.emit()
+        return
     if not restart_selected and not menu_selected:
         return
+    game_over_menu_selected = menu_selected
     get_viewport().set_input_as_handled()
     sound_requested.emit(&"on_section_select")
     var anchor := figureRoot.anchor
@@ -128,8 +149,6 @@ func handle_game_over_input(event: InputEvent, is_inverted: bool):
     option_tween.tween_callback(func():
         if restart_selected:
             restart_run()
-        else:
-            menu_requested.emit()
     )
 
 func sync_orientation() -> void:

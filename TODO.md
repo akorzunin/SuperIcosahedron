@@ -1,4 +1,6 @@
-- fix font, make it more readable or pick another one
-- unify UI (where buttons autoclick, where submunu title lives, where esc works and how it works)
-- more mechanics: harder levelup condition, more different mods
-- add modifiers library, so player can view opened modifiers from menu
+- more different mods
+- level 3 mechanics, condition to get to level 3
+- better implememntation for modifiers library
+- add modifiers lab where devs can clearly see what effect creates mods interactions
+- edit hexagonal font so it can be used everywhere and be readable
+- music system?

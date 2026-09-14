@@ -159,7 +159,7 @@ func test_seeded_distance_placement_and_dynamic_easy_zone() -> void:
         if i > 0:
             assert_gte(tiers, 1)
 
-func test_difficulty_counts_only_collected_tier_units() -> void:
+func test_mastery_counts_completed_chains_not_tier_units() -> void:
     var run := RunState.new()
     _collect(run, "points", 1)
     for i in 10:
@@ -170,18 +170,21 @@ func test_difficulty_counts_only_collected_tier_units() -> void:
     assert_eq(run.difficulty, 0)
     _collect(run, "tier", 13)
     assert_eq(run.tiers_collected, 4)
-    assert_eq(run.difficulty, 1)
+    assert_eq(run.charges_completed, 0)
     _collect(run, "tier", 14)
-    assert_eq(run.difficulty, 1)
+    assert_eq(run.difficulty, 0)
     _collect(run, "points", 15)
-    assert_eq(run.difficulty, 1, "Committing a chain does not reset difficulty")
+    assert_eq(run.charges_completed, 1, "Several tiers in one chain earn only one mark")
+    assert_eq(run.difficulty, 0, "Mastery never automatically changes the selected level")
     for i in 5:
         _collect(run, "tier", 16 + i)
-    assert_eq(run.difficulty, 3)
+    assert_eq(run.difficulty, 0)
+    assert_eq(run.charges_completed, 1)
     assert_eq(run.tiers_collected, 16, "Tier units count even after the pending chain reaches its cap")
     run.reset()
     assert_eq(run.difficulty, 0)
     assert_eq(run.tiers_collected, 0)
+    assert_eq(run.charges_completed, 0)
 
 func test_neutral_pass_keeps_chain_and_difficulty() -> void:
     var run := RunState.new()

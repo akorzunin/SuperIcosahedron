@@ -26,6 +26,7 @@ func get_action_name(at: ActionType) -> StringName:
 func _gui_input(event: InputEvent) -> void:
     if not event is InputEventScreenTouch:
         return
+    accept_event()
     if event.is_released():
         Input.action_release(get_action_name(action))
         return
@@ -89,7 +90,7 @@ func set_button_size():
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_manager = get_node_or_null('%GameStateManager')
-    process_mode = Node.PROCESS_MODE_ALWAYS
+    process_mode = Node.PROCESS_MODE_INHERIT
     focus_mode = FocusMode.FOCUS_NONE
     set_button_size()
     get_viewport().size_changed.connect(set_button_size)

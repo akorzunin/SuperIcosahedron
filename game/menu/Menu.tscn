@@ -104,6 +104,17 @@ shape = SubResource("BoxShape3D_51eil")
 [node name="Gui" type="CanvasLayer" parent="." unique_id=979116471]
 script = ExtResource("8_rgs6i")
 
+[node name="SectionTitle" type="Label" parent="Gui"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 72.0
+grow_horizontal = 2
+mouse_filter = 2
+theme = ExtResource("7_vbk8k")
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
 [node name="DebugStatsContainer" parent="Gui" unique_id=1311977284 instance=ExtResource("8_w8wvy")]
 unique_name_in_owner = true
 

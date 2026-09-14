@@ -13,10 +13,14 @@ var settings := {}
 
 const PROGRESS_PATH := "user://progress.cfg"
 var unlocked_difficulty := 0
+var discovered_modifiers: Array = []
 
 func _ready() -> void:
     var saved := ConfigFile.new()
     if saved.load(PROGRESS_PATH) == OK:
+        var discoveries: Variant = saved.get_value("progress", "discovered_modifiers", [])
+        if discoveries is Array:
+            discovered_modifiers = discoveries
         unlocked_difficulty = clampi(int(saved.get_value("progress", "unlocked_difficulty", 0)), 0, UpgradeCatalog.data.difficulty_levels.size())
 
 func unlock_difficulty(level: int) -> void:
@@ -24,7 +28,17 @@ func unlock_difficulty(level: int) -> void:
     if level <= unlocked_difficulty:
         return
     unlocked_difficulty = level
+    save_progress()
+
+func discover_modifier(id: String) -> void:
+    if discovered_modifiers.has(id) or not UpgradeCatalog.data.pickups.any(func(entry): return entry.id == id):
+        return
+    discovered_modifiers.append(id)
+    save_progress()
+
+func save_progress() -> void:
     var saved := ConfigFile.new()
+    saved.set_value("progress", "discovered_modifiers", discovered_modifiers)
     saved.set_value("progress", "unlocked_difficulty", unlocked_difficulty)
     var error := saved.save(PROGRESS_PATH)
     if error != OK:
@@ -37,6 +51,7 @@ func reset_progress(path := PROGRESS_PATH) -> Error:
     if error != OK:
         return error
     unlocked_difficulty = 0
+    discovered_modifiers.clear()
     data.clear()
     return OK
 

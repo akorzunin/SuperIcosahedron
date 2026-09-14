@@ -48,6 +48,7 @@ func call_menu_action():
         menuSpawner.open_menu_section(
             controlledNode,
             {
+                name = "Select level",
                 items = LevelPatterns.get_menu_levels(
                     G.unlocked_difficulty
                 )
@@ -63,9 +64,6 @@ func call_menu_action():
     if selected.get("items"):
         if selected.items.get("options"):
             menuSpawner.open_options_section(controlledNode, selected.items)
-            return
-        var err := menu_state.forth(selected.items)
-        if err != OK:
             return
         menuSpawner.open_menu_section(controlledNode, selected.items)
         return
@@ -92,40 +90,42 @@ func skip_menu_event(event: InputEvent) -> bool:
     return true
 
 func _input(event: InputEvent):
-    if skip_menu_event(event):
+    if is_instance_valid(actions.modifier_library):
+        return
+    if skip_menu_event(event) or event.is_echo():
         return
     check_controlled_node()
+    if target.get("progress", 1) < 1:
+        return
     if event.is_action_pressed('ui_accept'):
         if event is InputEventKey and event.alt_pressed:
             return
         call_menu_action()
     if event.is_action_pressed('ui_cancel'):
-        var selected = menu_selector.get_selected_item()
-        if selected == null:
-            return
-        if selected.label == "start":
-            change_selection(Quats.menu_quat_left(),)
-            return
-        if selected.label == "exit":
-            actions.call("menu_exit_game")
-            return
-        actions.call("menu_back")
+        if menu_state.state.get("confirm_quit", false):
+            actions.menu_confirm_exit()
+        elif menu_state.history.is_empty():
+            actions.menu_exit_game()
+        else:
+            actions.menu_back()
         sfx_player.on_section_select.emit()
         return
     if controlledNode and target.get("progress", 1) < 1:
         return
     var is_inverted = G.settings.IS_CONTROL_INVERTED
-    if event.is_action('ui_down'):
+    if event.is_action_pressed('ui_down'):
         change_selection(controlledNode.quaternion * Quats.menu_quat_down(),)
     elif event.is_action_pressed('ui_up'):
         change_selection(Quaternion(),)
-    elif Op.xor(is_inverted, event.is_action('ui_right')):
-        change_selection(controlledNode.quaternion * Quats.menu_quat_left().inverse(),)
-    elif Op.xor(is_inverted, event.is_action('ui_left')):
-        change_selection(controlledNode.quaternion * Quats.menu_quat_left(),)
+    elif event.is_action_pressed('ui_right'):
+        change_selection(controlledNode.quaternion * (Quats.menu_quat_left() if is_inverted else Quats.menu_quat_left().inverse()))
+    elif event.is_action_pressed('ui_left'):
+        change_selection(controlledNode.quaternion * (Quats.menu_quat_left().inverse() if is_inverted else Quats.menu_quat_left()))
 
 func _unhandled_input(event: InputEvent) -> void:
-    if event is InputEventScreenTouch:
+    if is_instance_valid(actions.modifier_library):
+        return
+    if event is InputEventScreenTouch and event.pressed:
         InputEmit.new().emit({
             action = 'ui_accept'
         })

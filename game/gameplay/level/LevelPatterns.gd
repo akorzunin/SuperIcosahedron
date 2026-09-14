@@ -57,7 +57,8 @@ static func get_menu_levels(max_level: int):
     if max_level == 0:
         return {1: tutorial_item }
     var menu_entries = {}
-    for i in range(1, max_level + 1):
+    # Only controls and charging ship today; expose later levels when their lessons exist.
+    for i in range(1, mini(max_level, 2) + 1):
         menu_entries[i] = {
             name = "level %s" % i,
             action = "menu_start_game",

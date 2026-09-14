@@ -182,6 +182,10 @@ static var menu_items := {
             name = "settings",
             items = settings_items,
         },
+        4: {
+            name = "modifiers\nlibrary",
+            action = "menu_modifier_library",
+        },
         3: {
             name = "achivemets",
             action = "menu_show_achivemets"
@@ -211,6 +215,10 @@ static var menu_items_emoji := {
         2: {
             'name': "⚙️",
             'items': settings_items,
+        },
+        4: {
+            name = "📚",
+            action = "menu_modifier_library",
         },
         3: {
             'name': "🏆",

@@ -28,11 +28,13 @@ var max_reached_level := 0
 
 
 func _update_level():
-    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and LevelPatterns.is_level_up(figures_passed, 0):
-        # Restart after the current collision callback has finished resolving its figure.
-        (get_parent() as LoopScene).complete_tutorial.call_deferred()
-    elif G.settings.SPAWN_MODE != PatternGen.SpawnMode.QUEUE and LevelPatterns.is_level_up(figures_passed, pattern_gen.level):
-        G.level_changed.emit(pattern_gen.level + 1)
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and run_state.controls_completed >= RunState.required_controls():
+        G.unlock_difficulty(1)
+        (get_parent() as LoopScene).enter_next_level.call_deferred()
+    elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and run_state.difficulty == 0 \
+    and run_state.charges_completed >= RunState.required_charges():
+        G.unlock_difficulty(2)
+        (get_parent() as LoopScene).enter_next_level.call_deferred()
 
 func reset():
     run_state.reset()
@@ -47,7 +49,8 @@ func _ready() -> void:
     add_child(layer)
     modifier_hud = Label.new()
     modifier_hud.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-    modifier_hud.offset_top = -92
+    modifier_hud.offset_top = -160
+    modifier_hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     modifier_hud.offset_bottom = -12
     modifier_hud.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     modifier_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -58,8 +61,8 @@ func _ready() -> void:
     modifier_hud.add_theme_font_size_override("font_size", 20)
     layer.add_child(modifier_hud)
     pickup_message = modifier_hud.duplicate() as Label
-    pickup_message.offset_top = -160
-    pickup_message.offset_bottom = -96
+    pickup_message.offset_top = -228
+    pickup_message.offset_bottom = -164
     pickup_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     pickup_message.hide()
     layer.add_child(pickup_message)
@@ -99,13 +102,18 @@ func _physics_process(delta: float) -> void:
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
     debug_stats_container.current_level.label_text = str(run_state.difficulty + 1) if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE else str(pattern_gen.level)
     gui.game_state_label.set_text(str(figures_passed))
-    modifier_hud.visible = G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and \
+    var tutorial: bool = G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL
+    modifier_hud.visible = (tutorial or G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE) and \
         game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
     pickup_message_time = maxf(0.0, pickup_message_time - delta)
     pickup_message.visible = modifier_hud.visible and pickup_message_time > 0.0
-    modifier_hud.text = "Score: %d | Difficulty: %d | Tiers collected: %d\n%s\n%s" % [score,
-        run_state.difficulty + 1, run_state.tiers_collected,
-        run_state.modifier_system.summary(), run_state.modifier_system.last_activation]
+    var objective := "Completed chains: %d/%d · Points → Tier → Points · Then level 2" % [run_state.charges_completed, RunState.required_charges()]
+    if run_state.difficulty > 0:
+        objective = "Forge: 2 matching → ×4 · 3 matching → ×8 · First ingredient sets strength"
+    modifier_hud.text = "Score: %d | Level: %d\n%s\n%s" % [score,
+        run_state.difficulty + 1, objective, run_state.modifier_system.summary()]
+    if tutorial:
+        modifier_hud.text = "Controls: align an opening, confirm, then pass safely: %d/%d" % [run_state.controls_completed, RunState.required_controls()]
 
 func get_score():
     return "score\nnodes: %s\nscore: %s\ntime: %s" % [
@@ -128,6 +136,8 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
     var outcome := run_state.resolve_side(figure.get_instance_id(), side)
     if outcome == RunState.Outcome.IGNORED:
         return
+    if outcome == RunState.Outcome.PASSED and side.modifier:
+        G.discover_modifier(side.modifier.id)
     loop_controls.sync_orientation()
     figure.resolved = true
     figure.mesh_icosahedron.angle_good = true
@@ -137,7 +147,6 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
         return
     if figure.data.easy_side >= 0:
         loop_controls.loop_spawner.recenter_after_pass(side.id)
-        G.unlock_difficulty(run_state.difficulty + 1)
         level_changed.emit(run_state.difficulty + 1)
     sound_requested.emit(&"on_node_passed")
     _update_level()
