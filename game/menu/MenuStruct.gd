@@ -239,6 +239,54 @@ static var menu_items_emoji := {
     }
 }
 
+const MODIFIER_PAGE_SIZE := 4
+
+static func modifier_library_page(page: int) -> Dictionary:
+    var discovered: Array = UpgradeCatalog.data.pickups.filter(func(entry): return G.discovered_modifiers.has(entry.id))
+    var page_count := maxi(1, ceili(float(discovered.size()) / MODIFIER_PAGE_SIZE))
+    page = clampi(page, 0, page_count - 1)
+    var section := {
+        name = "modifiers · %d/%d" % [page + 1, page_count],
+        items = {},
+        modifier_page = page,
+        modifier_page_count = page_count,
+    }
+    var first := page * MODIFIER_PAGE_SIZE
+    for index in mini(MODIFIER_PAGE_SIZE, discovered.size() - first):
+        var entry: Dictionary = discovered[first + index]
+        section.items[index + 1] = {
+            name = entry.title,
+            action = "menu_show_modifier",
+            modifier_id = entry.id,
+            modifier_color = Color(entry.color),
+        }
+    if discovered.is_empty():
+        section.items[1] = {name = "no modifiers\ndiscovered"}
+    section.items[5] = {name = "back", action = "menu_back"}
+    if page > 0:
+        section.items[6] = {name = "previous\npage", action = "menu_modifier_library_previous"}
+    if page < page_count - 1:
+        section.items[7] = {name = "next\npage", action = "menu_modifier_library_next"}
+    if not discovered.is_empty():
+        section.preview_modifier_id = discovered[first].id
+    return section
+
+static func modifier_detail(id: String) -> Dictionary:
+    for entry in UpgradeCatalog.data.pickups:
+        if entry.id != id:
+            continue
+        return {
+            name = entry.title,
+            items = {
+                1: {name = "collect during\na run"},
+                5: {name = "back", action = "menu_back"},
+            },
+            modifier_id = id,
+            modifier_description = entry.get("description", ""),
+            preview_modifier_id = id,
+        }
+    return modifier_library_page(0)
+
 static var game_over := {
     name = "game_over",
     items = {

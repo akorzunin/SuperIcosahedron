@@ -89,13 +89,34 @@ func settings_sfx_on():
 func settings_sfx_off():
     sfx_player.toggle_sfx.emit(false)
 
-var modifier_library: ModifierLibrary
+var selected_menu_item: Dictionary = {}
+var modifier_library_page := 0
 
 func menu_modifier_library():
-    if is_instance_valid(modifier_library):
+    modifier_library_page = 0
+    menu_spawner.open_menu_section(menu_controls.controlledNode,
+        MenuStruct.modifier_library_page(modifier_library_page))
+
+func menu_modifier_library_previous():
+    _change_modifier_library_page(-1)
+
+func menu_modifier_library_next():
+    _change_modifier_library_page(1)
+
+func _change_modifier_library_page(delta: int) -> void:
+    var current := MenuStruct.modifier_library_page(modifier_library_page)
+    var page_count: int = current.get("modifier_page_count", 1)
+    modifier_library_page = clampi(modifier_library_page + delta, 0, page_count - 1)
+    var section := MenuStruct.modifier_library_page(modifier_library_page)
+    menu_state.state = section
+    menu_spawner.show_section(menu_controls.controlledNode, section)
+
+func menu_show_modifier():
+    var item_data: Dictionary = selected_menu_item.get("items", {})
+    var id: String = item_data.get("modifier_id", "")
+    if id.is_empty():
         return
-    modifier_library = ModifierLibrary.new()
-    add_child(modifier_library)
+    menu_spawner.open_menu_section(menu_controls.controlledNode, MenuStruct.modifier_detail(id))
 
 func menu_show_achivemets():
     pass

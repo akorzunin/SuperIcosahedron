@@ -54,6 +54,51 @@ func show_section(node: Node3D, section: Dictionary):
     clean_menu_items(node)
     add_menu_items(node, layer)
     gui.get_node("SectionTitle").text = str(section.get("name", "")).replace("\n", " ") if not menu_state.history.is_empty() else ""
+    gui.show_modifier_description(section.get("modifier_description", ""))
+    show_modifier_preview(section.get("preview_modifier_id", ""))
+
+func show_modifier_preview(id: String) -> void:
+    var figure := anchor.get_node_or_null("Icosahedron") as Icosahedron
+    if not figure:
+        return
+    if id.is_empty():
+        var normal_data := StageGenerator.create_figure(0)
+        figure.init(normal_data)
+        figure.mesh_icosahedron.apply_side_data(normal_data.sides)
+        figure.mesh_icosahedron.set_default_type()
+        figure.mesh_icosahedron.set_controlled(false)
+        return
+    var preview := FigureData.new()
+    var side_id := _front_preview_side(figure)
+    preview.easy_side = side_id
+    for variant_id in IcosahedronVarints.figure_variants_v2.keys():
+        var variant: Vector4 = IcosahedronVarints.figure_variants_v2[variant_id]
+        preview.sides.append(SideData.new().init(variant_id,
+            Vector3(variant.x, variant.y, variant.z), SideData.Kind.SOLID))
+    var side: SideData = preview.sides[side_id]
+    side.kind = SideData.Kind.POSITIVE
+    side.modifier = UpgradeCatalog.pickup(id, 2)
+    side.score_delta = side.modifier.score_value
+    figure.init(preview)
+    figure.mesh_icosahedron.apply_side_data(preview.sides)
+    figure.mesh_icosahedron.set_default_type()
+    figure.mesh_icosahedron.set_controlled(true)
+
+func _front_preview_side(figure: Icosahedron) -> int:
+    var camera := get_viewport().get_camera_3d()
+    if not camera:
+        return 0
+    var toward_camera := (camera.global_position - figure.global_position).normalized()
+    var best_id := 0
+    var best_dot := -INF
+    for variant_id in IcosahedronVarints.figure_variants_v2.keys():
+        var variant: Vector4 = IcosahedronVarints.figure_variants_v2[variant_id]
+        var normal := (figure.global_transform.basis * Vector3(variant.x, variant.y, variant.z)).normalized()
+        var candidate := normal.dot(toward_camera)
+        if candidate > best_dot:
+            best_dot = candidate
+            best_id = variant_id
+    return best_id
 
 func go_back():
     if menu_state.history.is_empty():

@@ -47,6 +47,7 @@ func save_progress() -> void:
 func reset_progress(path := PROGRESS_PATH) -> Error:
     var saved := ConfigFile.new()
     saved.set_value("progress", "unlocked_difficulty", 0)
+    saved.set_value("progress", "discovered_modifiers", [])
     var error := saved.save(path)
     if error != OK:
         return error

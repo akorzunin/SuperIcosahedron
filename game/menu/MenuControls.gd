@@ -37,6 +37,7 @@ func call_menu_action():
     var selected = menu_selector.get_selected_item()
     if not selected:
         return
+    actions.selected_menu_item = selected
     var action = selected.get("action")
     if action == "menu_start_game":
         sfx_player.on_action_select.emit()
@@ -90,8 +91,6 @@ func skip_menu_event(event: InputEvent) -> bool:
     return true
 
 func _input(event: InputEvent):
-    if is_instance_valid(actions.modifier_library):
-        return
     if skip_menu_event(event) or event.is_echo():
         return
     check_controlled_node()
@@ -123,8 +122,6 @@ func _input(event: InputEvent):
         change_selection(controlledNode.quaternion * (Quats.menu_quat_left().inverse() if is_inverted else Quats.menu_quat_left()))
 
 func _unhandled_input(event: InputEvent) -> void:
-    if is_instance_valid(actions.modifier_library):
-        return
     if event is InputEventScreenTouch and event.pressed:
         InputEmit.new().emit({
             action = 'ui_accept'

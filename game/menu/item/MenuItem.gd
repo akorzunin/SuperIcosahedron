@@ -29,6 +29,8 @@ func _ready() -> void:
     label_3d.font = HEX_FONT
     if items.get("is_current", false):
         label_3d.modulate = CURRENT_OPTION_COLOR
+    elif items.has("modifier_color"):
+        label_3d.modulate = items.modifier_color
     var t = Quats.menu_quat_left()
     var y = Quats.menu_quat_down().inverse()
     match pos:

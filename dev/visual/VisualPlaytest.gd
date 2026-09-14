@@ -41,7 +41,6 @@ func _run() -> void:
     await _mounted_gameplay_sequence()
     await _collision_sequence()
     await _modifier_sequence()
-    await _library_sequence()
     var report := {
         "automated_status": "failed" if failed else "passed",
         "visual_review": "required — inspect PNGs; state checks do not prove visual correctness",
@@ -65,24 +64,36 @@ func _run() -> void:
     print("Visual playtest: %s. Inspect images in %s" % [report.automated_status, output])
     get_tree().quit(1 if failed else 0)
 
-func _library_sequence() -> void:
-    var discoveries := G.discovered_modifiers
+func _library_sequence(main: Node) -> void:
+    var discoveries: Array = G.discovered_modifiers.duplicate()
     G.discovered_modifiers = []
-    var library := ModifierLibrary.new()
-    add_child(library)
+    var menu: MenuScene = main.scenes.MenuScene
+    var spawner: MenuSpawner = menu.get_node("MenuSpawner")
+    var controls: MenuControls = menu.get_node("MenuControls")
+    controls.controlledNode = spawner.anchor
+    await _frames(2)
+    spawner.open_menu_section(spawner.anchor, MenuStruct.modifier_library_page(0))
     await _frames(3)
     await _capture("library", "empty", {})
-    library.entries = UpgradeCatalog.data.pickups
-    library.show_page(0)
+    G.discovered_modifiers = UpgradeCatalog.data.pickups.map(func(entry): return entry.id)
+    var first_page := MenuStruct.modifier_library_page(0)
+    menu.get_node("MenuState").state = first_page
+    spawner.show_section(spawner.anchor, first_page)
     await _frames(3)
     await _capture("library", "first_page", {})
-    library.show_page(1)
+    spawner.show_section(spawner.anchor, MenuStruct.modifier_detail("forge"))
+    await _frames(3)
+    var preview: Icosahedron = spawner.anchor.get_node("Icosahedron")
+    _check(preview.data.sides.any(func(side): return side.modifier and side.modifier.id == "forge"),
+        "Library preview uses the real Forge pickup visual")
+    await _capture("library", "forge_preview", {})
+    var last_page := MenuStruct.modifier_library_page(1)
+    menu.get_node("MenuState").state = last_page
+    spawner.show_section(spawner.anchor, last_page)
     await _frames(3)
     await _capture("library", "last_page", {})
     _save_contact_sheet("library")
-    library.queue_free()
     G.discovered_modifiers = discoveries
-    await _frames(2)
 
 func _modifier_sequence() -> void:
     var old_data := G.data
@@ -402,6 +413,7 @@ func _mounted_gameplay_sequence() -> void:
     await _transition_sequence(main)
     await _video_scale_sequence(main)
     await _menu_ui_sequence(main)
+    await _library_sequence(main)
     main.queue_free()
     await _frames(3)
 
