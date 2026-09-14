@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: j178/prek-action@v1
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Test exporter packaging code
         run: python3 -m unittest discover -s docker -p 'test_*.py'
       - name: Run containerized GUT tests
@@ -52,21 +52,21 @@ jobs:
           echo "id=$version" >> "$GITHUB_OUTPUT"
           echo "GAME_VERSION=$version" >> "$GITHUB_ENV"
           echo "GAME_COMMIT=$GITHUB_SHA" >> "$GITHUB_ENV"
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Export games
         env:
           DISCORD_APP_ID: ${{ vars.DISCORD_APP_ID || '0' }}
         run: ./scripts/build_game.sh
       - name: Package exports
         run: python3 scripts/package_build.py build/docker/all build/release
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build UI image
         id: frontend
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: web/Dockerfile
@@ -107,7 +107,7 @@ jobs:
           (cd build/published && sha256sum --check SHA256SUMS)
           echo "FRONTEND_IMAGE=$(<build/published/frontend-image.txt)" >> "$GITHUB_ENV"
       - name: Deploy published artifacts
-        uses: dawidd6/action-ansible-playbook@v5
+        uses: dawidd6/action-ansible-playbook@v9
         with:
           playbook: deploy.yaml
           directory: deploy/dev
