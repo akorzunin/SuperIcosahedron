@@ -1,3 +1,7 @@
+# Python
+__pycache__/
+*.py[cod]
+
 ### Godot ###
 # Godot 4+ specific ignores
 temp

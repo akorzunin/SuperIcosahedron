@@ -25,7 +25,8 @@ Open either scene and press **F6**, or run:
 ```sh
 task lab-run       # production game loop, no menu
 task lab-rotation  # production controls, isolated figure
-task test          # GUT unit + integration tests
+task test          # parallel GUT tests; output only on failure (default: up to 4 workers)
+TEST_JOBS=2 task test # override test concurrency (Linux user data isolated per suite)
 task visual-playtest # rendered lab replays + screenshots (Linux graphical session)
 ```
 

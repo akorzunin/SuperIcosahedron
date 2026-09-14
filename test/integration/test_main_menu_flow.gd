@@ -71,6 +71,12 @@ func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void
     assert_eq(main_scene.current_scene, loop_scene, "Second accept starts the selected level.")
     assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"),
         "Gameplay must not render through the close-up menu camera.")
+    assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_PAUSED,
+        "The first level pauses for tutorial instructions.")
+    assert_true(game_state_manager.tutorial_waiting)
+    await _tap_action(&"ui_accept")
+    await wait_process_frames(2 * WAIT_MOD)
+    assert_false(game_state_manager.tutorial_waiting, "Accept dismisses tutorial instructions.")
     assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
 
     assert_true(_resolve_first_solid_side(loop_scene), "A spawned figure has a solid side that can end the run.")

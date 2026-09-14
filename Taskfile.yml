@@ -59,10 +59,10 @@ tasks:
       - ./web/*
 
   test:
-    desc: run GUT tests headlessly
+    desc: run GUT files in parallel (TEST_JOBS controls workers; output only on failure)
+    silent: true
     cmds:
-      - godot --headless --path . --import
-      - godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://test -ginclude_subdirs -gexit
+      - python3 scripts/run_tests.py
 
   visual-playtest:
     desc: replay rendered labs and save screenshots for visual review (Linux)
