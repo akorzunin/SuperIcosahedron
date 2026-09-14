@@ -2,6 +2,15 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# A private X server keeps rendered capture off the user's desktop. Do not fall
+# back to the desktop when dependencies are missing (that would steal focus).
+for dependency in xvfb-run Xvfb xauth; do
+    if ! command -v "$dependency" >/dev/null 2>&1; then
+        printf 'Missing %s: install Xvfb and xauth to run isolated visual playtests.\n' "$dependency" >&2
+        exit 1
+    fi
+done
+
 # Fresh evidence per run: a failed launch must never look like old passing output.
 mkdir -p build/visual-playtest
 touch build/visual-playtest/.gdignore
@@ -16,7 +25,8 @@ timeout 120s godot --headless --path . --import \
 # Editor plugins currently emit shutdown-leak errors. Keep the import log, but
 # gate errors strictly in the runtime log; gate import errors too once plugins are fixed.
 if [[ "$status" -eq 0 ]]; then
-    timeout 120s godot --path . --windowed --resolution 1280x720 \
+    timeout 120s xvfb-run --auto-servernum --server-args='-screen 0 1280x720x24 -nolisten tcp' \
+        godot --path . --display-driver x11 --windowed --resolution 1280x720 \
         --fixed-fps 60 --audio-driver Dummy --disable-vsync \
         --log-file "$output/engine.log" "$@" \
         res://dev/visual/VisualPlaytest.tscn -- --output="$output" \

@@ -78,21 +78,24 @@ func _modifier_sequence() -> void:
     gameplay.get_node("ScaleTimer").stop()
     gameplay.figure_root.clean_all(true)
     await _frames(3)
-    for step in 3:
-        var wanted := "tier" if step == 1 else "points"
+    var pickups := ["points", "tier", "points", "echo", "inversion", "inversion", "all_in", "points"]
+    for step in pickups.size():
+        var wanted: String = pickups[step]
+        var wanted_value := 2 if wanted in ["echo", "inversion"] else 1
         # Search deterministic fixture seeds; all layouts still use production generation.
         for fixture_seed in range(100):
             gameplay.spawner.rng.seed = fixture_seed
             var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng,
-                gameplay.progress.run_state.modifier_system.pending)
-            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted and side.modifier.pickup_value == 1):
+                gameplay.progress.run_state.modifier_system.pending, maxi(gameplay.spawner.easy_side, 0),
+                gameplay.progress.run_state.tiers_collected)
+            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted and side.modifier.pickup_value == wanted_value):
                 gameplay.spawner.rng.seed = fixture_seed
                 break
         gameplay.spawner.spawn_icosahedron()
         await _frames(2)
         var figure := gameplay.figure_root.get_live_figures()[0]
         var side: SideData = figure.data.sides.filter(
-            func(item): return item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == 1)[0]
+            func(item): return item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == wanted_value)[0]
         _align_side(gameplay, figure, side)
         figure.scale = Vector3.ONE * 5.0
         await _frames(3)
@@ -101,9 +104,10 @@ func _modifier_sequence() -> void:
         await _frames(70)
         await _capture("modifiers", "%02d_collected" % (step * 2 + 2), _run_state(gameplay))
         _check(gameplay.progress.figures_passed == step + 1, "Modifier physical passage %d" % step)
-    _check(gameplay.progress.score == 250, "Points / tier / points commits T2 once")
+    _check(gameplay.progress.score == 750, "T2 commit plus inverted T2 all-in payout")
     _check(gameplay.progress.run_state.modifier_system.tier == 1, "Commit starts fresh T1 chain")
     _save_contact_sheet("modifiers")
+    gameplay.progress.run_state.tiers_collected = 1 # Difficulty fixture starts one tier below its +2 pickup.
     await _difficulty_sequence(gameplay)
     gameplay.restart()
     await _frames(3)

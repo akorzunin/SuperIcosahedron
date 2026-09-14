@@ -1,3 +1,4 @@
 - fix font, make it more readable or pick another one
 - unify UI (where buttons autoclick, where submunu title lives, where esc works and how it works)
 - more mechanics: harder levelup condition, more different mods
+- add modifiers library, so player can view opened modifiers from menu

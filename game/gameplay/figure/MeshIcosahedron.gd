@@ -188,7 +188,9 @@ func apply_side_data(sides: Array[SideData]) -> void:
                 var center := (triangle[0] + triangle[1] + triangle[2]) / 3.0
                 var face_basis := _basis_for_triangle(triangle)
                 var radius := triangle[0].distance_to(center)
-                for vertex in triangle:
+                for vertex_index in 3:
+                    var vertex: Vector3 = triangle[vertex_index]
+                    surface.set_uv2(Vector2(1.0 if vertex_index == 0 else 0.0, 1.0 if vertex_index == 1 else 0.0))
                     var local := face_basis.inverse() * (vertex - center)
                     surface.set_uv(Vector2(local.x, local.y) / (2.0 * radius) + Vector2(0.5, 0.5))
                     surface.add_vertex(vertex)
@@ -198,6 +200,8 @@ func apply_side_data(sides: Array[SideData]) -> void:
                 material.set_shader_parameter("noise_texture", preload("res://game/gameplay/figure/assets/passage_noise.png"))
                 if side.modifier:
                     material.set_shader_parameter("tint", side.modifier.pickup_color)
+                    material.set_shader_parameter("echo_waves", side.modifier.pickup_kind == "echo")
+                    material.set_shader_parameter("inversion_arrows", side.modifier.pickup_kind == "inversion")
                     for entry in UpgradeCatalog.data.pickups:
                         if entry.id == side.modifier.id:
                             material.set_shader_parameter("vortex", entry.value > 1)

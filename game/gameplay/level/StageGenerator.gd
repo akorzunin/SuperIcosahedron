@@ -31,7 +31,7 @@ static func create_modifier_figure(rng: RandomNumberGenerator, has_chain: bool,
         var id: int = candidates.pop_at(rng.randi_range(0, candidates.size() - 1))
         figure.sides[id].kind = SideData.Kind.POSITIVE
     # Guarantee a base (nearest eligible opening) and a route to voluntary tier progression.
-    _place_required(figure, steps, "base", has_chain, rng)
+    _place_required(figure, steps, "points", has_chain, rng)
     if has_chain:
         _place_required(figure, steps, "tier", has_chain, rng)
     for side in figure.sides:

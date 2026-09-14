@@ -8,6 +8,51 @@ func _collect(run: RunState, id: String, figure_id: int) -> void:
     assert_eq(run.resolve_side(figure_id, side), RunState.Outcome.PASSED)
     assert_eq(run.resolve_side(figure_id, side), RunState.Outcome.IGNORED)
 
+func test_echo_does_not_stack_and_inversion_preserves_it() -> void:
+    var run := RunState.new()
+    var ids := ["points", "echo", "echo", "inversion", "inversion", "tier"]
+    for i in ids.size():
+        _collect(run, ids[i], i)
+    assert_eq(run.modifier_system.sign_value, 1)
+    assert_eq(run.modifier_system.tier, 6)
+    assert_eq(run.tiers_collected, 5)
+    assert_false(run.modifier_system.echo_pending)
+    _collect(run, "echo", 6)
+    _collect(run, "red", 7)
+    assert_eq(run.modifier_system.sign_value, -1)
+    assert_false(run.modifier_system.echo_pending)
+
+func test_all_in_requires_points_on_next_shell() -> void:
+    for next_id in ["points", "tier", "echo", "inversion", "all_in", ""]:
+        var run := RunState.new()
+        _collect(run, "points", 0)
+        _collect(run, "all_in", 1)
+        assert_eq(run.modifier_system.pending_points(), 200)
+        if next_id.is_empty():
+            var neutral := SideData.new().init(0, Vector3.RIGHT, SideData.Kind.POSITIVE)
+            assert_eq(run.resolve_side(2, neutral), RunState.Outcome.PASSED)
+        else:
+            _collect(run, next_id, 2)
+        assert_eq(run.score, 200 if next_id == "points" else 0)
+        assert_eq(run.modifier_system.pending, next_id == "points")
+        assert_false(run.modifier_system.all_in)
+
+func test_new_effects_are_cleared_on_commit_and_reset() -> void:
+    var run := RunState.new()
+    _collect(run, "echo", 0)
+    _collect(run, "all_in", 1)
+    _collect(run, "inversion", 2)
+    assert_false(run.modifier_system.pending)
+    _collect(run, "points", 3)
+    _collect(run, "echo", 4)
+    _collect(run, "points", 5)
+    assert_false(run.modifier_system.echo_pending)
+    _collect(run, "echo", 6)
+    _collect(run, "all_in", 7)
+    run.reset()
+    assert_false(run.modifier_system.echo_pending)
+    assert_false(run.modifier_system.all_in)
+
 func test_pickup_messages_describe_effect_and_use_config_color() -> void:
     var run := RunState.new()
     var messages: Array[String] = []
@@ -101,12 +146,12 @@ func test_seeded_distance_placement_and_dynamic_easy_zone() -> void:
                 var entry: Dictionary = UpgradeCatalog.data.pickups.filter(func(item): return item.id == pickup.id)[0]
                 assert_between(steps[j], int(entry.min_steps), int(entry.max_steps))
                 assert_eq(pickup.pickup_value, int(entry.value_by_steps[steps[j]]))
-                if pickup.pickup_kind == "base":
+                if pickup.pickup_kind == "points":
                     bases += 1
                 if pickup.pickup_kind == "tier":
                     tiers += 1
                 if i == 0:
-                    assert_eq(pickup.pickup_kind, "base")
+                    assert_eq(pickup.pickup_kind, "points")
             else:
                 assert_null(second.sides[j].modifier)
         assert_between(easy_open, int(level.easy_open_faces[0]), int(level.easy_open_faces[1]))

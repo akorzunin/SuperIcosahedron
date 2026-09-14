@@ -27,8 +27,16 @@ task lab-run       # production game loop, no menu
 task lab-rotation  # production controls, isolated figure
 task test          # parallel GUT tests; output only on failure (default: up to 4 workers)
 TEST_JOBS=2 task test # override test concurrency (Linux user data isolated per suite)
-task visual-playtest # rendered lab replays + screenshots (Linux graphical session)
+task visual-playtest # rendered replays + screenshots on a private display (Linux)
 ```
+
+Visual playtests require `Xvfb`, `xvfb-run`, and `xauth` (Debian/Ubuntu:
+`sudo apt install xvfb xauth`; Arch: `sudo pacman -S xorg-server-xvfb xorg-xauth`).
+They render on an isolated virtual display without opening desktop windows or
+stealing focus. Screenshots and contact sheets are captured automatically under
+`build/visual-playtest/run.*`; no desktop recording or frame splitting is needed.
+The project renderer is preserved, so working Vulkan drivers are still required
+for the default renderer.
 
 For visual changes, run the playtest before and after editing, then **open and
 inspect** the generated contact sheets. Passing state checks alone is not visual

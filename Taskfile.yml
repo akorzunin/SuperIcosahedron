@@ -65,7 +65,7 @@ tasks:
       - python3 scripts/run_tests.py
 
   visual-playtest:
-    desc: replay rendered labs and save screenshots for visual review (Linux)
+    desc: replay rendered labs on a private display and save screenshots (Linux, Xvfb)
     platforms: [linux]
     cmds:
       - bash scripts/visual_playtest.sh {{.CLI_ARGS}}
