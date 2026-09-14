@@ -1,10 +1,19 @@
 :8282 {
     redir /download /download/
+    handle_path /download/web/* {
+        root * /srv/build/.current/web
+        file_server
+    }
+    handle /download/latest_version.json {
+        root * /srv/build/.current
+        rewrite * /build-info.json
+        file_server
+    }
     handle_path /download/* {
         root * /srv/build
         file_server {
             browse ./template.html
-            hide frontend
+            hide frontend .current .current-next
         }
     }
     root * /srv/dist

@@ -1,117 +1,126 @@
-name: ci-workflow
+name: Build, release and deploy
 
 on:
   push:
-    branches:
-      - master
-      - main
-      - dev
+    branches: ["**"]
+    tags: ["v*"]
   pull_request:
-    branches:
-      - master
-      - main
+
+permissions:
+  contents: read
+
+# Do not use branch concurrency: GitHub would discard intermediate queued pushes.
+# Live updates are serialized on the workstation and reject older run numbers.
 
 jobs:
   check:
-    name: 🛠️ Run Pre-commit Hooks
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
       - uses: j178/prek-action@v1
+      - uses: docker/setup-buildx-action@v3
+      - name: Test exporter packaging code
+        run: python3 -m unittest discover -s docker -p 'test_*.py'
+      - name: Run containerized GUT tests
+        run: TARGET=test ./scripts/build_game.sh
 
-  is-frontend-changed:
-    name: 👁️‍🗨️ Check Frontend Changes
+  publish:
+    timeout-minutes: 45
+    needs: check
+    if: github.event_name == 'push' && (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-24.04
-    needs:
-      - check
-    outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - uses: dorny/paths-filter@v4
-        id: filter
-        with:
-          filters: |
-            frontend:
-              - 'web/**'
-
-  build-frontend:
-    name: 🏗️ Run Frontend Build
-    runs-on: ubuntu-24.04
-    if: needs.is-frontend-changed.outputs.frontend == 'true'
     environment: dev
     permissions:
-      contents: read
+      contents: write
       packages: write
-    needs:
-      - is-frontend-changed
     steps:
       - uses: actions/checkout@v6
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3.3.0
+        with:
+          fetch-depth: 0
+      - name: Set build identity
+        id: version
+        env:
+          IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          if [ "$IS_TAG" = true ]; then
+            version="$GITHUB_REF_NAME"
+          else
+            version="dev-${GITHUB_RUN_NUMBER}-${GITHUB_SHA:0:8}"
+          fi
+          [[ "$version" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]]
+          echo "id=$version" >> "$GITHUB_OUTPUT"
+          echo "GAME_VERSION=$version" >> "$GITHUB_ENV"
+          echo "GAME_COMMIT=$GITHUB_SHA" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - name: Export games
+        env:
+          DISCORD_APP_ID: ${{ vars.DISCORD_APP_ID || '0' }}
+        run: ./scripts/build_game.sh
+      - name: Package exports
+        run: python3 scripts/package_build.py build/docker/all build/release
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5.5.1
-        with:
-          images: ghcr.io/akorzunin/supericosahedron-frontend
-          tags: |
-            - type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.6.1
-        with:
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-
-      - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@v6.5.0
+      - name: Build UI image
+        id: frontend
+        uses: docker/build-push-action@v6
         with:
           context: .
+          file: web/Dockerfile
+          platforms: linux/amd64
           push: true
+          tags: ghcr.io/akorzunin/supericosahedron-frontend:${{ steps.version.outputs.id }}
           build-args: |
             VITE_HOST_URL=${{ vars.VITE_HOST_URL }}
             VITE_OG_DESCRIPTION=${{ vars.VITE_OG_DESCRIPTION }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          file: ./web/Dockerfile
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  deploy-frontend:
-    name: 🚢 Deploy Frontend Docker Image
-    runs-on: ubuntu-24.04
-    environment:
-      name: dev
-      url: https://supericosahedron.akorz.duckdns.org
-    needs:
-      - build-frontend
-    defaults:
-      run:
-        working-directory: deploy/dev
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v6
-
-      - name: Run playbook
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ steps.version.outputs.id }}
+          IS_TAG: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          printf '%s\n' 'ghcr.io/akorzunin/supericosahedron-frontend@${{ steps.frontend.outputs.digest }}' > build/release/frontend-image.txt
+          (cd build/release && sha256sum frontend-image.txt >> SHA256SUMS)
+          # A failed upload leaves only a draft; a retry recreates that draft.
+          if [ "$(gh release view "$RELEASE_ID" --json isDraft --jq .isDraft 2>/dev/null || true)" = true ]; then
+            gh release delete "$RELEASE_ID" --yes
+          fi
+          # Do not overwrite published assets on reruns: deployment reuses them below.
+          if ! gh release view "$RELEASE_ID" >/dev/null 2>&1; then
+            flags=(--prerelease --latest=false)
+            if [ "$IS_TAG" = true ]; then flags=(--verify-tag --latest); fi
+            gh release create "$RELEASE_ID" build/release/* --draft \
+              --target "$GITHUB_SHA" --title "$RELEASE_ID (debug builds)" \
+              --notes "Docker debug exports, including debug-signed Android APK. Commit: $GITHUB_SHA. UI image: ghcr.io/akorzunin/supericosahedron-frontend@${{ steps.frontend.outputs.digest }}" \
+              "${flags[@]}"
+            if [ "$IS_TAG" = true ]; then
+              gh release edit "$RELEASE_ID" --draft=false --latest
+            else
+              gh release edit "$RELEASE_ID" --draft=false --latest=false
+            fi
+          fi
+          mkdir -p build/published
+          gh release download "$RELEASE_ID" --dir build/published
+          (cd build/published && sha256sum --check SHA256SUMS)
+          echo "FRONTEND_IMAGE=$(<build/published/frontend-image.txt)" >> "$GITHUB_ENV"
+      - name: Deploy published artifacts
         uses: dawidd6/action-ansible-playbook@v5
         with:
-          playbook: deploy_frontend.yaml
+          playbook: deploy.yaml
           directory: deploy/dev
-          configuration: |
-            [defaults]
-            callbacks_enabled = ansible.posix.profile_tasks, ansible.posix.timer
-            callback_result_format = yaml
-            interpreter_python = /usr/bin/python
-            [ssh_connection]
-            retries=5
           vault_password: ${{ secrets.ANSIBLE_PASS }}
           inventory: ${{ secrets.ANSIBLE_HOSTS }}
+          known_hosts: ${{ secrets.ANSIBLE_KNOWN_HOSTS }}
+          configuration: |
+            [ssh_connection]
+            ssh_args = -o ControlMaster=auto -o ControlPersist=60s -o ServerAliveInterval=15 -o ServerAliveCountMax=3
           options: |
-            --limit ${{ vars.DEV_SERVER }}
-            --verbose
+            --limit remote_workstation
+            --extra-vars release_id=${{ steps.version.outputs.id }}
+            --extra-vars deployment_order=${{ github.run_number }}
+            --extra-vars artifact_dir=${{ github.workspace }}/build/published
+            --extra-vars publish_live=${{ !startsWith(github.ref, 'refs/tags/') }}
+            --extra-vars frontend_image=${{ env.FRONTEND_IMAGE }}

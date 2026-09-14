@@ -1,0 +1,132 @@
+- name: Publish build on workstation
+  hosts: remote_workstation
+  become: false
+  vars:
+    project_dir: "{{ ansible_facts['env']['HOME'] }}/Documents/supericosahedron-dev"
+    archive_dir: /mnt/storage/supericosahedron
+    release_dir: "{{ archive_dir }}/{{ release_id }}"
+  tasks:
+    - name: Validate deployment inputs
+      ansible.builtin.assert:
+        that:
+          - release_id is match('^[a-zA-Z0-9][a-zA-Z0-9._-]*$')
+          - artifact_dir is defined
+          - publish_live is defined
+          - deployment_order | int > 0
+
+    - name: Require storage disk to be mounted
+      ansible.builtin.command: mountpoint -q /mnt/storage
+      changed_when: false
+
+    - name: Create release directory
+      ansible.builtin.file:
+        path: "{{ release_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Upload published bundle
+      ansible.builtin.copy:
+        src: "{{ artifact_dir }}/deploy.tar.gz"
+        dest: "{{ release_dir }}/deploy.tar.gz"
+        mode: "0644"
+
+    - name: Unpack release
+      ansible.builtin.unarchive:
+        src: "{{ release_dir }}/deploy.tar.gz"
+        dest: "{{ release_dir }}"
+        remote_src: true
+
+    - name: Check game entry point
+      ansible.builtin.stat:
+        path: "{{ release_dir }}/web/index.html"
+      register: entrypoint
+
+    - name: Require complete web export
+      ansible.builtin.assert:
+        that: entrypoint.stat.size | default(0) > 0
+
+    # Host-wide live-update lock; a killed controller needs manual lock removal.
+    # Use a supervised host deployment worker if crash recovery becomes necessary.
+    - name: Acquire live-update lock
+      ansible.builtin.command:
+        argv: [mkdir, "{{ project_dir }}/.deploy-lock"]
+      register: lock
+      until: lock.rc == 0
+      retries: 180
+      delay: 5
+      changed_when: lock.rc == 0
+      when: publish_live | bool
+
+    - name: Update live site for default branch only
+      when: publish_live | bool
+      block:
+        - name: Read last successful deployment order
+          ansible.builtin.command:
+            argv: [cat, "{{ project_dir }}/.deployment-order"]
+          register: previous_order
+          failed_when: false
+          changed_when: false
+
+        - name: Deploy only if this run is not older than the live build
+          when: deployment_order | int >= previous_order.stdout | int
+          block:
+            - name: Install service configuration
+              ansible.builtin.copy:
+                src: "{{ item }}"
+                dest: "{{ project_dir }}/{{ item }}"
+                mode: "0644"
+              loop: [Caddyfile, compose.yaml]
+
+            - name: Pin frontend image
+              ansible.builtin.copy:
+                content: "FRONTEND_IMAGE={{ frontend_image }}\n"
+                dest: "{{ project_dir }}/.env"
+                mode: "0644"
+
+            - name: Start frontend
+              ansible.builtin.shell:
+                cmd: docker compose pull && docker compose up -d --force-recreate
+                chdir: "{{ project_dir }}"
+              changed_when: true
+
+            - name: Check frontend before switching game
+              ansible.builtin.uri:
+                url: http://127.0.0.1:8282/
+              register: health
+              until: health.status == 200
+              retries: 15
+              delay: 2
+
+            - name: Prepare current pointer
+              ansible.builtin.file:
+                src: "{{ release_id }}"
+                dest: "{{ archive_dir }}/.current-next"
+                state: link
+                force: true
+
+            - name: Atomically switch current game
+              ansible.builtin.command:
+                argv:
+                  [
+                    mv,
+                    -Tf,
+                    "{{ archive_dir }}/.current-next",
+                    "{{ archive_dir }}/.current",
+                  ]
+              changed_when: true
+
+            - name: Verify live game and metadata
+              ansible.builtin.uri:
+                url: "http://127.0.0.1:8282/download/{{ item }}"
+              loop: [web/index.html, latest_version.json]
+
+            - name: Record successful deployment order
+              ansible.builtin.copy:
+                content: "{{ deployment_order }}\n"
+                dest: "{{ project_dir }}/.deployment-order"
+                mode: "0644"
+      always:
+        - name: Release live-update lock
+          ansible.builtin.file:
+            path: "{{ project_dir }}/.deploy-lock"
+            state: absent

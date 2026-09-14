@@ -137,7 +137,7 @@ export const GodotFrame = () => {
         )}
         <p className="absolute bottom-0 right-2 text-primary-foreground outline-1 dark:text-primary">
           build: {gameVersionData?.version ?? "v0.0.0"} commit:{" "}
-          {gameVersionData?.commit ?? "devbld01"}
+          {gameVersionData?.commit.slice(0, 8) ?? "devbld01"}
         </p>
       </div>
     </div>

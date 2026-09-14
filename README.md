@@ -80,10 +80,14 @@ task build TARGET=web         # one platform
 task test-docker              # containerized GUT tests
 ```
 
-Artifacts: `build/docker/<TARGET>/`. See [Docker game builds](docs/docker-build.md)
-for prerequisites, metadata, signing limitations, and commands without Task.
-CI is unchanged. Legacy `dev-build-*` / `deploy-build-dev` tasks still use host
-tooling and the old output layout; they do not use this Docker path.
+Artifacts: `build/docker/<TARGET>/`. Exports currently use debug mode, including
+Android debug signing. Without Task, run `./scripts/build_game.sh` with optional
+`TARGET`, `GAME_VERSION`, `GAME_COMMIT`, and `DISCORD_APP_ID` environment variables.
+
+CI publishes default-branch prereleases and tagged releases, archives them on
+`remote_workstation`, and updates the live game on default-branch pushes.
+See [deployment and migration](docs/deployment.md) for configuration and rollback.
+Legacy `dev-build-*` tasks still use host tooling and the old output layout.
 
 ## Downloading assets
 

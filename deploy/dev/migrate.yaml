@@ -1,0 +1,114 @@
+# Copy only: the Pi service remains available for rollback. Cut over proxy separately.
+- name: Snapshot Pi archive
+  hosts: remote_pi
+  become: false
+  tasks:
+    - name: Discover archive mount
+      ansible.builtin.command: docker inspect supericosahedron-dev
+      register: container
+      changed_when: false
+
+    - name: Find build directory
+      ansible.builtin.set_fact:
+        archive_path: "{{ ((container.stdout | from_json)[0].Mounts | selectattr('Destination', 'equalto', '/srv/build') | first).Source }}"
+
+    - name: Create transfer archive
+      ansible.builtin.command:
+        argv:
+          [
+            tar,
+            -czf,
+            /tmp/supericosahedron-migration.tar.gz,
+            -C,
+            "{{ archive_path }}",
+            .,
+          ]
+      async: 1800
+      poll: 10
+      changed_when: true
+
+    - name: Fetch archive to controller
+      ansible.builtin.fetch:
+        src: /tmp/supericosahedron-migration.tar.gz
+        dest: "{{ playbook_dir }}/../../build/migration.tar.gz"
+        flat: true
+
+    - name: Remove temporary Pi archive
+      ansible.builtin.file:
+        path: /tmp/supericosahedron-migration.tar.gz
+        state: absent
+
+- name: Install current site on workstation
+  hosts: remote_workstation
+  become: false
+  vars:
+    project_dir: "{{ ansible_facts['env']['HOME'] }}/Documents/supericosahedron-dev"
+    archive_dir: /mnt/storage/supericosahedron
+  tasks:
+    - name: Require storage disk to be mounted
+      ansible.builtin.command: mountpoint -q /mnt/storage
+      changed_when: false
+
+    - name: Create service directory
+      ansible.builtin.file:
+        path: "{{ project_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Create build directory
+      ansible.builtin.file:
+        path: "{{ archive_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy historical archive
+      ansible.builtin.unarchive:
+        src: "{{ playbook_dir }}/../../build/migration.tar.gz"
+        dest: "{{ archive_dir }}"
+
+    - name: Create legacy live version
+      ansible.builtin.file:
+        path: "{{ archive_dir }}/legacy"
+        state: directory
+        mode: "0755"
+
+    - name: Preserve legacy web export
+      ansible.builtin.copy:
+        src: "{{ archive_dir }}/web"
+        dest: "{{ archive_dir }}/legacy/"
+        remote_src: true
+
+    - name: Preserve legacy metadata
+      ansible.builtin.copy:
+        src: "{{ archive_dir }}/latest_version.json"
+        dest: "{{ archive_dir }}/legacy/build-info.json"
+        remote_src: true
+
+    - name: Initialize current pointer without replacing existing deployment
+      ansible.builtin.command:
+        cmd: ln -s legacy .current
+        chdir: "{{ archive_dir }}"
+        creates: "{{ archive_dir }}/.current"
+
+    - name: Install service configuration
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ project_dir }}/{{ item }}"
+        mode: "0644"
+      loop: [Caddyfile, compose.yaml]
+
+    - name: Start site
+      ansible.builtin.shell:
+        cmd: docker compose pull && docker compose up -d
+        chdir: "{{ project_dir }}"
+      changed_when: true
+
+    - name: Verify migrated site
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:8282/{{ item }}"
+      register: health
+      until: health.status == 200
+      retries: 15
+      delay: 2
+      loop:
+        ["", download/, download/web/index.html, download/latest_version.json]
