@@ -93,7 +93,7 @@ jobs:
             flags=(--prerelease --latest=false)
             if [ "$IS_TAG" = true ]; then flags=(--verify-tag --latest); fi
             gh release create "$RELEASE_ID" build/release/* --draft \
-              --target "$GITHUB_SHA" --title "$RELEASE_ID (debug builds)" \
+              --target "$GITHUB_SHA" --title "$RELEASE_ID" \
               --notes "Docker debug exports, including debug-signed Android APK. Commit: $GITHUB_SHA. UI image: ghcr.io/akorzunin/supericosahedron-frontend@${{ steps.frontend.outputs.digest }}" \
               "${flags[@]}"
             if [ "$IS_TAG" = true ]; then
@@ -106,6 +106,12 @@ jobs:
           gh release download "$RELEASE_ID" --dir build/published
           (cd build/published && sha256sum --check SHA256SUMS)
           echo "FRONTEND_IMAGE=$(<build/published/frontend-image.txt)" >> "$GITHUB_ENV"
+      - name: Prepare local deployment bundle
+        run: |
+          test -s build/docker/all/web/index.html
+          tar -czf build/deploy.tar.gz -C "$GITHUB_WORKSPACE/build/docker/all" web \
+            -C "$GITHUB_WORKSPACE/build/published" .
+          mv build/deploy.tar.gz build/published/deploy.tar.gz
       - name: Deploy published artifacts
         uses: dawidd6/action-ansible-playbook@v9
         with:

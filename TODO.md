@@ -1,4 +1,3 @@
 - fix font, make it more readable or pick another one
-- setup deploy proiperly (gh actions + upload to ws)
 - unify UI (where buttons autoclick, where submunu title lives, where esc works and how it works)
 - more mechanics: harder levelup condition, more different mods

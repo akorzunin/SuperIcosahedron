@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 import subprocess
 import sys
-import tarfile
 import tempfile
 import unittest
 import zipfile
@@ -13,7 +12,7 @@ SCRIPT = Path(__file__).resolve().parents[1] / "scripts/package_build.py"
 
 
 class PackageTests(unittest.TestCase):
-    def test_bundle_and_checksums(self):
+    def test_release_assets_and_checksums(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             source, output = root / "exports", root / "release"
@@ -22,15 +21,29 @@ class PackageTests(unittest.TestCase):
             (source / "build-info.json").write_text(json.dumps(info))
             for target in ("linux", "windows", "web", "android"):
                 (source / target).mkdir()
-                (source / target / "payload").write_bytes(b"game")
+                if target == "android":
+                    (source / target / "SuperIcosahedron.apk").write_bytes(b"apk")
+                    (source / target / "SuperIcosahedron.apk.idsig").write_bytes(b"signature")
+                else:
+                    (source / target / "payload").write_bytes(b"game")
             subprocess.run([sys.executable, SCRIPT, source, output], check=True)
-            for line in (output / "SHA256SUMS").read_text().splitlines():
+            self.assertFalse((output / "android.zip").exists())
+            android_files = {
+                "SuperIcosahedron.apk": b"apk",
+                "SuperIcosahedron.apk.idsig": b"signature",
+            }
+            checksums = (output / "SHA256SUMS").read_text()
+            for name, content in android_files.items():
+                self.assertEqual((output / name).read_bytes(), content)
+                self.assertIn(f"  {name}\n", checksums)
+            for line in checksums.splitlines():
                 digest, name = line.split()
                 self.assertEqual(hashlib.sha256((output / name).read_bytes()).hexdigest(), digest)
-            with tarfile.open(output / "deploy.tar.gz") as bundle:
-                self.assertIn("web/payload", bundle.getnames())
-                self.assertEqual(json.load(bundle.extractfile("build-info.json")), info)
-                self.assertNotIn("deploy.tar.gz", bundle.getnames())
+            self.assertEqual(
+                {path.name for path in output.iterdir()},
+                {"linux.zip", "windows.zip", "build-info.json", "SHA256SUMS", *android_files},
+            )
+            self.assertEqual(json.loads((output / "build-info.json").read_text()), info)
             with zipfile.ZipFile(output / "linux.zip") as archive:
                 self.assertEqual(archive.read("payload"), b"game")
             # Output is immutable: a second packaging pass must not overwrite it.
