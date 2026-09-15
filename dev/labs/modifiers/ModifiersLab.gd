@@ -26,7 +26,10 @@ var sequence: Array = []
 var cursor := 0
 var passage_id := 0
 var history: ItemList
-var library: OptionButton
+var library: VBoxContainer
+var selected_modifier := 0
+var played: Array = []
+var played_starting: Dictionary = { }
 var preview: SubViewportContainer
 var strength: OptionButton
 var description: Label
@@ -51,7 +54,10 @@ func _ready() -> void:
     add_child(margin)
     var root := VBoxContainer.new()
     margin.add_child(root)
-    _label(root, "MODIFIERS LAB — Space: pass selected pickup · Real RunState passage logic")
+    _label(
+        root,
+        "MODIFIERS LAB — Space: pass hovered pickup · R: reset · Real RunState passage logic",
+    )
     var columns := HBoxContainer.new()
     columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
     root.add_child(columns)
@@ -61,12 +67,13 @@ func _ready() -> void:
     _label(left, "Replay sequence (select + remove to edit)")
     sequence_view = _list(left)
     _button(left, "Remove selected step", _remove_step)
+    _button(left, "Save played as preset + copy", save_played)
     var center := _column(columns)
     _label(center, "Modifier library")
     var preview_toggle := CheckButton.new()
     preview_toggle.name = "PreviewToggle"
     preview_toggle.text = "Show 3D preview (drag / click faces)"
-    preview_toggle.button_pressed = true
+    preview_toggle.button_pressed = false
     preview_toggle.focus_mode = Control.FOCUS_NONE
     center.add_child(preview_toggle)
     preview_toggle.toggled.connect(
@@ -75,23 +82,30 @@ func _ready() -> void:
     )
     preview = preload("res://dev/labs/modifiers/ModifierPreview.gd").new()
     center.add_child(preview)
-    preview.modifier_selected.connect(
-        func(index):
-            library.select(index)
-            _select_modifier(index),
-    )
-    library = OptionButton.new()
-    library.focus_mode = Control.FOCUS_NONE
-    center.add_child(library)
-    for entry in UpgradeCatalog.data.pickups:
-        library.add_item(entry.title)
-    library.item_selected.connect(_select_modifier)
+    preview.hide()
+    preview.modifier_selected.connect(_select_modifier)
+    var library_scroll := ScrollContainer.new()
+    library_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    center.add_child(library_scroll)
+    library = _column(library_scroll)
+    for index in UpgradeCatalog.data.pickups.size():
+        var button := Button.new()
+        button.text = UpgradeCatalog.data.pickups[index].title
+        button.focus_mode = Control.FOCUS_NONE
+        button.mouse_entered.connect(_select_modifier.bind(index))
+        button.pressed.connect(
+            func():
+                if selected_modifier != index:
+                    _select_modifier(index)
+                play_selected(),
+        )
+        library.add_child(button)
     strength = OptionButton.new()
     strength.focus_mode = Control.FOCUS_NONE
     center.add_child(strength)
     strength.item_selected.connect(
         func(_index):
-            preview.select_modifier(library.selected, _selected_steps()),
+            preview.select_modifier(selected_modifier, _selected_steps()),
     )
     description = _label(center, "")
     var pickup_actions := HBoxContainer.new()
@@ -119,7 +133,7 @@ func _ready() -> void:
     )
     var right := _column(columns)
     state_view = _label(right, "")
-    _label(right, "Starting state — applied on Reset")
+    _label(right, "Starting state — applied on Reset + replay")
     var scroll := ScrollContainer.new()
     scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
     right.add_child(scroll)
@@ -191,7 +205,7 @@ func _ready() -> void:
     buttons.add_child(presets)
     _button(buttons, "Copy repro", copy_repro)
     _button(buttons, "Import clipboard", import_repro)
-    _button(buttons, "Reset", reset_state)
+    _button(buttons, "Reset [R]", reset_fresh)
     _button(buttons, "Reset + replay", replay)
     _button(buttons, "Step sequence", step_sequence)
     _button(
@@ -210,7 +224,6 @@ func _ready() -> void:
         func(text, _color):
             message = text,
     )
-    library.select(0)
     _select_modifier(0)
     reset_state()
 
@@ -248,6 +261,7 @@ func _button(parent: Node, text: String, action: Callable) -> void:
 
 
 func _select_modifier(index: int) -> void:
+    selected_modifier = index
     var entry: Dictionary = UpgradeCatalog.data.pickups[index]
     description.text = entry.description
     strength.clear()
@@ -262,18 +276,21 @@ func _selected_steps() -> int:
 
 
 func _selection() -> Dictionary:
-    return { "id": UpgradeCatalog.data.pickups[library.selected].id, "steps": _selected_steps() }
+    return { "id": UpgradeCatalog.data.pickups[selected_modifier].id, "steps": _selected_steps() }
 
 
 func _input(event: InputEvent) -> void:
     if (
         event is InputEventKey and event.pressed and not event.echo
-        and event.physical_keycode == KEY_SPACE
+        and event.physical_keycode in [KEY_SPACE, KEY_R]
     ):
         var focus := get_viewport().gui_get_focus_owner()
         if focus is LineEdit or focus is TextEdit:
             return
-        play_selected()
+        if event.physical_keycode == KEY_R:
+            reset_fresh()
+        else:
+            play_selected()
         get_viewport().set_input_as_handled()
 
 
@@ -323,6 +340,7 @@ func activate(action: Dictionary) -> void:
             message += "\nCharge counter already at requirement."
         else:
             message += "\nNo completed charge: a pending chain containing TIER must be banked by POINTS (Forge may store instead)."
+    played.append(action.duplicate(true))
     history.add_item("%d. %s" % [history.item_count + 1, _action_name(action)])
     log_view.text += "%s\n%s\n%s\n\n" % [_action_name(action), message, "\n".join(changes)]
     log_view.set_caret_line(log_view.get_line_count() - 1)
@@ -340,6 +358,13 @@ func _action_name(action: Dictionary) -> String:
     )
 
 
+func reset_fresh() -> void:
+    var fresh := RunState.new()
+    for key in inputs:
+        _set_input(key, fresh.get(key) if key in RUN_FIELDS else fresh.modifier_system.get(key))
+    reset_state()
+
+
 func reset_state() -> void:
     run_state.reset()
     for key in inputs:
@@ -348,6 +373,10 @@ func reset_state() -> void:
             run_state.set(key, value)
         else:
             run_state.modifier_system.set(key, value)
+    played.clear()
+    played_starting.clear()
+    for key in inputs:
+        played_starting[key] = _input_value(key)
     cursor = 0
     passage_id = 0
     history.clear()
@@ -420,6 +449,15 @@ func _set_input(key: String, value: Variant) -> void:
         input.select(["", "points", "tier"].find(value))
     else:
         input.value = value
+
+
+func save_played() -> void:
+    sequence = played.duplicate(true)
+    for key in played_starting:
+        _set_input(key, played_starting[key])
+    cursor = sequence.size()
+    copy_repro()
+    _refresh()
 
 
 func copy_repro() -> void:

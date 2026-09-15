@@ -79,13 +79,15 @@ func _modifiers_lab_replay() -> void:
         lab.activate({ "id": id, "steps": -1 })
     await _frames(3)
     await _capture("modifiers_lab", "02_charge", lab.snapshot())
+    var preview_toggle := lab.find_child("PreviewToggle", true, false) as CheckButton
+    _check(not lab.preview.visible, "Modifier preview starts hidden")
+    preview_toggle.button_pressed = true
     for index in [1, 5]:
         lab.preview.modifier_selected.emit(index)
         lab.strength.select(lab.strength.item_count - 1)
         lab.strength.item_selected.emit(lab.strength.selected)
         await _frames(3)
         await _capture("modifiers_lab", "preview_%d" % index, lab.snapshot())
-    var preview_toggle := lab.find_child("PreviewToggle", true, false) as CheckButton
     preview_toggle.button_pressed = false
     await _frames(3)
     await _capture("modifiers_lab", "preview_hidden", lab.snapshot())
