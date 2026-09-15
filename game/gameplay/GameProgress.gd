@@ -30,14 +30,10 @@ var max_reached_level := 0
 
 
 func _update_level():
-    if (
-        G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL
-        and run_state.controls_completed >= RunState.required_controls()
-    ):
+    if (G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and run_state.level_complete(true)):
         G.unlock_difficulty(1)
         (get_parent() as LoopScene).enter_next_level.call_deferred()
-    elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and run_state.difficulty == 0 \
-            and run_state.charges_completed >= RunState.required_charges():
+    elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and run_state.level_complete(false):
         G.unlock_difficulty(2)
         (get_parent() as LoopScene).enter_next_level.call_deferred()
 

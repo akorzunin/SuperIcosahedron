@@ -43,6 +43,12 @@ func reset() -> void:
     modifier_system.reset()
 
 
+func level_complete(tutorial: bool) -> bool:
+    if tutorial:
+        return controls_completed >= required_controls()
+    return difficulty == 0 and charges_completed >= required_charges()
+
+
 func register_figure(figure: FigureData) -> void:
     for side in figure.sides:
         if side.modifier:

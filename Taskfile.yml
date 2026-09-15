@@ -75,6 +75,11 @@ tasks:
     cmds:
       - godot --path . res://dev/labs/run/RunLab.tscn
 
+  lab-modifiers:
+    desc: inspect and replay real modifier passages
+    cmds:
+      - godot --path . res://dev/labs/modifiers/ModifiersLab.tscn
+
   lab-rotation:
     desc: test production rotation controls
     cmds:

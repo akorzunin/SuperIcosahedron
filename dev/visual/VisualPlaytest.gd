@@ -40,6 +40,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
+    await _modifiers_lab_replay()
     await _rotation_replay()
     await _restart_sequence()
     await _mounted_gameplay_sequence()
@@ -67,6 +68,31 @@ func _run() -> void:
     file.close()
     print("Visual playtest: %s. Inspect images in %s" % [report.automated_status, output])
     get_tree().quit(1 if failed else 0)
+
+
+func _modifiers_lab_replay() -> void:
+    var lab := preload("res://dev/labs/modifiers/ModifiersLab.tscn").instantiate()
+    add_child(lab)
+    await _frames(3)
+    await _capture("modifiers_lab", "01_initial", lab.snapshot())
+    for id in ["points", "tier", "echo", "tier", "points"]:
+        lab.activate({ "id": id, "steps": -1 })
+    await _frames(3)
+    await _capture("modifiers_lab", "02_charge", lab.snapshot())
+    for index in [1, 5]:
+        lab.preview.modifier_selected.emit(index)
+        lab.strength.select(lab.strength.item_count - 1)
+        lab.strength.item_selected.emit(lab.strength.selected)
+        await _frames(3)
+        await _capture("modifiers_lab", "preview_%d" % index, lab.snapshot())
+    var preview_toggle := lab.find_child("PreviewToggle", true, false) as CheckButton
+    preview_toggle.button_pressed = false
+    await _frames(3)
+    await _capture("modifiers_lab", "preview_hidden", lab.snapshot())
+    _check(not lab.preview.visible, "Modifier preview can be hidden")
+    _save_contact_sheet("modifiers_lab")
+    lab.queue_free()
+    await get_tree().process_frame
 
 
 func _library_sequence(main: Node) -> void:

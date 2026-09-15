@@ -1,5 +1,4 @@
 - more different mods
 - level 3 mechanics, condition to get to level 3
-- add modifiers lab where devs can clearly see what effect creates mods interactions
 - edit hexagonal font so it can be used everywhere and be readable
 - music system?
