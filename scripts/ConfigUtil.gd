@@ -4,6 +4,7 @@ extends SceneTree
 var local_confg := "res://game/services/settings/default_settings.cfg"
 var user_config := "user://settings.cfg"
 
+
 func copy_config(src: String, dest: String):
     print("reading local config")
     var dc := SettingsConfig.load_gs(src)
@@ -12,11 +13,13 @@ func copy_config(src: String, dest: String):
     var config := SettingsConfig.dict_to_config(dc)
     config.save(dest)
 
+
 func sync_config(name: String):
     if name == "local":
         copy_config(local_confg, user_config)
     elif name == "user":
         copy_config(user_config, local_confg)
+
 
 func main(args: Dictionary):
     var _s = args.get("s")
@@ -27,16 +30,19 @@ func main(args: Dictionary):
         elif _sync:
             sync_config(_sync)
     else:
-        print("""
+        print(
+            """
 sync config from local to user and vise versa
 -s=local copy from local to user config
 
 -s=name (name: user, local)
 --sync=name
-        """)
+        """
+        )
+
 
 func _init():
-    var arguments = {}
+    var arguments = { }
     for argument in OS.get_cmdline_args():
         # Parse valid command-line arguments into a dictionary
         if argument.find("=") > -1:

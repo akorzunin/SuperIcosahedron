@@ -2,13 +2,18 @@ extends Node
 class_name PatternGen
 
 const MAX_LEVEL := 3
-enum SpawnMode {TUTORIAL, DEBUG, QUEUE}
+enum SpawnMode {
+    TUTORIAL,
+    DEBUG,
+    QUEUE,
+}
 
 @export var level: int = 0:
     set(val):
         level = clampi(val, 0, MAX_LEVEL)
 
 var level_queue := LevelQueue.new()
+
 
 func _ready():
     G.level_changed.connect(_on_level_changed)
@@ -17,10 +22,12 @@ func _ready():
         level = l
     add_patterns()
 
+
 func reset(start_level: int) -> void:
     level = start_level
     level_queue.clear()
     add_patterns()
+
 
 func _on_level_changed(new_level: int):
     level = new_level
@@ -30,10 +37,12 @@ func _on_level_changed(new_level: int):
         G.reload_settings.emit()
     level = new_level
 
+
 func next_pattern() -> int:
     if level_queue.length <= 0:
         add_patterns()
     return level_queue.next_item()
+
 
 func add_patterns():
     var current_level: Dictionary = LevelPatterns.levels[level]
@@ -48,9 +57,11 @@ func add_patterns():
     for pattern in current_level.level_patterns:
         queue_pattern(pattern)
 
+
 func queue_pattern(pattern: int):
     for type in LevelPatterns.patterns[pattern]:
         level_queue.add_item(type)
+
 
 func queue_item(item: int):
     level_queue.add_item(clampi(item, 0, 19))

@@ -11,7 +11,14 @@ class_name ModifierData
 @export var pickup_value := 0
 @export var pickup_color := Color.WHITE
 
-func init(_id: String, _title: String, _score_value: int = 0, _quality := "normal", _duration := "stage") -> ModifierData:
+
+func init(
+    _id: String,
+    _title: String,
+    _score_value: int = 0,
+    _quality := "normal",
+    _duration := "stage",
+) -> ModifierData:
     id = _id
     title = _title
     score_value = _score_value

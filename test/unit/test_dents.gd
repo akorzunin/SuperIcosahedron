@@ -2,9 +2,13 @@ extends GutTest
 
 const FIGURE_SCENE := preload("res://game/gameplay/figure/Icosahedron.tscn")
 
+
 func test_generated_figure_has_one_scoring_empty_dent() -> void:
     var figure := StageGenerator.create_figure(7)
-    var empty_sides := figure.sides.filter(func(side: SideData): return side.is_empty())
+    var empty_sides := figure.sides.filter(
+        func(side: SideData):
+            return side.is_empty(),
+    )
 
     assert_eq(figure.sides.size(), 20)
     assert_eq(empty_sides.size(), 1)
@@ -15,6 +19,7 @@ func test_generated_figure_has_one_scoring_empty_dent() -> void:
     run.register_figure(figure)
     assert_eq(run.resolve_side(1, empty_sides[0]), RunState.Outcome.PASSED)
     assert_eq(run.score, 1)
+
 
 func test_dent_visibility_matches_its_side() -> void:
     var dent := Dent.new().init(0, null)
@@ -29,6 +34,7 @@ func test_dent_visibility_matches_its_side() -> void:
     assert_false(dent.is_empty())
     assert_true(dent.visible)
     dent.free()
+
 
 func test_burst_preserves_colliders_and_outlives_figure() -> void:
     var root := Node3D.new()
@@ -63,16 +69,21 @@ func test_burst_preserves_colliders_and_outlives_figure() -> void:
     await wait_seconds(0.5)
     assert_false(is_instance_valid(burst), "Fragments clean themselves up.")
 
+
 func test_figure_is_built_from_twenty_dents_with_one_hole() -> void:
     var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(StageGenerator.create_figure(4))
     add_child_autofree(figure)
     await wait_process_frames(1)
     var dents := figure.mesh_icosahedron.get_dents()
-    var hidden_dents := dents.filter(func(dent: Dent): return not dent.visible)
+    var hidden_dents := dents.filter(
+        func(dent: Dent):
+            return not dent.visible,
+    )
 
     assert_eq(dents.size(), 20)
     assert_eq(hidden_dents.size(), 1)
     assert_eq(hidden_dents[0].side_id, 4)
+
 
 func test_control_cues_follow_open_dent_and_clear_on_handoff() -> void:
     var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(StageGenerator.create_figure(4))
@@ -84,12 +95,20 @@ func test_control_cues_follow_open_dent_and_clear_on_handoff() -> void:
     shell.set_controlled(true)
     assert_true(marker.visible)
     var points := shell.get_side_points(4)
-    assert_almost_eq(marker.position, (points[1] + points[2] + points[3]) / 3.0 * 1.03, Vector3.ONE * 0.001)
+    assert_almost_eq(
+        marker.position,
+        (points[1] + points[2] + points[3]) / 3.0 * 1.03,
+        Vector3.ONE * 0.001,
+    )
     for dent in shell.get_dents():
         assert_true(dent.material_override.get_shader_parameter("controlled"))
     shell.apply_side_data(StageGenerator.create_figure(7).sides)
     points = shell.get_side_points(7)
-    assert_almost_eq(marker.position, (points[1] + points[2] + points[3]) / 3.0 * 1.03, Vector3.ONE * 0.001)
+    assert_almost_eq(
+        marker.position,
+        (points[1] + points[2] + points[3]) / 3.0 * 1.03,
+        Vector3.ONE * 0.001,
+    )
     assert_false(shell.get_dents()[7].visible, "Marker must not fill the hole.")
     shell.set_controlled(false)
     assert_false(marker.visible)

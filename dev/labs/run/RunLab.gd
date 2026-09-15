@@ -5,6 +5,7 @@ extends Node
 
 var collision_debug: Node3D
 
+
 func _ready() -> void:
     collision_debug = preload("res://dev/labs/run/CollisionDebug.gd").new()
     collision_debug.gameplay = gameplay
@@ -24,10 +25,12 @@ func _ready() -> void:
     $UI/Panel/Buttons.add_child(observer)
     $UI/Panel/Buttons/Restart.pressed.connect(gameplay.restart)
     $UI/Panel/Buttons/Pause.pressed.connect(gameplay.toggle_pause)
-    gameplay.menu_requested.connect(func():
-        status.text = "Menu request intercepted. Restart to play again."
+    gameplay.menu_requested.connect(
+        func():
+            status.text = "Menu request intercepted. Restart to play again.",
     )
-    gameplay.game_state_manager.game_state_changed.connect(func(_old, state):
-        status.text = GameStateManager.GameStateNames[state]
+    gameplay.game_state_manager.game_state_changed.connect(
+        func(_old, state):
+            status.text = GameStateManager.GameStateNames[state],
     )
     status.text = "ACTIVE — align the empty dent; accept commits early"

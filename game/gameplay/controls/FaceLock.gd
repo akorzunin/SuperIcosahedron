@@ -21,6 +21,7 @@ const down_q := Quaternion(0, 0, -a1, b1)
 ## quat represents rotation to down-left face
 const alt_q := Quaternion(0.515479, 0.282345, -0.400652, 0.702881)
 
+
 static func face_lock_transform(q: Quaternion, m: MeshIcosahedron):
     m.stop_rotation()
     var tw := m.create_tween()
@@ -28,40 +29,46 @@ static func face_lock_transform(q: Quaternion, m: MeshIcosahedron):
     var rot := q * m.quaternion
     tw.tween_property(m, 'quaternion', rot.normalized(), ROTATION_TIME)
     tw.set_pause_mode(Tween.TWEEN_PAUSE_BOUND)
-    tw.tween_callback(func(): m.is_rotating = false)
+    tw.tween_callback(
+        func():
+            m.is_rotating = false,
+    )
     m.is_rotating = true
     tw.play()
+
 
 static func handle_rot_left(is_alt: bool) -> Quaternion:
     if not is_alt:
         return left_q.normalized()
     return alt_q * down_q.normalized().inverse()
 
+
 static func handle_rot_right(is_alt: bool) -> Quaternion:
     if not is_alt:
         return left_q.normalized().inverse()
     return (alt_q * down_q.normalized().inverse()).inverse()
 
-static func step(controlledNode: MeshIcosahedron, direction: Vector2):
-    if controlledNode.is_rotating:
+
+static func step(controlled_node: MeshIcosahedron, direction: Vector2):
+    if controlled_node.is_rotating:
         return
     var q: Quaternion
     if direction.y < 0:
-        if not controlledNode.is_alt:
+        if not controlled_node.is_alt:
             return
         q = down_q.normalized().inverse()
-        controlledNode.is_alt = false
+        controlled_node.is_alt = false
     elif direction.y > 0:
-        if controlledNode.is_alt:
+        if controlled_node.is_alt:
             return
         q = down_q.normalized()
-        controlledNode.is_alt = true
+        controlled_node.is_alt = true
     elif direction.x < 0:
-        q = handle_rot_left(controlledNode.is_alt)
+        q = handle_rot_left(controlled_node.is_alt)
     elif direction.x > 0:
-        q = handle_rot_right(controlledNode.is_alt)
+        q = handle_rot_right(controlled_node.is_alt)
 
     if direction == Vector2.ZERO:
         return
-    face_lock_transform(q, controlledNode)
+    face_lock_transform(q, controlled_node)
     return

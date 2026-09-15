@@ -10,10 +10,12 @@ class_name DebugStatsContainer
 
 var width_percent := 20
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     var screenSize = get_viewport_rect().size
     custom_minimum_size.x = int(screenSize.x * (width_percent / 100.))
+
 
 static func toggle(val: bool, node: DebugStatsContainer):
     if val:

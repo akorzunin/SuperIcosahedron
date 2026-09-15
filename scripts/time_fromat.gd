@@ -1,10 +1,12 @@
 #!/usr/bin/env -S godot -s
 extends SceneTree
 
+
 func format_time(time: int) -> String:
     var ms := time % 1000
     var sec := time / 1000
     return "%03d:%03d" % [sec, ms]
+
 
 func _init():
     print("start")

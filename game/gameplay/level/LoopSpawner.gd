@@ -13,6 +13,7 @@ var rng := RandomNumberGenerator.new()
 var easy_side := -1
 var tutorial_step := 0
 
+
 func reset(run_seed: int = -1) -> void:
     rng.seed = randi() if run_seed < 0 else run_seed
     easy_side = -1
@@ -22,24 +23,31 @@ func reset(run_seed: int = -1) -> void:
         game_over_tween = null
     figureRoot.anchor.transform = Transform3D.IDENTITY
 
+
 const IcosahedronScene = preload('res://game/gameplay/figure/Icosahedron.tscn')
 const MenuItemScene = preload('res://game/menu/item/MenuItem.tscn')
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
     game_state_manager.game_state_changed.connect(_on_game_state_changed)
     loop_timer.timeout.connect(_on_loop_timer)
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
     pass
 
-func _on_game_state_changed(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState) -> void:
+
+func _on_game_state_changed(
+    old_state: GameStateManager.GameState,
+    new_state: GameStateManager.GameState,
+) -> void:
     var gs = GameStateManager.GameState
     if new_state == gs.GAME_END:
         figureRoot.clean_all()
         spawn_game_over_scene()
-        pass
+
 
 func add_menu_items(node: Marker3D, layer: Dictionary):
     var items = layer.get("items")
@@ -48,37 +56,48 @@ func add_menu_items(node: Marker3D, layer: Dictionary):
     #for loop over first level items
     for key in items.keys():
         var new_item = MenuItemScene.instantiate() \
-            .init({
-                pos = key,
-                val = items[key]
-            })
+                .init({ pos = key, val = items[key] })
         node.add_child(new_item)
+
 
 func get_game_over_state() -> Dictionary:
     var m := MenuStruct.game_over
     m.items[1].name = game_progress.get_score()
     return m
 
+
 func spawn_game_over_scene():
     var anc := figureRoot.get_node("Anchor") as Anchor
     for ch in anc.get_children():
         ch.queue_free()
     var new_figure = IcosahedronScene.instantiate() \
-                .with_type(-1)\
-                .with_data(FigureData.new())
+            .with_type(-1) \
+            .with_data(FigureData.new())
     figureRoot.add_figure(new_figure)
     add_menu_items(anc, get_game_over_state())
     game_over_tween = anc.create_tween()
     game_over_tween.tween_property(anc, "scale", Vector3(7.25, 7.25, 7.25), 0.2)
-    pass
+
 
 class Figure:
     var type: FigureType
+
+
     func _init(_type: FigureType):
         self.type = _type
 
-enum FigureType {ICOSAHEDRON, OCTAHEDRON}
-enum SpawnMode {CENTER, SIDE, RANDOM, QUEUE}
+
+enum FigureType {
+    ICOSAHEDRON,
+    OCTAHEDRON,
+}
+enum SpawnMode {
+    CENTER,
+    SIDE,
+    RANDOM,
+    QUEUE,
+}
+
 
 func get_spawn_type():
     var s = PatternGen.SpawnMode
@@ -88,8 +107,10 @@ func get_spawn_type():
         s.QUEUE: # 2
             return pattern_gen.next_pattern()
 
+
 func spawn_icosahedron() -> void:
     spawn_figure(Figure.new(FigureType.ICOSAHEDRON))
+
 
 func spawn_figure(figure: Figure) -> void:
     var new_figure
@@ -98,9 +119,17 @@ func spawn_figure(figure: Figure) -> void:
             var spawn_type := 0
             var figure_data: FigureData
             if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
-                figure_data = StageGenerator.create_modifier_figure(rng,
-                    game_progress.run_state.modifier_system.pending, maxi(easy_side, 0),
-                    int(UpgradeCatalog.data.difficulty_levels[game_progress.run_state.difficulty].tiers_required))
+                figure_data = StageGenerator.create_modifier_figure(
+                    rng,
+                    game_progress.run_state.modifier_system.pending,
+                    maxi(easy_side, 0),
+                    int(
+                        UpgradeCatalog
+                        .data
+                        .difficulty_levels[game_progress.run_state.difficulty]
+                        .tiers_required
+                    ),
+                )
             elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
                 figure_data = StageGenerator.create_tutorial_figure(tutorial_step, rng)
                 spawn_type = figure_data.stage
@@ -110,20 +139,27 @@ func spawn_figure(figure: Figure) -> void:
                 figure_data = StageGenerator.create_figure(spawn_type)
             game_progress.register_figure(figure_data)
             new_figure = IcosahedronScene.instantiate() \
-                .with_type(spawn_type)\
-                .with_data(figure_data)\
-                .with_scale_timer(scale_timer)
+                    .with_type(spawn_type) \
+                    .with_data(figure_data) \
+                    .with_scale_timer(scale_timer)
         FigureType.OCTAHEDRON:
             pass
 
-    new_figure.tree_exiting.connect(game_progress.run_state.unregister_figure.bind(
-        new_figure.get_instance_id(), new_figure.data), CONNECT_ONE_SHOT)
+    new_figure.tree_exiting.connect(
+        game_progress.run_state.unregister_figure.bind(
+            new_figure.get_instance_id(),
+            new_figure.data,
+        ),
+        CONNECT_ONE_SHOT,
+    )
     figureRoot.add_figure(new_figure)
     if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
         # Tutorial turns start from each new figure's default orientation.
         var mesh: MeshIcosahedron = new_figure.mesh_icosahedron
         var detector: EndDetector = $"../EndDetector"
-        var center := FaceTopology.nearest(mesh.global_basis.inverse() * (detector.global_position - mesh.global_position))
+        var center := FaceTopology.nearest(
+            mesh.global_basis.inverse() * (detector.global_position - mesh.global_position)
+        )
         FaceTopology.recenter(new_figure.data, center)
         mesh.apply_side_data(new_figure.data.sides)
     elif new_figure.data.easy_side >= 0:
@@ -135,13 +171,17 @@ func spawn_figure(figure: Figure) -> void:
             mesh.is_alt = controls.shared_is_alt
         if easy_side < 0:
             var detector: EndDetector = $"../EndDetector"
-            easy_side = FaceTopology.nearest(mesh.global_basis.inverse() * (detector.global_position - mesh.global_position))
+            easy_side = FaceTopology.nearest(
+                mesh.global_basis.inverse() * (detector.global_position - mesh.global_position)
+            )
             FaceTopology.recenter(new_figure.data, easy_side)
             mesh.apply_side_data(new_figure.data.sides)
+
 
 func recenter_after_pass(side_id: int) -> void:
     # Only future spawns use this center; visible layouts stay fixed.
     easy_side = side_id
+
 
 func _on_loop_timer():
     spawn_figure(Figure.new(FigureType.ICOSAHEDRON))

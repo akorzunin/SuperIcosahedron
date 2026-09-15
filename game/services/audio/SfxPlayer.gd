@@ -18,11 +18,13 @@ signal on_node_passed
 signal toggle_sfx(state: bool)
 signal toggle_music(state: bool)
 
+
 func _init() -> void:
     if Utils.get_platform() == Utils.Platform.WEB:
         create_mute_callbac()
     if not G.settings.MUSIC_ENABLED:
         SfxPlayer.enable_bus("Music", false)
+
 
 func _ready() -> void:
     on_section_chaged.connect(_play_section_chaged)
@@ -36,47 +38,60 @@ func _ready() -> void:
     if not G.settings.SFX_ENABLED:
         _on_toggle_sfx(false)
 
+
 static func enable_bus(bus_name: String, state: bool):
     var bus_idx := AudioServer.get_bus_index(bus_name)
     AudioServer.set_bus_mute(bus_idx, not state)
+
 
 func _on_toggle_sfx(state: bool):
     SfxPlayer.enable_bus("sfx", state)
     config.set_sfx_state(state)
 
+
 func _on_toggle_music(state: bool):
     SfxPlayer.enable_bus("Music", state)
     config.set_music_state(state)
+
 
 func _play_section_chaged():
     if section_changed.playing:
         section_changed.stop()
     section_changed.play()
 
+
 func _play_section_select():
     section_select.play()
 
+
 func _play_action_select():
     action_select.play()
+
 
 func _play_node_passed():
     if node_passed.playing:
         node_passed.stop()
     node_passed.play()
 
+
 var js_audio_callback: JavaScriptObject
+
 
 func create_mute_callbac() -> void:
     js_audio_callback = JavaScriptBridge.create_callback(_set_audio_state)
-    JavaScriptBridge.eval("""
+    JavaScriptBridge.eval(
+        """
 var godotAudioBridge = {
     callback: null,
     setCallback: (cb) => this.callback = cb,
     setAudioState: (data) => this.callback(JSON.stringify(data)),
 };
-    """, true)
+    """,
+        true,
+    )
     var godot_bridge = JavaScriptBridge.get_interface("godotAudioBridge")
     godot_bridge.setCallback(js_audio_callback)
+
 
 func _set_audio_state(data: Array) -> void:
     var json := JSON.new()

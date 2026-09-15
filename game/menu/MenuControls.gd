@@ -12,15 +12,14 @@ class_name MenuControls
 @export var controlledNode: Node3D
 @export var MENU_ROTATION_SPEED: float
 
-var target = {
-    progress = 1,
-    quat = Quaternion(),
-}
+var target = { progress = 1, quat = Quaternion() }
 var initial_pos := Vector3()
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     MENU_ROTATION_SPEED = G.settings.ROTATION_SPEED
+
 
 ## In menu we apply all rotations to Anshor node
 func get_controlled_node() -> Node3D:
@@ -28,8 +27,6 @@ func get_controlled_node() -> Node3D:
     if len(node) > 0:
         return menuSpawner.get_node("Anchor")
     return null
-
-
 
 
 ## Get selected menu intem and execute action that item meant to do
@@ -48,12 +45,7 @@ func call_menu_action():
     if action == "menu_level_select":
         menuSpawner.open_menu_section(
             controlledNode,
-            {
-                name = "Select level",
-                items = LevelPatterns.get_menu_levels(
-                    G.unlocked_difficulty
-                )
-            }
+            { name = "Select level", items = LevelPatterns.get_menu_levels(G.unlocked_difficulty) },
         )
         return
 
@@ -69,6 +61,7 @@ func call_menu_action():
         menuSpawner.open_menu_section(controlledNode, selected.items)
         return
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
     if controlledNode and target.get("progress", 1) < 1:
@@ -77,11 +70,13 @@ func _physics_process(delta: float) -> void:
         controlledNode.transform.basis = Basis(t).orthonormalized()
         return
 
+
 func check_controlled_node():
     if not controlledNode:
         controlledNode = get_controlled_node()
         initial_pos = controlledNode.position
         target.prev_pos = controlledNode.quaternion
+
 
 func skip_menu_event(event: InputEvent) -> bool:
     if event is InputEventKey:
@@ -89,6 +84,7 @@ func skip_menu_event(event: InputEvent) -> bool:
     if event is InputEventAction:
         return false
     return true
+
 
 func _input(event: InputEvent):
     if skip_menu_event(event) or event.is_echo():
@@ -113,19 +109,25 @@ func _input(event: InputEvent):
         return
     var is_inverted = G.settings.IS_CONTROL_INVERTED
     if event.is_action_pressed('ui_down'):
-        change_selection(controlledNode.quaternion * Quats.menu_quat_down(),)
+        change_selection(controlledNode.quaternion * Quats.menu_quat_down())
     elif event.is_action_pressed('ui_up'):
-        change_selection(Quaternion(),)
+        change_selection(Quaternion())
     elif event.is_action_pressed('ui_right'):
-        change_selection(controlledNode.quaternion * (Quats.menu_quat_left() if is_inverted else Quats.menu_quat_left().inverse()))
+        change_selection(
+            controlledNode.quaternion
+            * (Quats.menu_quat_left() if is_inverted else Quats.menu_quat_left().inverse())
+        )
     elif event.is_action_pressed('ui_left'):
-        change_selection(controlledNode.quaternion * (Quats.menu_quat_left().inverse() if is_inverted else Quats.menu_quat_left()))
+        change_selection(
+            controlledNode.quaternion
+            * (Quats.menu_quat_left().inverse() if is_inverted else Quats.menu_quat_left())
+        )
+
 
 func _unhandled_input(event: InputEvent) -> void:
     if event is InputEventScreenTouch and event.pressed:
-        InputEmit.new().emit({
-            action = 'ui_accept'
-        })
+        InputEmit.new().emit({ action = 'ui_accept' })
+
 
 func change_selection(direction: Quaternion, silent := false):
     if not silent:
@@ -142,8 +144,4 @@ func change_selection(direction: Quaternion, silent := false):
     tw.tween_property(controlledNode, "position:z", initial_pos.z, dur)
     tw.play()
 
-    target = {
-        prev_pos = controlledNode.quaternion,
-        quat = direction,
-        progress = 0.,
-    }
+    target = { prev_pos = controlledNode.quaternion, quat = direction, progress = 0. }

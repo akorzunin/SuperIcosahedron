@@ -1,5 +1,6 @@
 extends GutTest
 
+
 func test_all_centers_have_expected_step_rings() -> void:
     for center in 20:
         var distances := FaceTopology.distances(center)
@@ -10,13 +11,14 @@ func test_all_centers_have_expected_step_rings() -> void:
         assert_eq(FaceTopology.neighbors(center).size(), 3)
         assert_eq(distances[center], 0)
 
+
 func test_recenter_is_bijective_and_preserves_every_distance() -> void:
     for from in 20:
         var original := FaceTopology.distances(from)
         for to in 20:
             var mapping := FaceTopology.face_mapping(from, to)
             var distances := FaceTopology.distances(to)
-            var seen := {}
+            var seen := { }
             var preserves_steps := true
             for id in 20:
                 seen[mapping[id]] = true
@@ -24,6 +26,7 @@ func test_recenter_is_bijective_and_preserves_every_distance() -> void:
             assert_eq(seen.size(), 20)
             assert_true(preserves_steps)
             assert_eq(mapping[from], to)
+
 
 func test_layout_recenter_keeps_pickups_and_collider_resource_identity() -> void:
     var rng := RandomNumberGenerator.new()

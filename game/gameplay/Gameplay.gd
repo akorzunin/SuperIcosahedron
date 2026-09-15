@@ -13,19 +13,37 @@ signal level_changed(level: int)
 @onready var figure_root: FigureRoot = $FigureRoot
 var start_inactive := false
 
+
 func init(props: Dictionary):
     start_inactive = props.get("start_inactive", false)
     return self
 
+
 func _ready() -> void:
     controls.restart_requested.connect(restart)
-    controls.menu_requested.connect(func(): menu_requested.emit())
-    controls.sound_requested.connect(func(event): sound_requested.emit(event))
-    progress.sound_requested.connect(func(event): sound_requested.emit(event))
-    progress.status_changed.connect(func(details, state): status_changed.emit(details, state))
-    progress.level_changed.connect(func(level): level_changed.emit(level))
+    controls.menu_requested.connect(
+        func():
+            menu_requested.emit(),
+    )
+    controls.sound_requested.connect(
+        func(event):
+            sound_requested.emit(event),
+    )
+    progress.sound_requested.connect(
+        func(event):
+            sound_requested.emit(event),
+    )
+    progress.status_changed.connect(
+        func(details, state):
+            status_changed.emit(details, state),
+    )
+    progress.level_changed.connect(
+        func(level):
+            level_changed.emit(level),
+    )
     if not start_inactive:
         restart()
+
 
 func restart() -> void:
     controls.controlledNode = null
@@ -37,7 +55,13 @@ func restart() -> void:
     progress.reset()
     if G.data.has("selected_difficulty"):
         var selected := clampi(int(G.data.selected_difficulty), 0, mini(G.unlocked_difficulty, 2))
-        G.settings.SPAWN_MODE = PatternGen.SpawnMode.TUTORIAL if selected == 0 else PatternGen.SpawnMode.QUEUE
+        G.settings.SPAWN_MODE = (
+            PatternGen.SpawnMode.TUTORIAL
+            if selected == 0
+            else PatternGen \
+                    .SpawnMode \
+                    .QUEUE
+        )
         if selected > 0:
             progress.run_state.difficulty = selected - 1
     game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
@@ -45,8 +69,10 @@ func restart() -> void:
     if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
         game_state_manager.pause_for_tutorial()
 
+
 func complete_tutorial() -> void:
     G.unlock_difficulty(1)
+
 
 func enter_next_level() -> void:
     # Recheck after deferred passage handling: restart/death may have cancelled completion.
@@ -56,16 +82,27 @@ func enter_next_level() -> void:
         if progress.run_state.controls_completed < RunState.required_controls():
             return
     elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
-        if progress.run_state.difficulty != 0 or progress.run_state.charges_completed < RunState.required_charges():
+        if (
+            progress.run_state.difficulty != 0
+            or progress.run_state.charges_completed < RunState.required_charges()
+        ):
             return
     else:
         return
-    var next := 1 if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL else progress.run_state.difficulty + 2
+    var next := (
+        1
+        if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL
+        else progress \
+                .run_state \
+                .difficulty
+        + 2
+    )
     if next > mini(G.unlocked_difficulty, 2):
         return
     G.data.selected_difficulty = next
     G.data.level = next
     restart()
+
 
 func toggle_pause() -> void:
     game_state_manager.toggle_pause()

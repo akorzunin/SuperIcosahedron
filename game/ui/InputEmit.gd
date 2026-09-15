@@ -3,6 +3,7 @@ class_name InputEmit
 
 var scene
 
+
 func emit(props: Dictionary):
     scene = props.get("scene")
     action = props.action

@@ -13,7 +13,10 @@ signal sound_requested(event: StringName)
 signal commit_rejected(figure: Icosahedron)
 @onready var loop_spawner: LoopSpawner = %LoopSpawner
 
-enum ControlType {FREE_SPIN, FACE_LOCK}
+enum ControlType {
+    FREE_SPIN,
+    FACE_LOCK,
+}
 
 const OPTION_ROTATION_TIME := 0.3
 var option_tween: Tween
@@ -24,11 +27,13 @@ var shared_basis := Basis.IDENTITY
 var shared_is_alt := false
 var orientation_initialized := false
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     # After PlayerInput; physics sync also catches FaceLock's post-process tween updates.
     process_priority = 100
     game_state_manager.game_state_changed.connect(_on_game_state)
+
 
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs := GameStateManager.GameState
@@ -46,15 +51,21 @@ func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateM
         figure_controller.target = null
         figure_controller.enabled = false
 
+
 func restart_run() -> void:
     restart_requested.emit()
 
+
 func set_controlled_node(node: MeshIcosahedron):
-    if controlledNode != null and is_instance_valid(controlledNode) and controlledNode is MeshIcosahedron:
+    if (
+        controlledNode != null and is_instance_valid(controlledNode)
+        and controlledNode is MeshIcosahedron
+    ):
         controlledNode.set_controlled(false)
     node.set_controlled(true)
     controlledNode = node
     figure_controller.target = node
+
 
 func update_controlled_node():
     if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
@@ -73,6 +84,7 @@ func update_controlled_node():
             controlledNode.set_controlled(false)
         controlledNode = null
         figure_controller.target = null
+
 
 func advance_control() -> void:
     if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
@@ -93,6 +105,7 @@ func advance_control() -> void:
     game_progress.log_tts(controlledNode.icosahedron.spwan_time, controlledNode.currnt_type)
     update_controlled_node()
 
+
 func _input(event: InputEvent) -> void:
     if event.is_echo():
         get_viewport().set_input_as_handled()
@@ -103,7 +116,7 @@ func _input(event: InputEvent) -> void:
             get_viewport().set_input_as_handled()
         return
     if game_state_manager.game_state != GameStateManager.GameState.GAME_END \
-    and (event.is_action_pressed('ui_pause') or event.is_action_pressed('ui_cancel')):
+            and (event.is_action_pressed('ui_pause') or event.is_action_pressed('ui_cancel')):
         gui.open_pause_menu()
         sound_requested.emit(&"on_section_select")
         get_viewport().set_input_as_handled()
@@ -119,9 +132,10 @@ func _input(event: InputEvent) -> void:
         handle_game_over_input(event, is_inverted)
         return
     if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE \
-    and event.is_action_pressed('ui_accept'):
+            and event.is_action_pressed('ui_accept'):
         advance_control()
         get_viewport().set_input_as_handled()
+
 
 func handle_game_over_input(event: InputEvent, is_inverted: bool):
     if game_over_input_delay > 0.0 or (option_tween and option_tween.is_running()):
@@ -129,7 +143,9 @@ func handle_game_over_input(event: InputEvent, is_inverted: bool):
     var restart_action := 'ui_left' if is_inverted else 'ui_right'
     var menu_action := 'ui_right' if is_inverted else 'ui_left'
     var accept := event.is_action_pressed('ui_accept')
-    var restart_selected := event.is_action_pressed(restart_action) or (accept and not game_over_menu_selected)
+    var restart_selected := (
+        event.is_action_pressed(restart_action) or (accept and not game_over_menu_selected)
+    )
     var menu_selected := event.is_action_pressed(menu_action)
     if event.is_action_pressed('ui_cancel') or (accept and game_over_menu_selected):
         get_viewport().set_input_as_handled()
@@ -146,16 +162,18 @@ func handle_game_over_input(event: InputEvent, is_inverted: bool):
     option_tween = create_tween()
     option_tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
     option_tween.tween_property(anchor, "quaternion", destination, OPTION_ROTATION_TIME)
-    option_tween.tween_callback(func():
-        if restart_selected:
-            restart_run()
+    option_tween.tween_callback(
+        func():
+            if restart_selected:
+                restart_run(),
     )
+
 
 func sync_orientation() -> void:
     if G.settings.SPAWN_MODE != PatternGen.SpawnMode.QUEUE:
         return
     if is_instance_valid(controlledNode) and not controlledNode.angle_good \
-    and controlledNode.icosahedron.data.easy_side >= 0:
+            and controlledNode.icosahedron.data.easy_side >= 0:
         shared_basis = controlledNode.basis.orthonormalized()
         shared_is_alt = controlledNode.is_alt
         orientation_initialized = true
@@ -167,16 +185,20 @@ func sync_orientation() -> void:
             mesh.basis = shared_basis
             mesh.is_alt = shared_is_alt
 
+
 func _physics_process(_delta: float) -> void:
     if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE:
         sync_orientation()
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     if game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE:
         sync_orientation()
     game_over_input_delay = maxf(0.0, game_over_input_delay - delta)
-    figure_controller.enabled = game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
+    figure_controller.enabled = game_state_manager.game_state == GameStateManager \
+            .GameState \
+            .GAME_ACTIVE
     if not controlledNode or not is_instance_valid(controlledNode):
         update_controlled_node()
     figure_controller.target = controlledNode

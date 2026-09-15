@@ -1,12 +1,11 @@
 import hashlib
 import json
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
 import zipfile
-
+from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts/package_build.py"
 
@@ -23,7 +22,9 @@ class PackageTests(unittest.TestCase):
                 (source / target).mkdir()
                 if target == "android":
                     (source / target / "SuperIcosahedron.apk").write_bytes(b"apk")
-                    (source / target / "SuperIcosahedron.apk.idsig").write_bytes(b"signature")
+                    (source / target / "SuperIcosahedron.apk.idsig").write_bytes(
+                        b"signature"
+                    )
                 else:
                     (source / target / "payload").write_bytes(b"game")
             subprocess.run([sys.executable, SCRIPT, source, output], check=True)
@@ -38,24 +39,38 @@ class PackageTests(unittest.TestCase):
                 self.assertIn(f"  {name}\n", checksums)
             for line in checksums.splitlines():
                 digest, name = line.split()
-                self.assertEqual(hashlib.sha256((output / name).read_bytes()).hexdigest(), digest)
+                self.assertEqual(
+                    hashlib.sha256((output / name).read_bytes()).hexdigest(), digest
+                )
             self.assertEqual(
                 {path.name for path in output.iterdir()},
-                {"linux.zip", "windows.zip", "build-info.json", "SHA256SUMS", *android_files},
+                {
+                    "linux.zip",
+                    "windows.zip",
+                    "build-info.json",
+                    "SHA256SUMS",
+                    *android_files,
+                },
             )
             self.assertEqual(json.loads((output / "build-info.json").read_text()), info)
             with zipfile.ZipFile(output / "linux.zip") as archive:
                 self.assertEqual(archive.read("payload"), b"game")
             # Output is immutable: a second packaging pass must not overwrite it.
-            result = subprocess.run([sys.executable, SCRIPT, source, output], capture_output=True)
+            result = subprocess.run(
+                [sys.executable, SCRIPT, source, output],
+                capture_output=True,
+                check=False,
+            )
             self.assertNotEqual(result.returncode, 0)
 
     def test_missing_export_fails(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            (root / "build-info.json").write_text('{}')
+            (root / "build-info.json").write_text("{}")
             result = subprocess.run(
-                [sys.executable, SCRIPT, root, root / "release"], capture_output=True
+                [sys.executable, SCRIPT, root, root / "release"],
+                capture_output=True,
+                check=False,
             )
             self.assertNotEqual(result.returncode, 0)
             self.assertFalse((root / "release/deploy.tar.gz").exists())

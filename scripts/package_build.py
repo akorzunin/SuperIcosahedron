@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Package Docker exports once for GitHub Releases and host deployment."""
+
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 
 def main():

@@ -5,6 +5,7 @@ const INDENT_SIZE := 4
 const INCLUDE_ADDONS := false
 const ROOT_DIR := "res://"
 
+
 func _run() -> void:
     var files: PackedStringArray = []
     _collect_gd_files(ROOT_DIR, files)
@@ -16,6 +17,7 @@ func _run() -> void:
 
     EditorInterface.get_resource_filesystem().scan()
     print("Converted indentation in %d of %d GDScript files." % [changed_count, files.size()])
+
 
 func _collect_gd_files(dir_path: String, files: PackedStringArray) -> void:
     if not INCLUDE_ADDONS and dir_path.begins_with("res://addons"):
@@ -42,6 +44,7 @@ func _collect_gd_files(dir_path: String, files: PackedStringArray) -> void:
         entry = dir.get_next()
     dir.list_dir_end()
 
+
 func _convert_file(file_path: String) -> bool:
     var file := FileAccess.open(file_path, FileAccess.READ)
     if file == null:
@@ -61,6 +64,7 @@ func _convert_file(file_path: String) -> bool:
     file.store_string(converted)
     print("Converted: %s" % file_path)
     return true
+
 
 func _leading_tabs_to_spaces(text: String) -> String:
     var spaces := " ".repeat(INDENT_SIZE)

@@ -7,6 +7,7 @@ var history: Array[Dictionary] = []
 var restored_rotation := Quaternion.IDENTITY
 var is_easter_egged := false
 
+
 func back() -> Dictionary:
     if history.is_empty():
         return state
@@ -15,13 +16,15 @@ func back() -> Dictionary:
     restored_rotation = previous.rotation
     return state
 
+
 func forth(new_state: Dictionary, rotation := Quaternion.IDENTITY) -> Error:
     if not new_state.has("items") and not new_state.has("options"):
         push_warning("invalid state")
         return FAILED
-    history.append({state = state, rotation = rotation})
+    history.append({ state = state, rotation = rotation })
     state = new_state
     return OK
+
 
 func toggle_easter_egg_state():
     is_easter_egged = !is_easter_egged

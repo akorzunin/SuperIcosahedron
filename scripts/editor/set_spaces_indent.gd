@@ -6,6 +6,7 @@ const INDENT_SIZE_SETTING := "text_editor/behavior/indent/size"
 const INDENT_TYPE_SPACES := 1
 const INDENT_SIZE := 4
 
+
 func _run() -> void:
     var settings := EditorInterface.get_editor_settings()
     settings.set_setting(INDENT_TYPE_SETTING, INDENT_TYPE_SPACES)

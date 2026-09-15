@@ -6,6 +6,7 @@ class_name MenuGui
 @onready var section_title: Label = $SectionTitle
 var modifier_description: Label
 
+
 func _ready() -> void:
     modifier_description = Label.new()
     modifier_description.set_anchors_preset(Control.PRESET_TOP_WIDE)
@@ -26,8 +27,10 @@ func _ready() -> void:
     else:
         debug_stats_container.hide()
 
+
 func _on_debug_stats_toggle(v: bool):
     DebugStatsContainer.toggle(v, debug_stats_container)
+
 
 func show_modifier_description(description: String) -> void:
     modifier_description.text = description

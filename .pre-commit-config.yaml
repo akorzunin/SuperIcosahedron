@@ -20,3 +20,20 @@ repos:
           - "tailwindcss-animate@^1.0.7"
         types_or: [javascript, ts, tsx, css, yaml, json]
         exclude: ^*.lock.*$
+  - repo: https://github.com/GDQuest/GDScript-formatter
+    rev: 0.26.0
+    hooks:
+      - id: gdscript-formatter
+        args: ["--use-spaces"]
+        exclude: "^addons/"
+      - id: gdscript-linter
+        args:
+          - "--disable"
+          - "max-line-length,variable-name,unused-argument,constant-name"
+        exclude: "^addons/"
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.7
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format

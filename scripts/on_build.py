@@ -11,7 +11,7 @@ version_file = "./game/app/version.gd"
 
 def check_main_scene():
     with open("project.godot") as f:
-        for line in f.readlines():
+        for line in f:
             if line.startswith("run/main_scene="):
                 # check scene name
                 scene_name = line.split("=")[-1].strip("\n").strip('"')
@@ -38,27 +38,29 @@ def get_commit():
 def set_version():
     version = get_version()
     commit = get_commit()
-    for line in fileinput.input(version_file, inplace=True):
-        if "VERSION" in line:
-            new_line = line.replace("__VERSION__", version)
-        elif "COMMIT" in line:
-            new_line = line.replace("__COMMIT__", commit)
-        else:
-            new_line = line
-        print(new_line, end="")
+    with fileinput.input(version_file, inplace=True) as lines:
+        for line in lines:
+            if "VERSION" in line:
+                new_line = line.replace("__VERSION__", version)
+            elif "COMMIT" in line:
+                new_line = line.replace("__COMMIT__", commit)
+            else:
+                new_line = line
+            print(new_line, end="")
 
 
 def clear_version():
     version = get_version()
     commit = get_commit()
-    for line in fileinput.input(version_file, inplace=True):
-        if "VERSION" in line:
-            new_line = line.replace(version, "__VERSION__")
-        elif "COMMIT" in line:
-            new_line = line.replace(commit, "__COMMIT__")
-        else:
-            new_line = line
-        print(new_line, end="")
+    with fileinput.input(version_file, inplace=True) as lines:
+        for line in lines:
+            if "VERSION" in line:
+                new_line = line.replace(version, "__VERSION__")
+            elif "COMMIT" in line:
+                new_line = line.replace(commit, "__COMMIT__")
+            else:
+                new_line = line
+            print(new_line, end="")
 
 
 def main():

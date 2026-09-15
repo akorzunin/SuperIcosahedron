@@ -1,6 +1,7 @@
 extends DummyDiscordStatus
 class_name DiscordStatus
 
+
 func _ready():
     DiscordRPC.app_id = ENV.DISCORD_APP_ID # Application ID
     DiscordRPC.details = init_state.details
@@ -8,15 +9,11 @@ func _ready():
     DiscordRPC.large_image = 'icon' # Image key from "Art Assets"
     DiscordRPC.refresh()
 
-const init_state := {
-    details = "Main menu",
-    desc = "Chilling",
-}
 
-const loop_state := {
-    details = "In Game",
-    desc = "Level: %s",
-}
+const init_state := { details = "Main menu", desc = "Chilling" }
+
+const loop_state := { details = "In Game", desc = "Level: %s" }
+
 
 func set_state(details: String, desc: String, with_time: bool = false):
     if with_time:
@@ -27,15 +24,14 @@ func set_state(details: String, desc: String, with_time: bool = false):
     DiscordRPC.state = desc
     DiscordRPC.refresh()
 
+
 func set_menu_state():
     set_state(init_state.details, init_state.desc)
 
+
 func set_loop_state(level := 0):
-    set_state(
-        loop_state.details,
-        loop_state.desc % level if level else "tutorial",
-        true
-    )
+    set_state(loop_state.details, loop_state.desc % level if level else "tutorial", true)
+
 
 func _notification(what: int):
     if what == NOTIFICATION_WM_CLOSE_REQUEST:

@@ -3,10 +3,12 @@ class_name SettingsConfig
 
 const config_path = "user://settings.cfg"
 
+
 static func load_gs(file: String) -> Dictionary:
     var cfg = load_config(file)
     var d = config_to_dict(cfg)
     return d
+
 
 ## Load data from a file.
 static func load_config(file := config_path) -> ConfigFile:
@@ -16,6 +18,7 @@ static func load_config(file := config_path) -> ConfigFile:
         push_warning("Cannot read user settings; restoring defaults: " + file)
     update_keys(config, file)
     return config
+
 
 ## Persist preferences only; old saved gameplay values must not shadow CMS tuning.
 static func update_keys(config: ConfigFile, file: String):
@@ -36,6 +39,7 @@ static func update_keys(config: ConfigFile, file: String):
     for key in defaults.game_settings:
         config.set_value("game_settings", key, defaults.game_settings[key])
 
+
 static func set_default_config_values(config: ConfigFile) -> ConfigFile:
     var settings: Dictionary = DafaultConfig.settings
     for section in settings.keys():
@@ -44,21 +48,24 @@ static func set_default_config_values(config: ConfigFile) -> ConfigFile:
                 config.set_value(section, key, settings[section][key])
     return config
 
+
 static func config_to_kv(config: ConfigFile) -> Dictionary:
-    var d = {}
+    var d = { }
     for section in config.get_sections():
         for key in config.get_section_keys(section):
             d[key] = config.get_value(section, key)
     return d
 
+
 static func config_to_dict(config: ConfigFile) -> Dictionary:
-    var d = {}
+    var d = { }
     for section in config.get_sections():
-        d[section] = {}
+        d[section] = { }
         for key in config.get_section_keys(section):
             d[section][key] = config.get_value(section, key)
             d[key] = config.get_value(section, key)
     return d
+
 
 static func dict_to_config(d: Dictionary) -> ConfigFile:
     var config = ConfigFile.new()
@@ -67,6 +74,7 @@ static func dict_to_config(d: Dictionary) -> ConfigFile:
             for key in d[section].keys():
                 config.set_value(section, key, d[section][key])
     return config
+
 
 static func write_key(_config_path: String, section: String, key: String, value: Variant) -> Error:
     var c = ConfigFile.new()

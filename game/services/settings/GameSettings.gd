@@ -4,9 +4,11 @@ class_name GameSettings
 
 var parent
 
+
 func init():
     set_window_settings()
     # Engine.max_fps = 60
+
 
 func _ready() -> void:
     if Engine.is_editor_hint():
@@ -16,6 +18,7 @@ func _ready() -> void:
     if parent.name == 'Settings' and Utils.main_scene(self) == 'MainScene':
         return
     init()
+
 
 func set_window_settings():
     var V = get_viewport()
@@ -54,7 +57,6 @@ func set_window_settings():
         V.screen_space_aa = Viewport.SCREEN_SPACE_AA_FXAA
         V.msaa_3d = Viewport.MSAA_8X
 
-    pass
 
 func update_from_dict(d: Dictionary):
     for section in d.keys():

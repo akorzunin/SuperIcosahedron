@@ -20,8 +20,12 @@ var forge_count := 0
 var forge_kind := ""
 var forge_value := 0
 
+
 func pending_points() -> int:
-    return sign_value * int(UpgradeCatalog.data.points_by_tier[tier - 1]) * points_multiplier * (2 if all_in else 1)
+    return sign_value * int(UpgradeCatalog.data.points_by_tier[tier - 1]) * points_multiplier * (
+        2 if all_in else 1
+    )
+
 
 func collect(session: Object, pickup: ModifierData) -> void:
     if all_in and pickup.pickup_kind != "points":
@@ -29,7 +33,10 @@ func collect(session: Object, pickup: ModifierData) -> void:
     if pickup.pickup_kind == "forge":
         if forge_slots == 0:
             forge_slots = clampi(pickup.pickup_value + 1, 2, 3)
-            pickup_collected.emit("Forge armed · Matching POINTS or TIER wait instead of activating", pickup.pickup_color)
+            pickup_collected.emit(
+                "Forge armed · Matching POINTS or TIER wait instead of activating",
+                pickup.pickup_color,
+            )
         else:
             pickup_collected.emit("Forge already active · Recipe kept", pickup.pickup_color)
         return
@@ -61,7 +68,10 @@ func collect(session: Object, pickup: ModifierData) -> void:
                 var delta := pending_points()
                 session.score += delta
                 if chain_has_tier:
-                    session.charges_completed = mini(session.charges_completed + 1, RunState.required_charges())
+                    session.charges_completed = mini(
+                        session.charges_completed + 1,
+                        RunState.required_charges(),
+                    )
                 last_activation = "Activated: %+d points" % delta
                 message = "%+d scored" % delta
             discard_chain()
@@ -77,7 +87,10 @@ func collect(session: Object, pickup: ModifierData) -> void:
                 message = "Sign → positive" if sign_value > 0 else "Sign → negative"
         "tier":
             if pending:
-                tier = mini(tier + pickup.pickup_value * repeats, UpgradeCatalog.data.points_by_tier.size())
+                tier = mini(
+                    tier + pickup.pickup_value * repeats,
+                    UpgradeCatalog.data.points_by_tier.size(),
+                )
                 chain_has_tier = true
                 # Tier units remain build statistics, not level progress.
                 session.tiers_collected += pickup.pickup_value * repeats
@@ -100,12 +113,15 @@ func collect(session: Object, pickup: ModifierData) -> void:
     if pickup.pickup_kind.is_empty():
         return
     if not pending:
-        message = "No effect · Collect %s first" % UpgradeCatalog.pickup(UpgradeCatalog.base_id()).title
+        message = "No effect · Collect %s first" % UpgradeCatalog \
+                .pickup(UpgradeCatalog.base_id()) \
+                .title
     else:
         message += " · %+d pending" % pending_points()
     if crafted_multiplier > 1:
         message = "Forged %s ×%d · " % [pickup.pickup_kind.to_upper(), crafted_multiplier] + message
     pickup_collected.emit(message, pickup.pickup_color)
+
 
 func discard_forge() -> void:
     forge_slots = 0
@@ -113,15 +129,21 @@ func discard_forge() -> void:
     forge_kind = ""
     forge_value = 0
 
+
 func forge_summary() -> String:
     if forge_slots == 0:
         return ""
     var slots: Array[String] = []
     for i in forge_slots:
         slots.append("[%s]" % forge_kind.to_upper() if i < forge_count else "[ _ ]")
-    var recipe := "Next POINTS/TIER starts recipe" if forge_kind.is_empty() else \
-        "%s %d ×%d · Collect %d matching" % [forge_kind.to_upper(), forge_value, 1 << forge_slots, forge_slots - forge_count]
+    var recipe := (
+        "Next POINTS/TIER starts recipe"
+        if forge_kind.is_empty()
+        else "%s %d ×%d · Collect %d matching"
+        % [forge_kind.to_upper(), forge_value, 1 << forge_slots, forge_slots - forge_count]
+    )
     return "FORGE · " + " ".join(slots) + " · " + recipe + " · Others activate normally"
+
 
 func discard_chain() -> void:
     pending = false
@@ -132,18 +154,26 @@ func discard_chain() -> void:
     sign_value = 1
     points_multiplier = 1
 
+
 func summary() -> String:
     var forging := "\n" + forge_summary() if forge_slots > 0 else ""
     return chain_summary() + forging
+
 
 func chain_summary() -> String:
     var title := UpgradeCatalog.pickup(UpgradeCatalog.base_id()).title
     if not pending:
         return "Pick %s to start a chain" % title
     return "Pending: %s T%d (%+d) | Next %s activates%s%s" % [
-        title, tier, pending_points(), title,
-        " | Echo: next SIGN/TIER activation" if echo_pending else "", " | ALL-IN: POINTS next shell!" if all_in else ""] \
-        + (" | Forged ×%d" % points_multiplier if points_multiplier > 1 else "")
+        title,
+        tier,
+        pending_points(),
+        title,
+        " | Echo: next SIGN/TIER activation" if echo_pending else "",
+        " | ALL-IN: POINTS next shell!" if all_in else "",
+    ] \
+            + (" | Forged ×%d" % points_multiplier if points_multiplier > 1 else "")
+
 
 func reset() -> void:
     world.clear()
@@ -151,11 +181,13 @@ func reset() -> void:
     discard_forge()
     last_activation = ""
 
+
 func register_modifier(modifier: ModifierData) -> int:
     var entity := world.create_entity()
     world.add_component(entity, C_MODIFIER, modifier)
     world.add_component(entity, C_SCORE, modifier.score_value)
     return entity
+
 
 func apply_to(session: Object, modifier_entity: int) -> void:
     if modifier_entity <= 0:

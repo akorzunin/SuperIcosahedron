@@ -1,12 +1,23 @@
 extends Button
 class_name GameButton
 
-enum InputType {ACTION, EVENT}
+enum InputType {
+    ACTION,
+    EVENT,
+}
 @export var input_type := InputType.EVENT
-enum ActionType {UI_CANCEL, UI_ACCEPT, UI_LEFT, UI_RIGHT, UI_UP, UI_DOWN}
+enum ActionType {
+    UI_CANCEL,
+    UI_ACCEPT,
+    UI_LEFT,
+    UI_RIGHT,
+    UI_UP,
+    UI_DOWN,
+}
 @export var action := ActionType.UI_CANCEL
-@onready var scene: = $'../../..'
+@onready var scene := $'../../..'
 @onready var game_state_manager: GameStateManager
+
 
 func get_action_name(at: ActionType) -> StringName:
     match at:
@@ -23,6 +34,7 @@ func get_action_name(at: ActionType) -> StringName:
         _:
             return 'ui_cancel'
 
+
 func _gui_input(event: InputEvent) -> void:
     if not event is InputEventScreenTouch:
         return
@@ -32,19 +44,21 @@ func _gui_input(event: InputEvent) -> void:
         return
 
     if input_type == InputType.EVENT or \
-        (game_state_manager and game_state_manager.game_state == GameStateManager.GameState.GAME_END):
-        InputEmit.new().emit({
-            action = get_action_name(action),
-            scene = scene,
-        })
+            (
+                game_state_manager
+                and game_state_manager.game_state == GameStateManager.GameState.GAME_END
+            ):
+        InputEmit.new().emit({ action = get_action_name(action), scene = scene })
     elif input_type == InputType.ACTION:
         Input.action_press(get_action_name(action))
         #Input.action_release(get_action_name(action))
+
 
 ## Width of side touch panels, as a fraction of the viewport.
 const SIDE_PANEL := 0.20
 ## Height of top/bottom touch panels, as a fraction of the viewport.
 const VERTICAL_PANEL := 0.30
+
 
 func set_button_size():
     custom_minimum_size = Vector2.ZERO
@@ -87,6 +101,7 @@ func set_button_size():
     offset_right = 0.0
     offset_bottom = 0.0
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_manager = get_node_or_null('%GameStateManager')
@@ -95,8 +110,8 @@ func _ready() -> void:
     set_button_size()
     get_viewport().size_changed.connect(set_button_size)
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
     #if event is InputEventScreenTouch:
-
     pass

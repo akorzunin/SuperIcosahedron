@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import subprocess
 import json
+import subprocess
 
 
 # Function to execute shell command and return output
@@ -10,12 +10,12 @@ def execute_shell_command(command):
         capture_output=True,
         text=True,
         shell=True,
+        check=False,
     )
     return result.stdout.strip()
 
 
 def main():
-
     # Get version and commit information
     version = execute_shell_command("./scripts/get_version.sh --tag")
     commit = execute_shell_command("./scripts/get_version.sh --short")

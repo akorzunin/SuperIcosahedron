@@ -2,6 +2,7 @@ extends GutTest
 
 const DENT_MESH: Mesh = preload("res://game/gameplay/figure/assets/ico_dent_full.res")
 
+
 func test_dent_mesh_has_only_the_outer_face() -> void:
     assert_eq(DENT_MESH.get_surface_count(), 1)
     var arrays := DENT_MESH.surface_get_arrays(0)
@@ -10,6 +11,7 @@ func test_dent_mesh_has_only_the_outer_face() -> void:
     assert_eq(indices.size(), 3, "Interior walls must not obscure the empty dent.")
     for index in indices:
         assert_almost_eq(vertices[index].length(), 1.0, 0.0001)
+
 
 func test_dent_mesh_has_flat_normals_matching_each_triangle() -> void:
     # Every menu/gameplay face uses this mesh; missing normals cause incorrect lighting.

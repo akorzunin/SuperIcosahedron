@@ -28,6 +28,7 @@ var _dent_marker: MeshInstance3D
 var _pickup_labels: Array[Label3D] = []
 var _passage_faces: Array[MeshInstance3D] = []
 
+
 func _ready() -> void:
     _build_dents()
     if icosahedron.data:
@@ -39,11 +40,13 @@ func _ready() -> void:
         set_default_type()
     transform.basis = Basis(icosahedron.transform.basis.get_rotation_quaternion())
 
+
 func set_controlled(state: bool):
     _controlled = state
     for material in _materials:
         material.set_shader_parameter("controlled", state)
     _update_dent_marker()
+
 
 func _update_dent_marker() -> void:
     if not _dent_marker:
@@ -60,6 +63,7 @@ func _update_dent_marker() -> void:
             _dent_marker.show()
             return
 
+
 func _process(_delta: float) -> void:
     var camera := get_viewport().get_camera_3d()
     if not camera:
@@ -71,11 +75,16 @@ func _process(_delta: float) -> void:
         var outward := label.global_position - global_position
         label.hide()
         if _controlled and outward.dot(camera.global_position - label.global_position) > 0 \
-        and not camera.is_position_behind(label.global_position):
+                and not camera.is_position_behind(label.global_position):
             candidates.append(label)
     var screen_center := get_viewport().get_visible_rect().size / 2.0
-    candidates.sort_custom(func(a, b): return camera.unproject_position(a.global_position).distance_squared_to(screen_center) \
-        < camera.unproject_position(b.global_position).distance_squared_to(screen_center))
+    candidates.sort_custom(
+        func(a, b):
+            return camera.unproject_position(a.global_position).distance_squared_to(screen_center) \
+                    < camera.unproject_position(b.global_position).distance_squared_to(
+                screen_center
+            ),
+    )
     var occupied: Array[Rect2] = []
     # Greedy O(n²) suppression, bounded to 20 faces. Use screen-space label layout
     # if more markers are added; rotating reveals labels hidden by nearer choices.
@@ -85,18 +94,28 @@ func _process(_delta: float) -> void:
         var lines := label.text.split("\n")
         var width := 0.0
         for line in lines:
-            width = maxf(width, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x)
+            width = maxf(
+                width,
+                font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, label.font_size).x,
+            )
         var size := Vector2(width, font.get_height(label.font_size) * lines.size()) * label.pixel_size * pixels_per_unit
-        var rect := Rect2(camera.unproject_position(label.global_position) - size / 2.0, size).grow(6)
-        if not occupied.any(func(other): return other.intersects(rect)):
+        var rect := Rect2(camera.unproject_position(label.global_position) - size / 2.0, size).grow(
+            6
+        )
+        if not occupied.any(
+            func(other):
+                return other.intersects(rect),
+        ):
             occupied.append(rect)
             label.show()
+
 
 func stop_rotation() -> void:
     if rotation_tween:
         rotation_tween.kill()
         rotation_tween = null
     is_rotating = false
+
 
 func fade_out() -> void:
     if fade_tween:
@@ -106,8 +125,13 @@ func fade_out() -> void:
     fade_tween.tween_property(self, "opacity", 0.0, FADE_TIME)
     fade_tween.tween_callback(hide)
 
+
 func burst_dents() -> void:
-    if not visible or not _dents.any(func(dent: Dent): return dent.visible):
+    if (not visible
+        or not _dents.any(
+            func(dent: Dent):
+                return dent.visible,
+        )):
         return
     stop_rotation()
     set_controlled(false)
@@ -133,26 +157,47 @@ func burst_dents() -> void:
         shard.global_transform = dent.global_transform
         dent.hide()
         var distance := world_center.distance_to(global_position) * 0.8
-        tween.tween_property(shard, "global_position", shard.global_position + direction * distance, 1.1)
+        tween.tween_property(
+            shard,
+            "global_position",
+            shard.global_position + direction * distance,
+            1.1,
+        )
         var material := shard.material_override as ShaderMaterial
-        tween.tween_method(func(value: float): material.set_shader_parameter("opacity", value),
-            opacity, 0.0, 0.8).set_delay(0.3)
+        tween \
+                .tween_method(
+            func(value: float):
+                material.set_shader_parameter("opacity", value),
+            opacity,
+            0.0,
+            0.8,
+        ) \
+                .set_delay(0.3)
     tween.chain().tween_callback(fragments.queue_free)
+
 
 func set_cutplane(v: Vector4):
     cutplane = Vector3(v.x, v.y, v.z).normalized()
+
 
 func set_color(c: Variant):
     var color: Color = c if c is Color else Color(c.x, c.y, c.z, 1.0)
     for material in _materials:
         material.set_shader_parameter("color", color)
 
-const DIFFICULTY_COLORS := [TwColors.tw.cyan._400, TwColors.tw.blue._500,
-    TwColors.tw.orange._400, TwColors.tw.rose._500]
+
+const DIFFICULTY_COLORS := [
+    TwColors.tw.cyan._400,
+    TwColors.tw.blue._500,
+    TwColors.tw.orange._400,
+    TwColors.tw.rose._500,
+]
+
 
 func set_difficulty_color(stage: int) -> void:
     var rgb: Array = DIFFICULTY_COLORS[clampi(stage, 0, DIFFICULTY_COLORS.size() - 1)]
     set_color(Color(rgb[0], rgb[1], rgb[2]))
+
 
 func set_type(type: int):
     currnt_type = type
@@ -160,15 +205,18 @@ func set_type(type: int):
     set_cutplane(variant)
     set_color(_color_for_type(type))
 
+
 func set_default_type():
     currnt_type = -1
     set_color(Color(0.35, 0.85, 1.0, 1.0))
+
 
 func _color_for_type(type: int) -> Color:
     var c: Array = TwTheme.figure_variants_v2.get(type, [])
     if c.size() >= 3:
         return Color(float(c[0]), float(c[1]), float(c[2]), 1.0)
     return Color(0.35, 0.85, 1.0, 1.0)
+
 
 func apply_side_data(sides: Array[SideData]) -> void:
     for label in _pickup_labels:
@@ -190,18 +238,31 @@ func apply_side_data(sides: Array[SideData]) -> void:
                 var radius := triangle[0].distance_to(center)
                 for vertex_index in 3:
                     var vertex: Vector3 = triangle[vertex_index]
-                    surface.set_uv2(Vector2(1.0 if vertex_index == 0 else 0.0, 1.0 if vertex_index == 1 else 0.0))
+                    surface.set_uv2(
+                        Vector2(
+                            1.0 if vertex_index == 0 else 0.0,
+                            1.0 if vertex_index == 1 else 0.0,
+                        )
+                    )
                     var local := face_basis.inverse() * (vertex - center)
                     surface.set_uv(Vector2(local.x, local.y) / (2.0 * radius) + Vector2(0.5, 0.5))
                     surface.add_vertex(vertex)
                 face.mesh = surface.commit()
                 var material := ShaderMaterial.new()
-                material.shader = preload("res://game/gameplay/figure/shaders/passage_face.gdshader")
-                material.set_shader_parameter("noise_texture", preload("res://game/gameplay/figure/assets/passage_noise.png"))
+                material.shader = preload(
+                    "res://game/gameplay/figure/shaders/passage_face.gdshader"
+                )
+                material.set_shader_parameter(
+                    "noise_texture",
+                    preload("res://game/gameplay/figure/assets/passage_noise.png"),
+                )
                 if side.modifier:
                     material.set_shader_parameter("tint", side.modifier.pickup_color)
                     material.set_shader_parameter("echo_waves", side.modifier.pickup_kind == "echo")
-                    material.set_shader_parameter("inversion_arrows", side.modifier.pickup_kind == "inversion")
+                    material.set_shader_parameter(
+                        "inversion_arrows",
+                        side.modifier.pickup_kind == "inversion",
+                    )
                     for entry in UpgradeCatalog.data.pickups:
                         if entry.id == side.modifier.id:
                             material.set_shader_parameter("vortex", entry.value > 1)
@@ -210,7 +271,10 @@ func apply_side_data(sides: Array[SideData]) -> void:
                 face.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
                 add_child(face)
                 _passage_faces.append(face)
-            if side.is_empty() and side.modifier and icosahedron.data and icosahedron.data.easy_side >= 0:
+            if (
+                side.is_empty() and side.modifier and icosahedron.data
+                and icosahedron.data.easy_side >= 0
+            ):
                 var label := Label3D.new()
                 label.text = "◆"
                 if side.modifier.pickup_kind == "forge":
@@ -236,8 +300,10 @@ func apply_side_data(sides: Array[SideData]) -> void:
                 _pickup_labels.append(label)
     _update_dent_marker()
 
+
 func get_dents() -> Array[Dent]:
     return _dents
+
 
 func _build_dents() -> void:
     var source := mesh
@@ -276,9 +342,11 @@ func _build_dents() -> void:
     add_child(_dent_marker)
     _dent_marker.hide()
 
+
 func get_side_points(side_id: int) -> PackedVector3Array:
     var tri: PackedVector3Array = _side_tris[side_id]
     return PackedVector3Array([Vector3.ZERO, tri[0], tri[1], tri[2]])
+
 
 func _side_triangle(source: Mesh, side_id: int) -> PackedVector3Array:
     var best := PackedVector3Array()
@@ -303,6 +371,7 @@ func _side_triangle(source: Mesh, side_id: int) -> PackedVector3Array:
                 best_dot = d
                 best = tri
     return best
+
 
 func _basis_for_triangle(tri: PackedVector3Array) -> Basis:
     var center := (tri[0] + tri[1] + tri[2]) / 3.0

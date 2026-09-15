@@ -1,8 +1,8 @@
 """Script to get cnfgi file located at user:// space"""
 
+import argparse
 import os
 import sys
-import argparse
 from pathlib import Path
 
 app_name = "SuperIcosahedron"
@@ -13,7 +13,7 @@ default_config = Path("./game/services/settings/default_settings.cfg")
 
 def get_config_path(project_name: str) -> Path:
     if sys.platform.startswith("win"):
-        path = Path(os.getenv("APPDATA")) / "Godot" / "app_userdata" / project_name # type: ignore
+        path = Path(os.getenv("APPDATA")) / "Godot" / "app_userdata" / project_name  # type: ignore
     elif sys.platform == "darwin":
         path = (
             Path.home()
@@ -78,7 +78,7 @@ def main():
                 os.startfile(config_file)
             else:
                 os.system(f"{args.editor} {config_file}")
-        except Exception as e:
+        except OSError as e:
             print(f"Error opening file: {e}")
     elif args.show:
         print(f"Config File Path: {config_file}")

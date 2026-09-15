@@ -17,9 +17,11 @@ var modifier_hud: Label
 var pickup_message: Label
 var pickup_message_time := 0.0
 var figures_passed: int:
-    get: return run_state.figures_passed
+    get:
+        return run_state.figures_passed
 var score: int:
-    get: return run_state.score
+    get:
+        return run_state.score
 var time_passed := 0.
 var time_passed_formated: String:
     get:
@@ -28,13 +30,17 @@ var max_reached_level := 0
 
 
 func _update_level():
-    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and run_state.controls_completed >= RunState.required_controls():
+    if (
+        G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL
+        and run_state.controls_completed >= RunState.required_controls()
+    ):
         G.unlock_difficulty(1)
         (get_parent() as LoopScene).enter_next_level.call_deferred()
     elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and run_state.difficulty == 0 \
-    and run_state.charges_completed >= RunState.required_charges():
+            and run_state.charges_completed >= RunState.required_charges():
         G.unlock_difficulty(2)
         (get_parent() as LoopScene).enter_next_level.call_deferred()
+
 
 func reset():
     run_state.reset()
@@ -43,6 +49,7 @@ func reset():
         pickup_message.hide()
         pickup_message.text = ""
     time_passed = 0
+
 
 func _ready() -> void:
     var layer := CanvasLayer.new()
@@ -70,14 +77,17 @@ func _ready() -> void:
     game_state_manager.game_state_changed.connect(_on_game_state)
     G.level_changed.connect(_on_level_changed)
 
+
 func _on_pickup_collected(message: String, color: Color) -> void:
     pickup_message.text = message
     pickup_message.add_theme_color_override("font_color", color)
     pickup_message_time = 2.0
     pickup_message.visible = modifier_hud.visible
 
+
 func start():
     gui.show_stats_panel(true)
+
 
 func end():
     time_passed = loop_timer.get_raw_elapsed_time()
@@ -85,51 +95,75 @@ func end():
     pickup_message_time = 0.0
     pickup_message.hide()
 
+
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
     var gs := GameStateManager.GameState
     if new_state == gs.GAME_END:
         status_changed.emit("Game over", "Enjoying results")
         end()
     elif new_state == gs.GAME_ACTIVE:
-        level_changed.emit(run_state.difficulty + 1 if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE else pattern_gen.level)
+        level_changed.emit(
+            run_state.difficulty + 1 if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE else pattern_gen.level
+        )
         start()
+
 
 func _on_level_changed(new_level: int):
     level_changed.emit(new_level)
 
+
 func _physics_process(delta: float) -> void:
     debug_stats_container.nodes_passed.label_text = str(figures_passed)
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
-    debug_stats_container.current_level.label_text = str(run_state.difficulty + 1) if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE else str(pattern_gen.level)
+    debug_stats_container.current_level.label_text = (
+        str(run_state.difficulty + 1)
+        if G \
+                .settings \
+                .SPAWN_MODE
+        == PatternGen.SpawnMode.QUEUE
+        else str(pattern_gen.level)
+    )
     gui.game_state_label.set_text(str(figures_passed))
     var tutorial: bool = G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL
     modifier_hud.visible = (tutorial or G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE) and \
-        game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
+            game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
     pickup_message_time = maxf(0.0, pickup_message_time - delta)
     pickup_message.visible = modifier_hud.visible and pickup_message_time > 0.0
-    var objective := "Completed chains: %d/%d · Points → Tier → Points · Then level 2" % [run_state.charges_completed, RunState.required_charges()]
+    var objective := "Completed chains: %d/%d · Points → Tier → Points · Then level 2" % [
+        run_state.charges_completed,
+        RunState.required_charges(),
+    ]
     if run_state.difficulty > 0:
         objective = "Forge: 2 matching → ×4 · 3 matching → ×8 · First ingredient sets strength"
-    modifier_hud.text = "Score: %d | Level: %d\n%s\n%s" % [score,
-        run_state.difficulty + 1, objective, run_state.modifier_system.summary()]
+    modifier_hud.text = "Score: %d | Level: %d\n%s\n%s" % [
+        score,
+        run_state.difficulty + 1,
+        objective,
+        run_state.modifier_system.summary(),
+    ]
     if tutorial:
-        modifier_hud.text = "Controls: align an opening, confirm, then pass safely: %d/%d" % [run_state.controls_completed, RunState.required_controls()]
+        modifier_hud.text = "Controls: align an opening, confirm, then pass safely: %d/%d" % [
+            run_state.controls_completed,
+            RunState.required_controls(),
+        ]
+
 
 func get_score():
-    return "score\nnodes: %s\nscore: %s\ntime: %s" % [
-        figures_passed,
-        score,
-        time_passed_formated
-    ]
+    return "score\nnodes: %s\nscore: %s\ntime: %s" % [figures_passed, score, time_passed_formated]
+
 
 func register_figure(figure: FigureData) -> void:
     run_state.register_figure(figure)
 
+
 func resolve_side(figure: Icosahedron, side: SideData) -> void:
     if game_state_manager.game_state != GameStateManager.GameState.GAME_ACTIVE:
         return
-    if not is_instance_valid(figure) or figure.resolved or figure.despawning \
-    or figure.is_queued_for_deletion() or not side or side.collected:
+    if (
+        not is_instance_valid(figure) or figure.resolved or figure.despawning \
+                or figure.is_queued_for_deletion()
+        or not side or side.collected
+    ):
         return
     if figure.get_parent() != loop_controls.figureRoot.anchor or not figure.data.sides.has(side):
         return
@@ -154,12 +188,14 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
     figure.despawn()
     loop_controls.update_controlled_node()
 
+
 func _game_over() -> void:
     var gs := GameStateManager.GameState
     if game_state_manager.game_state == gs.GAME_END:
         return
     game_state_manager.change_state(gs.GAME_END)
     sound_requested.emit(&"on_section_select")
+
 
 func log_tts(spawn_time: float, type: int):
     var time_ms := int((Time.get_unix_time_from_system() - spawn_time) * 1000.)

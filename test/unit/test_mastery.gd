@@ -1,5 +1,6 @@
 extends GutTest
 
+
 func test_control_requirement_uses_config() -> void:
     var previous = UpgradeCatalog.data.controls_required_for_level_1
     UpgradeCatalog.data.controls_required_for_level_1 = 2
@@ -12,6 +13,7 @@ func test_control_requirement_uses_config() -> void:
         run.resolve_side(id, figure.sides[0])
     assert_eq(run.controls_completed, 2, "Control progress caps at the configured requirement")
     UpgradeCatalog.data.controls_required_for_level_1 = previous
+
 
 func test_points_do_not_earn_mastery_and_each_chain_counts_once() -> void:
     var run := RunState.new()
@@ -29,6 +31,7 @@ func test_points_do_not_earn_mastery_and_each_chain_counts_once() -> void:
     run.reset()
     assert_eq(run.charges_completed, 0)
 
+
 func test_discard_loses_attempt_not_completed_marks() -> void:
     var run := RunState.new()
     var points := UpgradeCatalog.pickup("points")
@@ -40,6 +43,7 @@ func test_discard_loses_attempt_not_completed_marks() -> void:
     run.modifier_system.discard_chain()
     run.modifier_system.collect(run, points)
     assert_eq(run.charges_completed, 1)
+
 
 func test_controls_require_confirmed_safe_passages() -> void:
     var run := RunState.new()

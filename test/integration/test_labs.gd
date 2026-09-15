@@ -6,13 +6,17 @@ var lab: Node
 var previous_settings: Dictionary
 var previous_data: Dictionary
 
+
 func before_each() -> void:
     previous_settings = G.settings
     previous_data = G.data
-    G.settings = SettingsConfig.config_to_dict(SettingsConfig.set_default_config_values(ConfigFile.new()))
-    G.data = {}
+    G.settings = SettingsConfig.config_to_dict(
+        SettingsConfig.set_default_config_values(ConfigFile.new())
+    )
+    G.data = { }
     for action in InputMap.get_actions():
         Input.action_release(action)
+
 
 func after_each() -> void:
     for action in InputMap.get_actions():
@@ -23,6 +27,7 @@ func after_each() -> void:
     G.settings = previous_settings
     G.data = previous_data
 
+
 func test_run_lab_starts_without_main_menu_and_restarts_with_one_figure() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -32,7 +37,10 @@ func test_run_lab_starts_without_main_menu_and_restarts_with_one_figure() -> voi
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
     assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
     assert_true(gameplay.controls.figure_controller is FigureController)
-    assert_eq(gameplay.controls.get_node("PlayerInput").controller, gameplay.controls.figure_controller)
+    assert_eq(
+        gameplay.controls.get_node("PlayerInput").controller,
+        gameplay.controls.figure_controller,
+    )
     gameplay.progress.run_state.score = 42
     gameplay.restart()
     await wait_process_frames(2)
@@ -45,14 +53,19 @@ func test_run_lab_starts_without_main_menu_and_restarts_with_one_figure() -> voi
     assert_false(gameplay.get_node("ScaleTimer").paused)
     assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
 
+
 func test_collision_debug_toggles_do_not_take_keyboard_focus() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
     await wait_process_frames(2)
     for name in ["Collisions", "Observer"]:
         var button: CheckButton = lab.get_node("UI/Panel/Buttons/" + name)
-        assert_eq(button.focus_mode, Control.FOCUS_NONE,
-            name + " must not block PlayerInput after a mouse click.")
+        assert_eq(
+            button.focus_mode,
+            Control.FOCUS_NONE,
+            name + " must not block PlayerInput after a mouse click.",
+        )
+
 
 func test_accept_locks_current_figure_and_controls_the_next_one() -> void:
     lab = RUN_LAB.instantiate()
@@ -92,6 +105,7 @@ func test_accept_locks_current_figure_and_controls_the_next_one() -> void:
     assert_false(first.visible)
     assert_false(first.icosahedron.resolved, "Fading must not bypass collision validation.")
 
+
 func test_empty_dent_collision_advances_control_without_accept() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -109,6 +123,7 @@ func test_empty_dent_collision_advances_control_without_accept() -> void:
     assert_eq(gameplay.controls.controlledNode, second)
     assert_eq(gameplay.controls.figure_controller.target, second)
     assert_false(is_instance_valid(first))
+
 
 func test_incorrect_commit_is_rejected_without_losing_control() -> void:
     lab = RUN_LAB.instantiate()
@@ -133,6 +148,7 @@ func test_incorrect_commit_is_rejected_without_losing_control() -> void:
     gameplay.controls._input(accept)
     assert_true(first.mesh_icosahedron.angle_good, "Player can correct and retry.")
 
+
 func test_committed_figure_pass_does_not_skip_next_figure() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -153,6 +169,7 @@ func test_committed_figure_pass_does_not_skip_next_figure() -> void:
     assert_eq(gameplay.controls.controlledNode, second)
     assert_false(second.angle_good)
 
+
 func _align_for_commit(gameplay: LoopScene, figure: Icosahedron, empty := true) -> void:
     var detector: EndDetector = gameplay.get_node("EndDetector")
     for side in figure.data.sides:
@@ -162,6 +179,7 @@ func _align_for_commit(gameplay: LoopScene, figure: Icosahedron, empty := true) 
             var direction := (detector.global_position - figure.global_position).normalized()
             figure.mesh_icosahedron.global_basis = Basis(Quaternion(normal, direction))
             return
+
 
 func _collide_with_side(gameplay: LoopScene, figure: Icosahedron, empty: bool) -> void:
     var detector: EndDetector = gameplay.get_node("EndDetector")
@@ -178,6 +196,7 @@ func _collide_with_side(gameplay: LoopScene, figure: Icosahedron, empty: bool) -
                 await wait_physics_frames(3)
             return
 
+
 func test_run_lab_resets_game_over_presentation() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -188,6 +207,7 @@ func test_run_lab_resets_game_over_presentation() -> void:
     await wait_seconds(0.25)
     assert_true(gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY))
     assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
+
 
 func test_control_handoff_preserves_each_figures_color() -> void:
     lab = RUN_LAB.instantiate()
@@ -204,6 +224,7 @@ func test_control_handoff_preserves_each_figures_color() -> void:
     assert_eq(first.get_dents()[0].material_override.get_shader_parameter("color"), first_color)
     assert_eq(second.get_dents()[0].material_override.get_shader_parameter("color"), second_color)
 
+
 func test_commit_stops_in_flight_face_rotation() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -217,6 +238,7 @@ func test_commit_stops_in_flight_face_rotation() -> void:
     await wait_seconds(FaceLock.ROTATION_TIME + 0.05)
     assert_true(mesh.quaternion.is_equal_approx(committed))
     assert_false(mesh.is_rotating)
+
 
 func test_shared_rotation_spawn_commit_preserves_existing_layouts() -> void:
     lab = RUN_LAB.instantiate()
@@ -233,8 +255,10 @@ func test_shared_rotation_spawn_commit_preserves_existing_layouts() -> void:
     assert_true(first.mesh_icosahedron.basis.is_equal_approx(second.mesh_icosahedron.basis))
     gameplay.spawner.spawn_icosahedron()
     var third := gameplay.figure_root.get_live_figures()[2]
-    assert_true(first.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
-        "New figures inherit accumulated steering")
+    assert_true(
+        first.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
+        "New figures inherit accumulated steering",
+    )
     lab.collision_debug.set_enabled(true)
     await wait_process_frames(2)
     _align_for_commit(gameplay, first)
@@ -245,30 +269,51 @@ func test_shared_rotation_spawn_commit_preserves_existing_layouts() -> void:
     await wait_seconds(FaceLock.ROTATION_TIME + 0.05)
     gameplay.controls.sync_orientation()
     assert_true(first.mesh_icosahedron.basis.is_equal_approx(frozen), "Committed shell stays safe")
-    assert_true(second.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
-        "FaceLock tween propagates to upcoming shells")
+    assert_true(
+        second.mesh_icosahedron.basis.is_equal_approx(third.mesh_icosahedron.basis),
+        "FaceLock tween propagates to upcoming shells",
+    )
     var layouts := []
     for figure in [second, third]:
-        layouts.append([figure.data.easy_side,
-            figure.data.sides.map(func(side): return [side.kind, side.modifier])])
+        layouts.append(
+            [
+                figure.data.easy_side,
+                figure.data.sides.map(
+                    func(side):
+                        return [side.kind, side.modifier],
+                ),
+            ]
+        )
     await _collide_with_side(gameplay, first, true)
     assert_eq(gameplay.spawner.easy_side, passed.id)
     for i in 2:
         var figure: Icosahedron = [second, third][i]
         assert_eq(figure.data.easy_side, layouts[i][0])
-        assert_eq(figure.data.sides.map(func(side): return [side.kind, side.modifier]), layouts[i][1])
+        assert_eq(
+            figure.data.sides.map(
+                func(side):
+                    return [side.kind, side.modifier],
+            ),
+            layouts[i][1],
+        )
     gameplay.spawner.spawn_icosahedron()
     assert_eq(gameplay.figure_root.get_live_figures()[-1].data.easy_side, passed.id)
     await wait_process_frames(2)
     for area in second.get_node("MeshIcosahedron/SideColliders").get_children():
         var wire: MeshInstance3D = lab.collision_debug.shapes[area.get_child(0)]
-        assert_eq(wire.material_override.albedo_color, Color.LIME_GREEN if area.side.is_empty() else Color.RED)
+        assert_eq(
+            wire.material_override.albedo_color,
+            Color.LIME_GREEN if area.side.is_empty() else Color.RED,
+        )
     gameplay.restart()
     await wait_process_frames(2)
     assert_eq(gameplay.progress.run_state.tiers_collected, 0)
     assert_eq(gameplay.figure_root.get_live_figures().size(), 1)
 
-func test_end_game_rotates_before_activating_option(inverted = use_parameters([false, true])) -> void:
+
+func test_end_game_rotates_before_activating_option(
+    inverted = use_parameters([false, true])
+) -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
     await wait_process_frames(2)
@@ -304,6 +349,7 @@ func test_end_game_rotates_before_activating_option(inverted = use_parameters([f
     controls.handle_game_over_input(event, inverted)
     assert_signal_emit_count(controls, "menu_requested", 1)
 
+
 func test_restart_cancels_pending_end_game_selection() -> void:
     lab = RUN_LAB.instantiate()
     add_child(lab)
@@ -321,8 +367,9 @@ func test_restart_cancels_pending_end_game_selection() -> void:
     assert_signal_not_emitted(gameplay.controls, "menu_requested")
     assert_true(gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY))
 
+
 func test_rotation_lab_uses_production_controller_and_resets_target() -> void:
-    G.settings = {} # Rotation must not depend on app settings initialization.
+    G.settings = { } # Rotation must not depend on app settings initialization.
     lab = ROTATION_LAB.instantiate()
     add_child(lab)
     var controller: FigureController = lab.get_node("FigureController")

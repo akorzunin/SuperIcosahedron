@@ -9,15 +9,18 @@ class_name MenuActions
 @onready var menu_state: MenuState = %MenuState
 @onready var common_controls: CommonControls = %CommonControls
 
+
 func menu_start_game():
     if Utils.main_scene(self) == 'MenuScene':
         get_tree().quit()
         return
     Utils.set_scene(self, 'LoopScene')
 
+
 func menu_level_select():
     # handeled in MenuControls.call_menu_action
     return
+
 
 func settings_reset_progress():
     var error := G.reset_progress()
@@ -25,6 +28,7 @@ func settings_reset_progress():
         push_error("Could not reset progress: %s" % error_string(error))
         return
     menu_back()
+
 
 func settings_reset_defaults():
     var error := config.reset_user_settings()
@@ -38,19 +42,24 @@ func settings_reset_defaults():
     common_controls.toggle_debug_stats.emit(G.settings.SHOW_DEBUG_STATS)
     menu_back()
 
+
 func settings_fps_counter_on():
     config.set_fps_counter_state.emit(true)
+
 
 func settings_fps_counter_off():
     config.set_fps_counter_state.emit(false)
 
+
 func settings_display_debug_stats_on():
-    config._on_debug_stats_state(true)
+    config.set_debug_stats_state.emit(true)
     common_controls.toggle_debug_stats.emit(true)
 
+
 func settings_display_debug_stats_off():
-    config._on_debug_stats_state(false)
+    config.set_debug_stats_state.emit(false)
     common_controls.toggle_debug_stats.emit(false)
+
 
 func settings_fullscreen():
     var state := DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
@@ -58,50 +67,65 @@ func settings_fullscreen():
     # TODO: logic of this func a bit confusing
     Utils.change_window_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 
+
 func settings_bordered():
     var state := DisplayServer.WINDOW_MODE_MAXIMIZED
     config.set_fullscreen_state(state)
     DisplayServer.window_set_mode(state)
+
 
 func settings_vsync_on():
     var state := DisplayServer.VSYNC_ADAPTIVE
     config.set_vsync_state(state)
     Utils.set_vsync(state)
 
+
 func settings_vsync_off():
     var state := DisplayServer.VSYNC_DISABLED
     config.set_vsync_state(state)
     Utils.set_vsync(state)
 
+
 func settings_cycle_render_scale():
     var percent: int = G.settings.get("RENDER_SCALE_PERCENT", 100)
     config.set_render_scale(100 if percent <= 10 else percent - 10)
 
+
 func settings_music_on():
     sfx_player.toggle_music.emit(true)
+
 
 func settings_music_off():
     sfx_player.toggle_music.emit(false)
 
+
 func settings_sfx_on():
     sfx_player.toggle_sfx.emit(true)
+
 
 func settings_sfx_off():
     sfx_player.toggle_sfx.emit(false)
 
-var selected_menu_item: Dictionary = {}
+
+var selected_menu_item: Dictionary = { }
 var modifier_library_page := 0
+
 
 func menu_modifier_library():
     modifier_library_page = 0
-    menu_spawner.open_menu_section(menu_controls.controlledNode,
-        MenuStruct.modifier_library_page(modifier_library_page))
+    menu_spawner.open_menu_section(
+        menu_controls.controlledNode,
+        MenuStruct.modifier_library_page(modifier_library_page),
+    )
+
 
 func menu_modifier_library_previous():
     _change_modifier_library_page(-1)
 
+
 func menu_modifier_library_next():
     _change_modifier_library_page(1)
+
 
 func _change_modifier_library_page(delta: int) -> void:
     var current := MenuStruct.modifier_library_page(modifier_library_page)
@@ -111,46 +135,58 @@ func _change_modifier_library_page(delta: int) -> void:
     menu_state.state = section
     menu_spawner.show_section(menu_controls.controlledNode, section)
 
+
 func menu_show_modifier():
-    var item_data: Dictionary = selected_menu_item.get("items", {})
+    var item_data: Dictionary = selected_menu_item.get("items", { })
     var id: String = item_data.get("modifier_id", "")
     if id.is_empty():
         return
     menu_spawner.open_menu_section(menu_controls.controlledNode, MenuStruct.modifier_detail(id))
 
+
 func menu_show_achivemets():
     pass
+
 
 func menu_show_credits():
     pass
 
+
 func menu_exit_game():
-    menu_spawner.open_menu_section(menu_controls.controlledNode, {
-        name = "Quit game?",
-        confirm_quit = true,
-        items = {
-            1: {name = "quit", action = "menu_confirm_exit"},
+    menu_spawner.open_menu_section(
+        menu_controls.controlledNode,
+        {
+            name = "Quit game?",
+            confirm_quit = true,
+            items = { 1: { name = "quit", action = "menu_confirm_exit" } },
         },
-    })
+    )
+
 
 func menu_confirm_exit():
     get_tree().quit()
 
+
 func menu_back():
     menu_spawner.go_back()
+
 
 func menu_easter_egg():
     menu_state.toggle_easter_egg_state()
     menu_spawner.show_section(menu_controls.controlledNode, menu_state.state)
 
+
 func settings_set_control_free_spin():
     config.set_control_type(LoopControls.ControlType.FREE_SPIN)
+
 
 func settings_set_control_face_lock():
     config.set_control_type(LoopControls.ControlType.FACE_LOCK)
 
+
 func settings_invert_x():
     config.set_control_invert_x(true)
+
 
 func settings_not_invert_x():
     config.set_control_invert_x(false)

@@ -4,16 +4,19 @@ extends Node3D
 var gameplay: LoopScene
 var enabled := false
 var observer := false
-var shapes: Dictionary = {}
+var shapes: Dictionary = { }
 var camera_transform: Transform3D
+
 
 func _ready() -> void:
     camera_transform = gameplay.get_node("Environment/Camera3D").transform
+
 
 func set_enabled(value: bool) -> void:
     enabled = value
     visible = value
     gameplay.get_node("EndDetector").debug_contacts = value
+
 
 func set_observer(value: bool) -> void:
     observer = value
@@ -23,6 +26,7 @@ func set_observer(value: bool) -> void:
         camera.look_at(Vector3(0, 3, 5))
     else:
         camera.transform = camera_transform
+
 
 func _process(_delta: float) -> void:
     if not enabled:
@@ -72,4 +76,7 @@ func _process(_delta: float) -> void:
         # Recentered layouts keep collider identity but can change passage/solid kind.
         var area := shape.get_parent()
         shapes[shape].material_override.albedo_color = (
-            Color.LIME_GREEN if area.side.is_empty() else Color.RED) if area is SideCollider else Color.MAGENTA
+            (Color.LIME_GREEN if area.side.is_empty() else Color.RED)
+            if area is SideCollider
+            else Color.MAGENTA
+        )

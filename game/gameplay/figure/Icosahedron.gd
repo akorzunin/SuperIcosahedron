@@ -16,25 +16,31 @@ var data: FigureData
 var resolved := false
 var despawning := false
 
+
 func with_type(type: int):
     shader_type = type
     return self
+
 
 func with_face_numbers(_show: bool):
     show_face_numbers = _show
     return self
 
+
 func with_scale_timer(_scale_timer: ScaleTimer):
     scale_timer = _scale_timer
     return self
+
 
 func with_data(_data: FigureData):
     data = _data
     return self
 
+
 func init(_data: FigureData):
     data = _data
     return self
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -51,11 +57,13 @@ func _ready() -> void:
         mesh_icosahedron.set_difficulty_color(data.stage)
     _build_side_colliders()
 
+
 func _on_scale_tick() -> void:
     if scaling_enabled:
-        var sf: float = 1. + (G.settings.SCALE_FACTOR  / 1000. ) \
-            * (0.5 +  (G.settings.GAME_SPEED / (10. + G.settings.GAME_SPEED)))
+        var sf: float = 1. + (G.settings.SCALE_FACTOR / 1000.) \
+                * (0.5 + (G.settings.GAME_SPEED / (10. + G.settings.GAME_SPEED)))
         scale_object_local(Vector3(sf, sf, sf))
+
 
 func _build_side_colliders() -> void:
     var root := Node3D.new()
@@ -70,6 +78,7 @@ func _build_side_colliders() -> void:
         area.add_child(shape)
         root.add_child(area)
 
+
 func despawn():
     if despawning or is_queued_for_deletion():
         return
@@ -77,6 +86,7 @@ func despawn():
     scaling_enabled = false
     _disable_collisions(self)
     queue_free()
+
 
 func _disable_collisions(node: Node) -> void:
     if node is Area3D:

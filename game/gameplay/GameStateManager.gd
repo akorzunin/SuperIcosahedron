@@ -1,7 +1,12 @@
 extends Node
 class_name GameStateManager
 
-enum GameState {GAME_MENU, GAME_ACTIVE, GAME_PAUSED, GAME_END}
+enum GameState {
+    GAME_MENU,
+    GAME_ACTIVE,
+    GAME_PAUSED,
+    GAME_END,
+}
 
 signal game_state_changed(old_state: GameState, new_state: GameState)
 
@@ -15,9 +20,11 @@ const GameStateNames = {
 @export var game_state := GameState.GAME_MENU
 var tutorial_waiting := false
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     game_state_changed.connect(_on_game_state_changed)
+
 
 func change_state(new_state: GameState) -> void:
     if game_state == new_state:
@@ -28,9 +35,11 @@ func change_state(new_state: GameState) -> void:
     game_state = new_state
     game_state_changed.emit(old_state, new_state)
 
+
 func pause_for_tutorial() -> void:
     tutorial_waiting = true
     change_state(GameState.GAME_PAUSED)
+
 
 func toggle_pause() -> void:
     if tutorial_waiting:
@@ -39,6 +48,7 @@ func toggle_pause() -> void:
         change_state(GameState.GAME_PAUSED)
     elif game_state == GameState.GAME_PAUSED:
         change_state(GameState.GAME_ACTIVE)
+
 
 func _on_game_state_changed(_old_state: GameState, new_state: GameState) -> void:
     game_state = new_state

@@ -14,14 +14,10 @@ const patterns: Dictionary = {
     7: [12, 8],
     8: [6, 16],
     # level 3
-
 }
 
 const levels: Dictionary = {
-    0: {
-        level_patterns = [0, 1, 2],
-        random = false,
-    },
+    0: { level_patterns = [0, 1, 2], random = false },
     1: {
         level_patterns = [3, 4, 5],
         random = true,
@@ -32,38 +28,33 @@ const levels: Dictionary = {
         random = true,
         # game_speed = 10,
         # game_speed_diff = 2,
-
     },
-    3: {
-        level_patterns = [],
-        random = true,
-    }
+    3: { level_patterns = [], random = true },
 }
+
 
 static func is_level_up(nodes: int, level: int) -> bool:
     match level:
-        0: return nodes > 10
-        1: return nodes > 20
-        2: return nodes > 40
-        _: return false
+        0:
+            return nodes > 10
+        1:
+            return nodes > 20
+        2:
+            return nodes > 40
+        _:
+            return false
 
-const tutorial_item := {
-    name = "tutorial",
-    action = "menu_start_game",
-    level = 0,
-}
+
+const tutorial_item := { name = "tutorial", action = "menu_start_game", level = 0 }
+
 
 static func get_menu_levels(max_level: int):
     if max_level == 0:
-        return {1: tutorial_item }
-    var menu_entries = {}
+        return { 1: tutorial_item }
+    var menu_entries = { }
     # Only controls and charging ship today; expose later levels when their lessons exist.
     for i in range(1, mini(max_level, 2) + 1):
-        menu_entries[i] = {
-            name = "level %s" % i,
-            action = "menu_start_game",
-            level = i,
-        }
+        menu_entries[i] = { name = "level %s" % i, action = "menu_start_game", level = i }
     menu_entries[6] = tutorial_item
 
     return menu_entries

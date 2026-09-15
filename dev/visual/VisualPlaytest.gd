@@ -12,6 +12,7 @@ var thumbnails: Array[Image] = []
 var failed := false
 var frame := 0
 
+
 func _ready() -> void:
     for arg in OS.get_cmdline_user_args():
         if arg.begins_with("--output="):
@@ -29,11 +30,14 @@ func _ready() -> void:
     get_window().content_scale_aspect = Window.CONTENT_SCALE_ASPECT_KEEP
     get_window().content_scale_size = SIZE
     get_window().size = SIZE
-    G.settings = SettingsConfig.config_to_dict(SettingsConfig.set_default_config_values(ConfigFile.new()))
+    G.settings = SettingsConfig.config_to_dict(
+        SettingsConfig.set_default_config_values(ConfigFile.new())
+    )
     G.settings.FULLSCREEN_ENABLED = false
     G.settings.FPS_COUNTER_ENABLED = false
-    G.data = {}
+    G.data = { }
     _run.call_deferred()
+
 
 func _run() -> void:
     await _rotation_replay()
@@ -64,6 +68,7 @@ func _run() -> void:
     print("Visual playtest: %s. Inspect images in %s" % [report.automated_status, output])
     get_tree().quit(1 if failed else 0)
 
+
 func _library_sequence(main: Node) -> void:
     var discoveries: Array = G.discovered_modifiers.duplicate()
     G.discovered_modifiers = []
@@ -74,30 +79,39 @@ func _library_sequence(main: Node) -> void:
     await _frames(2)
     spawner.open_menu_section(spawner.anchor, MenuStruct.modifier_library_page(0))
     await _frames(3)
-    await _capture("library", "empty", {})
-    G.discovered_modifiers = UpgradeCatalog.data.pickups.map(func(entry): return entry.id)
+    await _capture("library", "empty", { })
+    G.discovered_modifiers = UpgradeCatalog.data.pickups.map(
+        func(entry):
+            return entry.id,
+    )
     var first_page := MenuStruct.modifier_library_page(0)
     menu.get_node("MenuState").state = first_page
     spawner.show_section(spawner.anchor, first_page)
     await _frames(3)
-    await _capture("library", "first_page", {})
+    await _capture("library", "first_page", { })
     spawner.show_section(spawner.anchor, MenuStruct.modifier_detail("forge"))
     await _frames(3)
     var preview: Icosahedron = spawner.anchor.get_node("Icosahedron")
-    _check(preview.data.sides.any(func(side): return side.modifier and side.modifier.id == "forge"),
-        "Library preview uses the real Forge pickup visual")
-    await _capture("library", "forge_preview", {})
+    _check(
+        preview.data.sides.any(
+            func(side):
+                return side.modifier and side.modifier.id == "forge",
+        ),
+        "Library preview uses the real Forge pickup visual",
+    )
+    await _capture("library", "forge_preview", { })
     var last_page := MenuStruct.modifier_library_page(1)
     menu.get_node("MenuState").state = last_page
     spawner.show_section(spawner.anchor, last_page)
     await _frames(3)
-    await _capture("library", "last_page", {})
+    await _capture("library", "last_page", { })
     _save_contact_sheet("library")
     G.discovered_modifiers = discoveries
 
+
 func _modifier_sequence() -> void:
     var old_data := G.data
-    G.data = {} # Direct lab starts must not inherit a previously selected menu difficulty.
+    G.data = { } # Direct lab starts must not inherit a previously selected menu difficulty.
     var old_mode: int = G.settings.SPAWN_MODE
     G.settings.SPAWN_MODE = PatternGen.SpawnMode.QUEUE
     var lab := RUN_LAB.instantiate()
@@ -109,24 +123,47 @@ func _modifier_sequence() -> void:
     gameplay.get_node("ScaleTimer").stop()
     gameplay.figure_root.clean_all(true)
     await _frames(3)
-    var pickups := ["points", "tier", "points", "echo", "inversion", "inversion", "all_in", "points"]
+    var pickups := [
+        "points",
+        "tier",
+        "points",
+        "echo",
+        "inversion",
+        "inversion",
+        "all_in",
+        "points",
+    ]
     for step in pickups.size():
         var wanted: String = pickups[step]
         var wanted_value := 2 if wanted in ["echo", "inversion"] else 1
         # Search deterministic fixture seeds; all layouts still use production generation.
         for fixture_seed in range(100):
             gameplay.spawner.rng.seed = fixture_seed
-            var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng,
-                gameplay.progress.run_state.modifier_system.pending, maxi(gameplay.spawner.easy_side, 0),
-                gameplay.progress.run_state.tiers_collected)
-            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted and side.modifier.pickup_value == wanted_value):
+            var candidate := StageGenerator.create_modifier_figure(
+                gameplay.spawner.rng,
+                gameplay.progress.run_state.modifier_system.pending,
+                maxi(gameplay.spawner.easy_side, 0),
+                gameplay.progress.run_state.tiers_collected,
+            )
+            if candidate.sides.any(
+                func(side):
+                    return (
+                        side.modifier and side.modifier.id == wanted
+                        and side.modifier.pickup_value == wanted_value
+                    ),
+            ):
                 gameplay.spawner.rng.seed = fixture_seed
                 break
         gameplay.spawner.spawn_icosahedron()
         await _frames(2)
         var figure := gameplay.figure_root.get_live_figures()[0]
         var side: SideData = figure.data.sides.filter(
-            func(item): return item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == wanted_value)[0]
+            func(item):
+                return (
+                    item.modifier and item.modifier.id == wanted
+                    and item.modifier.pickup_value == wanted_value
+                ),
+        )[0]
         _align_side(gameplay, figure, side)
         figure.scale = Vector3.ONE * 5.0
         await _frames(3)
@@ -144,11 +181,15 @@ func _modifier_sequence() -> void:
     await _automatic_level_sequence(gameplay)
     gameplay.restart()
     await _frames(3)
-    _check(not gameplay.progress.run_state.modifier_system.pending, "Restart discards modifier chain")
+    _check(
+        not gameplay.progress.run_state.modifier_system.pending,
+        "Restart discards modifier chain",
+    )
     lab.queue_free()
     await _frames(3)
     G.settings.SPAWN_MODE = old_mode
     G.data = old_data
+
 
 func _automatic_level_sequence(gameplay: LoopScene) -> void:
     gameplay.figure_root.clean_all(true)
@@ -161,7 +202,10 @@ func _automatic_level_sequence(gameplay: LoopScene) -> void:
     gameplay.spawner.spawn_icosahedron()
     await _frames(2)
     var figure := gameplay.figure_root.get_live_figures()[0]
-    var side: SideData = figure.data.sides.filter(func(item): return item.modifier and item.modifier.pickup_kind == "points")[0]
+    var side: SideData = figure.data.sides.filter(
+        func(item):
+            return item.modifier and item.modifier.pickup_kind == "points",
+    )[0]
     _align_side(gameplay, figure, side)
     figure.scale = Vector3.ONE * 5.0
     await _frames(3)
@@ -170,11 +214,17 @@ func _automatic_level_sequence(gameplay: LoopScene) -> void:
     await _frames(3)
     gameplay.get_node("LoopTimer").stop()
     gameplay.get_node("ScaleTimer").stop()
-    _check(run.difficulty == 1 and run.score == 0 and run.charges_completed == 0,
-        "Final chain automatically starts a fresh level 2")
-    _check(gameplay.figure_root.get_live_figures().size() == 1, "Automatic transition replaces old shells")
+    _check(
+        run.difficulty == 1 and run.score == 0 and run.charges_completed == 0,
+        "Final chain automatically starts a fresh level 2",
+    )
+    _check(
+        gameplay.figure_root.get_live_figures().size() == 1,
+        "Automatic transition replaces old shells",
+    )
     await _capture("transition", "02_level_two", _run_state(gameplay))
     _save_contact_sheet("transition")
+
 
 func _forge_sequence(gameplay: LoopScene) -> void:
     gameplay.figure_root.clean_all(true)
@@ -188,16 +238,30 @@ func _forge_sequence(gameplay: LoopScene) -> void:
         var wanted: String = ids[step]
         for fixture_seed in range(1000):
             gameplay.spawner.rng.seed = fixture_seed
-            var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng,
-                run.modifier_system.pending, maxi(gameplay.spawner.easy_side, 0),
-                int(UpgradeCatalog.data.difficulty_levels[1].tiers_required))
-            if candidate.sides.any(func(side): return side.modifier and side.modifier.id == wanted and side.modifier.pickup_value == 1):
+            var candidate := StageGenerator.create_modifier_figure(
+                gameplay.spawner.rng,
+                run.modifier_system.pending,
+                maxi(gameplay.spawner.easy_side, 0),
+                int(UpgradeCatalog.data.difficulty_levels[1].tiers_required),
+            )
+            if candidate.sides.any(
+                func(side):
+                    return (
+                        side.modifier and side.modifier.id == wanted
+                        and side.modifier.pickup_value == 1
+                    ),
+            ):
                 gameplay.spawner.rng.seed = fixture_seed
                 break
         gameplay.spawner.spawn_icosahedron()
         await _frames(2)
         var figure := gameplay.figure_root.get_live_figures()[0]
-        var side: SideData = figure.data.sides.filter(func(item): return item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == 1)[0]
+        var side: SideData = figure.data.sides.filter(
+            func(item):
+                return (
+                    item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == 1
+                ),
+        )[0]
         _align_side(gameplay, figure, side)
         figure.scale = Vector3.ONE * 5.0
         await _frames(3)
@@ -208,14 +272,24 @@ func _forge_sequence(gameplay: LoopScene) -> void:
     _check(run.score == before + 400, "Forged Points pays ×4 on the following Points")
     _save_contact_sheet("forge")
 
+
 func _difficulty_sequence(gameplay: LoopScene) -> void:
     # Continue the actual base/tier/base replay: one tier unit collected so far.
     # Find a seeded hard TIER +2 layout, then collect it through physical passage.
     for fixture_seed in range(100):
         gameplay.spawner.rng.seed = fixture_seed
-        var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng, true,
-            gameplay.spawner.easy_side, gameplay.progress.run_state.tiers_collected)
-        if candidate.sides.any(func(side): return side.modifier and side.modifier.id == "tier" and side.modifier.pickup_value == 2):
+        var candidate := StageGenerator.create_modifier_figure(
+            gameplay.spawner.rng,
+            true,
+            gameplay.spawner.easy_side,
+            gameplay.progress.run_state.tiers_collected,
+        )
+        if candidate.sides.any(
+            func(side):
+                return (
+                    side.modifier and side.modifier.id == "tier" and side.modifier.pickup_value == 2
+                ),
+        ):
             gameplay.spawner.rng.seed = fixture_seed
             break
     gameplay.spawner.spawn_icosahedron()
@@ -229,13 +303,19 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     gameplay.spawner.spawn_icosahedron()
     var next := gameplay.figure_root.get_live_figures()[1]
     var next_center := next.data.easy_side
-    var next_layout := next.data.sides.map(func(side): return [side.kind, side.modifier])
+    var next_layout := next.data.sides.map(
+        func(side):
+            return [side.kind, side.modifier],
+    )
     next.scale = Vector3.ONE * 2.5
     gameplay.controls.figure_controller.rotate_continuous(Vector2.RIGHT, 0.15)
     await _frames(3)
     _check(figure.mesh_icosahedron.basis.is_equal_approx(next.mesh_icosahedron.basis), "Live figures share steering")
     await _capture("difficulty", "02_shared_rotation", _run_state(gameplay))
-    var hard: SideData = figure.data.sides.filter(func(side): return side.modifier and side.modifier.id == "tier" and side.modifier.pickup_value == 2)[0]
+    var hard: SideData = figure.data.sides.filter(
+        func(side):
+            return side.modifier and side.modifier.id == "tier" and side.modifier.pickup_value == 2,
+    )[0]
     _align_side(gameplay, figure, hard)
     gameplay.controls.sync_orientation()
     await _frames(3)
@@ -245,26 +325,49 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     var frozen := figure.mesh_icosahedron.basis
     gameplay.controls.figure_controller.rotate_continuous(Vector2.LEFT, 0.15)
     await _frames(3)
-    _check(figure.mesh_icosahedron.basis.is_equal_approx(frozen), "Committed shell ignores later shared steering")
+    _check(
+        figure.mesh_icosahedron.basis.is_equal_approx(frozen),
+        "Committed shell ignores later shared steering",
+    )
     await _grow_to_contact(figure)
     await _frames(70)
-    _check(gameplay.progress.run_state.tiers_collected == 3, "Hard +2 pickup adds two build tier units")
-    _check(gameplay.progress.run_state.difficulty == 0, "Tier collection never changes the selected level")
-    _check(gameplay.progress.run_state.charges_completed == previous_charges, "Unfinished charge grants no mastery")
+    _check(
+        gameplay.progress.run_state.tiers_collected == 3,
+        "Hard +2 pickup adds two build tier units",
+    )
+    _check(
+        gameplay.progress.run_state.difficulty == 0,
+        "Tier collection never changes the selected level",
+    )
+    _check(
+        gameplay.progress.run_state.charges_completed == previous_charges,
+        "Unfinished charge grants no mastery",
+    )
     _check(gameplay.spawner.easy_side == hard.id, "Future spawns use passed face as easy point")
-    _check(next.data.easy_side == next_center and
-        next.data.sides.map(func(side): return [side.kind, side.modifier]) == next_layout,
-        "Already spawned dent layouts stay unchanged after passage")
+    _check(
+        next.data.easy_side == next_center and next.data.sides.map(
+            func(side):
+                return [side.kind, side.modifier],
+        ) == next_layout,
+        "Already spawned dent layouts stay unchanged after passage",
+    )
     await _capture("difficulty", "04_unchanged", _run_state(gameplay))
     next.despawn()
     await _frames(3)
     gameplay.progress.run_state.difficulty = 1 # Explicit level selection for the two-route fixture.
     for fixture_seed in range(100):
         gameplay.spawner.rng.seed = fixture_seed
-        var candidate := StageGenerator.create_modifier_figure(gameplay.spawner.rng, true,
-            gameplay.spawner.easy_side, gameplay.progress.run_state.tiers_collected)
+        var candidate := StageGenerator.create_modifier_figure(
+            gameplay.spawner.rng,
+            true,
+            gameplay.spawner.easy_side,
+            gameplay.progress.run_state.tiers_collected,
+        )
         var steps := FaceTopology.distances(candidate.easy_side)
-        if candidate.sides.filter(func(side): return side.is_empty() and steps[side.id] <= 1).size() == 2:
+        if candidate.sides.filter(
+            func(side):
+                return side.is_empty() and steps[side.id] <= 1,
+        ).size() == 2:
             gameplay.spawner.rng.seed = fixture_seed
             break
     gameplay.spawner.spawn_icosahedron()
@@ -275,11 +378,16 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     figure.scale = Vector3.ONE * 5.0
     await _frames(3)
     await _capture("difficulty", "05_two_easy_routes", _run_state(gameplay))
-    var neighbor: int = FaceTopology.neighbors(center).filter(func(id): return figure.data.sides[id].is_empty())[0]
+    var neighbor: int = FaceTopology.neighbors(center).filter(
+        func(id):
+            return figure.data.sides[id].is_empty(),
+    )[0]
     var edge := (FaceTopology.normal(center) + FaceTopology.normal(neighbor)).normalized()
     var detector: EndDetector = gameplay.get_node("EndDetector")
     var toward_player := (detector.global_position - figure.global_position).normalized()
-    figure.mesh_icosahedron.global_basis = Basis(Quaternion(edge, toward_player)).scaled(Vector3.ONE * 5.0)
+    figure.mesh_icosahedron.global_basis = Basis(Quaternion(edge, toward_player)).scaled(
+        Vector3.ONE * 5.0
+    )
     await _frames(3)
     _check(detector.get_passing_side(figure) != null, "Adjacent open/open border has clearance")
     await _capture("difficulty", "06_open_border", _run_state(gameplay))
@@ -291,8 +399,13 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
         _align_side(gameplay, figure, figure.data.sides[figure.data.easy_side])
         figure.scale = Vector3.ONE * 5.0
         await _frames(3)
-        await _capture("difficulty", "%02d_palette_level_%d" % [stage + 5, stage + 1], _run_state(gameplay))
+        await _capture(
+            "difficulty",
+            "%02d_palette_level_%d" % [stage + 5, stage + 1],
+            _run_state(gameplay),
+        )
     _save_contact_sheet("difficulty")
+
 
 func _rotation_replay() -> void:
     seed(SEED)
@@ -325,6 +438,7 @@ func _rotation_replay() -> void:
     lab.queue_free()
     await _frames(3)
 
+
 func _restart_sequence() -> void:
     seed(SEED)
     var lab := RUN_LAB.instantiate()
@@ -344,8 +458,14 @@ func _restart_sequence() -> void:
     await _frames(6)
     await _capture("run", "03_game_over_mid", _run_state(gameplay))
     await _frames(12)
-    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END, "Game-over state reached")
-    _check(not gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY), "Game-over presentation changes anchor")
+    _check(
+        gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Game-over state reached",
+    )
+    _check(
+        not gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY),
+        "Game-over presentation changes anchor",
+    )
     await _capture("run", "04_game_over", _run_state(gameplay))
     seed(SEED)
     await _click(lab.get_node("UI/Panel/Buttons/Restart"))
@@ -356,11 +476,15 @@ func _restart_sequence() -> void:
     var restarted_scale := restarted_figure.scale.x
     await _frames(24)
     _check_active_run(gameplay, "Settled restart")
-    _check(is_instance_valid(restarted_figure) and restarted_figure.scale.x > restarted_scale, "Restarted figure continues growing")
+    _check(
+        is_instance_valid(restarted_figure) and restarted_figure.scale.x > restarted_scale,
+        "Restarted figure continues growing",
+    )
     await _capture("run", "06_restart_settled", _run_state(gameplay))
     _save_contact_sheet("run")
     lab.queue_free()
     await _frames(3)
+
 
 func _mounted_gameplay_sequence() -> void:
     seed(SEED)
@@ -372,19 +496,24 @@ func _mounted_gameplay_sequence() -> void:
         player.stream = null
     get_tree().root.add_child(main)
     await _frames(30)
-    await _capture("mounted", "01_menu", {})
+    await _capture("mounted", "01_menu", { })
     await _tap_accept()
     await _frames(30)
     await _tap_accept()
     await _frames(30)
     var gameplay: LoopScene = main.scenes.LoopScene
     _check(main.current_scene == gameplay, "Menu input starts mounted gameplay")
-    _check(get_viewport().get_camera_3d() == gameplay.get_node("Environment/Camera3D"),
-        "Mounted gameplay uses gameplay camera")
+    _check(
+        get_viewport().get_camera_3d() == gameplay.get_node("Environment/Camera3D"),
+        "Mounted gameplay uses gameplay camera",
+    )
     gameplay.get_node("LoopTimer").stop()
     gameplay.get_node("ScaleTimer").stop()
     var figure := gameplay.figure_root.get_live_figures()[0]
-    var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
+    var empty := figure.data.sides.filter(
+        func(side: SideData):
+            return side.is_empty(),
+    )[0] as SideData
     _align_side(gameplay, figure, empty)
     figure.scale = Vector3.ONE * 5.0
     await _frames(3)
@@ -394,21 +523,28 @@ func _mounted_gameplay_sequence() -> void:
     _check(gameplay.progress.figures_passed == 1, "Mounted physical passage scores once")
     await _capture("mounted", "03_passed", _run_state(gameplay))
     figure = gameplay.figure_root.get_live_figures()[0]
-    var solid := figure.data.sides.filter(func(side: SideData): return not side.is_empty())[0] as SideData
+    var solid := figure.data.sides.filter(
+        func(side: SideData):
+            return not side.is_empty(),
+    )[0] as SideData
     _align_side(gameplay, figure, solid)
     figure.scale = Vector3.ONE * 5.0
     await _frames(3)
     await _capture("mounted", "04_approaching_solid", _run_state(gameplay))
     await _grow_to_contact(figure)
     await _frames(20)
-    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
-        "Mounted solid contact ends run")
+    _check(
+        gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Mounted solid contact ends run",
+    )
     await _capture("mounted", "05_game_over", _run_state(gameplay))
     main.change_scene("MenuScene")
     await _frames(3)
-    _check(get_viewport().get_camera_3d() == main.scenes.MenuScene.get_node("Environment/Camera3D"),
-        "Returning to menu restores menu camera")
-    await _capture("mounted", "06_menu_return", {})
+    _check(
+        get_viewport().get_camera_3d() == main.scenes.MenuScene.get_node("Environment/Camera3D"),
+        "Returning to menu restores menu camera",
+    )
+    await _capture("mounted", "06_menu_return", { })
     _save_contact_sheet("mounted")
     await _transition_sequence(main)
     await _video_scale_sequence(main)
@@ -416,6 +552,7 @@ func _mounted_gameplay_sequence() -> void:
     await _library_sequence(main)
     main.queue_free()
     await _frames(3)
+
 
 func _menu_ui_sequence(main: Node) -> void:
     var previous_data: Dictionary = G.data.duplicate(true)
@@ -429,16 +566,16 @@ func _menu_ui_sequence(main: Node) -> void:
         await _frames(30)
     spawner.open_menu_section(controls.controlledNode, MenuStruct.menu_items.items[2])
     await _frames(30)
-    await _capture("menu_ui", "01_settings_heading", {})
+    await _capture("menu_ui", "01_settings_heading", { })
     spawner.open_menu_section(controls.controlledNode, MenuStruct.settings_items[1])
     await _frames(30)
     spawner.open_options_section(controls.controlledNode, MenuStruct.settings_items[1].items[2])
     await _frames(30)
-    await _capture("menu_ui", "02_option_heading", {})
+    await _capture("menu_ui", "02_option_heading", { })
     await _tap_accept(&"ui_cancel")
     await _frames(30)
     _check(state.state.name == "controls", "Esc returns exactly one submenu level")
-    await _capture("menu_ui", "03_parent_heading", {})
+    await _capture("menu_ui", "03_parent_heading", { })
     await _tap_accept(&"ui_cancel")
     await _frames(30)
     await _tap_accept(&"ui_cancel")
@@ -446,7 +583,7 @@ func _menu_ui_sequence(main: Node) -> void:
     await _tap_accept(&"ui_cancel")
     await _frames(30)
     _check(state.state.name == "Quit game?", "Root Esc asks before quitting")
-    await _capture("menu_ui", "04_quit_confirmation", {})
+    await _capture("menu_ui", "04_quit_confirmation", { })
     await _tap_accept(&"ui_left")
     await _frames(30)
     await _tap_accept()
@@ -457,18 +594,19 @@ func _menu_ui_sequence(main: Node) -> void:
     var gui: LoopGui = gameplay.get_node("Gui")
     await _tap_accept(&"ui_cancel")
     _check(gui.pause_menu.visible, "Tutorial Esc opens pause menu")
-    await _capture("menu_ui", "05_tutorial_pause", {})
+    await _capture("menu_ui", "05_tutorial_pause", { })
     await _click(gui.get_node("PauseMenu/Options/Resume"))
     _check(gameplay.game_state_manager.tutorial_waiting, "Resume preserves tutorial instructions")
     await _tap_accept()
     await _tap_accept(&"ui_cancel")
     _check(gui.pause_menu.visible, "Gameplay Esc opens pause menu")
-    await _capture("menu_ui", "06_gameplay_pause", {})
+    await _capture("menu_ui", "06_gameplay_pause", { })
     await _click(gui.get_node("PauseMenu/Options/ReturnToMenu"))
     _check(main.current_scene == menu, "Pause menu can return to main menu")
     _save_contact_sheet("menu_ui")
     G.data = previous_data
     G.settings.SPAWN_MODE = previous_spawn_mode
+
 
 func _video_scale_sequence(main: Node) -> void:
     var config: Config = main.get_node("Config")
@@ -495,15 +633,18 @@ func _video_scale_sequence(main: Node) -> void:
                     break
                 await _tap_accept()
         await _frames(3)
-        _check(is_equal_approx(get_viewport().scaling_3d_scale, percent / 100.0),
-            "Video scale applies %d%%" % percent)
+        _check(
+            is_equal_approx(get_viewport().scaling_3d_scale, percent / 100.0),
+            "Video scale applies %d%%" % percent,
+        )
         checkpoint += 1
-        await _capture("video_scale", "%02d_%d" % [checkpoint, percent], {"percent": percent})
+        await _capture("video_scale", "%02d_%d" % [checkpoint, percent], { "percent": percent })
     _save_contact_sheet("video_scale")
     config.set_render_scale(previous_percent)
     get_viewport().scaling_3d_scale = previous_scale
     DirAccess.remove_absolute(ProjectSettings.globalize_path(config.config))
     config.config = previous_path
+
 
 func _transition_sequence(main: Node) -> void:
     main.change_scene("LoopScene")
@@ -512,7 +653,10 @@ func _transition_sequence(main: Node) -> void:
     gameplay.get_node("ScaleTimer").stop()
     await _frames(3)
     var figure := gameplay.figure_root.get_live_figures()[0]
-    var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
+    var empty := figure.data.sides.filter(
+        func(side: SideData):
+            return side.is_empty(),
+    )[0] as SideData
     _align_side(gameplay, figure, empty)
     figure.scale = Vector3.ONE * 7.0
     gameplay.spawner.spawn_icosahedron()
@@ -523,13 +667,17 @@ func _transition_sequence(main: Node) -> void:
     await _capture("fade", "02_early", _run_state(gameplay))
     await _frames(4)
     await _capture("fade", "03_mid", _run_state(gameplay))
-    _check(figure.mesh_icosahedron.opacity > 0.0 and figure.mesh_icosahedron.opacity < 1.0,
-        "Commit visibly fades over time")
+    _check(
+        figure.mesh_icosahedron.opacity > 0.0 and figure.mesh_icosahedron.opacity < 1.0,
+        "Commit visibly fades over time",
+    )
     await _frames(5)
     await _capture("fade", "04_late", _run_state(gameplay))
     await _frames(8)
-    _check(not figure.mesh_icosahedron.visible and not figure.resolved,
-        "Faded shell still awaits collision validation")
+    _check(
+        not figure.mesh_icosahedron.visible and not figure.resolved,
+        "Faded shell still awaits collision validation",
+    )
     await _capture("fade", "05_hidden", _run_state(gameplay))
     await _grow_to_contact(figure)
     _check(gameplay.progress.figures_passed == 1, "Committed shell scores at physical passage")
@@ -541,8 +689,10 @@ func _transition_sequence(main: Node) -> void:
     await _capture("options", "01_score", _run_state(gameplay))
     await _tap_accept(&"ui_right")
     await _frames(7)
-    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
-        "Restart waits for rotation")
+    _check(
+        gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Restart waits for rotation",
+    )
     await _capture("options", "02_restart_turn", _run_state(gameplay))
     await _frames(15)
     _check_active_run(gameplay, "Animated restart")
@@ -558,8 +708,9 @@ func _transition_sequence(main: Node) -> void:
     _check(main.current_scene == gameplay, "Selecting Menu does not autoclick")
     await _tap_accept()
     _check(main.current_scene == main.scenes.MenuScene, "Confirming Menu returns to menu")
-    await _capture("options", "06_menu", {})
+    await _capture("options", "06_menu", { })
     _save_contact_sheet("options")
+
 
 func _collision_sequence() -> void:
     seed(SEED)
@@ -569,7 +720,10 @@ func _collision_sequence() -> void:
     gameplay.get_node("LoopTimer").stop()
     gameplay.get_node("ScaleTimer").stop()
     var figure := gameplay.figure_root.get_live_figures()[0]
-    var empty := figure.data.sides.filter(func(side: SideData): return side.is_empty())[0] as SideData
+    var empty := figure.data.sides.filter(
+        func(side: SideData):
+            return side.is_empty(),
+    )[0] as SideData
     _align_side(gameplay, figure, empty)
     figure.scale = Vector3.ONE * 7.0
     await _frames(3)
@@ -581,16 +735,26 @@ func _collision_sequence() -> void:
     var detector: EndDetector = gameplay.get_node("EndDetector")
     var camera: Camera3D = gameplay.get_node("Environment/Camera3D")
     _check(detector.global_basis.is_equal_approx(camera.global_basis), "Window is parallel to camera plane")
-    var solid_start := figure.data.sides.filter(func(side: SideData): return not side.is_empty())[0] as SideData
+    var solid_start := figure.data.sides.filter(
+        func(side: SideData):
+            return not side.is_empty(),
+    )[0] as SideData
     _align_side(gameplay, figure, solid_start)
     var rejected: Array[Icosahedron] = []
-    gameplay.controls.commit_rejected.connect(func(value): rejected.append(value))
+    gameplay.controls.commit_rejected.connect(
+        func(value):
+            rejected.append(value),
+    )
     await _tap_accept()
     _check(rejected == [figure], "Incorrect Space emits rejection signal")
-    _check(not figure.mesh_icosahedron.angle_good and figure.mesh_icosahedron.visible,
-        "Rejected figure stays visible and unlocked")
-    _check(gameplay.controls.controlledNode == figure.mesh_icosahedron and gameplay.progress.score == 0,
-        "Rejected commit keeps control and does not score")
+    _check(
+        not figure.mesh_icosahedron.angle_good and figure.mesh_icosahedron.visible,
+        "Rejected figure stays visible and unlocked",
+    )
+    _check(
+        gameplay.controls.controlledNode == figure.mesh_icosahedron and gameplay.progress.score == 0,
+        "Rejected commit keeps control and does not score",
+    )
     await _capture("collision", "01_player_view", _run_state(gameplay))
     _align_side(gameplay, figure, empty)
     await _click(lab.get_node("UI/Panel/Buttons/Observer"))
@@ -602,36 +766,58 @@ func _collision_sequence() -> void:
     gameplay.spawner.spawn_icosahedron()
     await _tap_accept()
     await _frames(25)
-    _check(not figure.mesh_icosahedron.visible and not figure.resolved, "Debug: hidden shell still unresolved")
-    var shape: CollisionShape3D = figure.get_node("MeshIcosahedron/SideColliders").get_child(0).get_child(0)
-    _check(lab.collision_debug.shapes[shape].is_visible_in_tree(), "Hidden shell retains debug wireframe")
+    _check(
+        not figure.mesh_icosahedron.visible and not figure.resolved,
+        "Debug: hidden shell still unresolved",
+    )
+    var shape: CollisionShape3D = figure \
+            .get_node("MeshIcosahedron/SideColliders") \
+            .get_child(0) \
+            .get_child(0)
+    _check(
+        lab.collision_debug.shapes[shape].is_visible_in_tree(),
+        "Hidden shell retains debug wireframe",
+    )
     await _capture("collision", "03_hidden_collider", _run_state(gameplay))
     await _grow_to_contact(figure)
     _check(gameplay.progress.figures_passed == 1, "Debug: real hole contact scores")
     await _capture("collision", "04_passed", _run_state(gameplay))
     figure = gameplay.figure_root.get_live_figures()[0]
-    var solid := figure.data.sides.filter(func(side: SideData): return not side.is_empty())[0] as SideData
+    var solid := figure.data.sides.filter(
+        func(side: SideData):
+            return not side.is_empty(),
+    )[0] as SideData
     _align_side(gameplay, figure, solid)
     figure.scale = Vector3.ONE * 10.0
     await _frames(3)
     await _capture("collision", "05_solid_approach", _run_state(gameplay))
     await _grow_to_contact(figure)
     await _frames(20)
-    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
-        "Debug: real solid contact fails")
+    _check(
+        gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_END,
+        "Debug: real solid contact fails",
+    )
     await _click(lab.get_node("UI/Panel/Buttons/Collisions"))
     await _click(lab.get_node("UI/Panel/Buttons/Observer"))
     await _frames(3)
     _check(not lab.collision_debug.visible, "Collision overlay can be hidden")
-    _check(gameplay.get_node("Environment/Camera3D").transform.is_equal_approx(lab.collision_debug.camera_transform),
-        "Observer restores gameplay camera")
+    _check(
+        gameplay.get_node("Environment/Camera3D").transform.is_equal_approx(
+            lab.collision_debug.camera_transform
+        ),
+        "Observer restores gameplay camera",
+    )
     await _capture("collision", "06_game_over", _run_state(gameplay))
     _save_contact_sheet("collision")
     lab.queue_free()
     await _frames(3)
 
+
 func _check_debug_steering(figure: Icosahedron, label: String) -> void:
-    _check(get_viewport().gui_get_focus_owner() == null, label + ": click leaves gameplay keyboard focus")
+    _check(
+        get_viewport().gui_get_focus_owner() == null,
+        label + ": click leaves gameplay keyboard focus",
+    )
     var initial := figure.mesh_icosahedron.quaternion
     Input.action_press("ui_right")
     await _frames(15)
@@ -639,7 +825,9 @@ func _check_debug_steering(figure: Icosahedron, label: String) -> void:
     var turned := figure.mesh_icosahedron.quaternion
     _check(not turned.is_equal_approx(initial), label + ": steering works after click")
     await _frames(15)
-    _check(figure.mesh_icosahedron.quaternion.is_equal_approx(turned), label + ": release stops steering")
+    _check(figure.mesh_icosahedron.quaternion.is_equal_approx(turned), label
+        + ": release stops steering")
+
 
 func _tap_accept(action: StringName = &"ui_accept") -> void:
     var event := InputEventAction.new()
@@ -652,6 +840,7 @@ func _tap_accept(action: StringName = &"ui_accept") -> void:
     Input.parse_input_event(event)
     await _frames(1)
 
+
 func _align_side(gameplay: LoopScene, figure: Icosahedron, side: SideData) -> void:
     var detector: EndDetector = gameplay.get_node("EndDetector")
     var direction := (detector.global_position - figure.global_position).normalized()
@@ -659,6 +848,7 @@ func _align_side(gameplay: LoopScene, figure: Icosahedron, side: SideData) -> vo
     var points := figure.mesh_icosahedron.get_side_points(side.id)
     var normal := (points[1] + points[2] + points[3]).normalized()
     figure.mesh_icosahedron.global_basis = Basis(Quaternion(normal, direction)).scaled(mesh_scale)
+
 
 func _grow_to_contact(figure: Icosahedron) -> void:
     # Controlled scale steps isolate camera/passage presentation from wall-clock growth.
@@ -668,32 +858,50 @@ func _grow_to_contact(figure: Icosahedron) -> void:
         figure.scale = Vector3.ONE * size
         await _frames(3)
 
+
 func _check_active_run(gameplay: LoopScene, label: String) -> void:
-    _check(gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE, label + ": active")
+    _check(
+        gameplay.game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE,
+        label + ": active",
+    )
     _check(gameplay.progress.score == 0, label + ": score reset")
     _check(gameplay.progress.figures_passed == 0, label + ": progress reset")
     _check(gameplay.figure_root.get_live_figures().size() == 1, label + ": exactly one figure")
-    _check(gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY), label + ": anchor reset")
-    _check(is_instance_valid(gameplay.controls.figure_controller.target), label + ": control target exists")
+    _check(gameplay.figure_root.anchor.transform.is_equal_approx(Transform3D.IDENTITY), label
+        + ": anchor reset")
+    _check(
+        is_instance_valid(gameplay.controls.figure_controller.target),
+        label + ": control target exists",
+    )
     _check(not gameplay.get_node("ScaleTimer").paused, label + ": scaling unpaused")
 
+
 func _rotation_state(lab: Node) -> Dictionary:
-    return {"orientation": _quaternion(lab.controller.target.quaternion)}
+    return { "orientation": _quaternion(lab.controller.target.quaternion) }
+
 
 func _run_state(gameplay: LoopScene) -> Dictionary:
     var figures: Array[Dictionary] = []
     for figure in gameplay.figure_root.get_live_figures():
-        figures.append({
-            "orientation": _quaternion(figure.mesh_icosahedron.quaternion),
-            "scale": [figure.scale.x, figure.scale.y, figure.scale.z],
-            "opacity": figure.mesh_icosahedron.opacity,
-            "committed": figure.mesh_icosahedron.angle_good,
-            "easy_side": figure.data.easy_side,
-            "layout_difficulty": figure.data.stage,
-            "open_faces": figure.data.sides.filter(func(side): return side.is_empty()).map(func(side): return side.id),
-            "visible": figure.mesh_icosahedron.is_visible_in_tree(),
-            "controlled": figure.mesh_icosahedron == gameplay.controls.figure_controller.target,
-        })
+        figures.append(
+            {
+                "orientation": _quaternion(figure.mesh_icosahedron.quaternion),
+                "scale": [figure.scale.x, figure.scale.y, figure.scale.z],
+                "opacity": figure.mesh_icosahedron.opacity,
+                "committed": figure.mesh_icosahedron.angle_good,
+                "easy_side": figure.data.easy_side,
+                "layout_difficulty": figure.data.stage,
+                "open_faces": figure.data.sides.filter(
+                    func(side):
+                        return side.is_empty(),
+                ).map(
+                    func(side):
+                        return side.id,
+                ),
+                "visible": figure.mesh_icosahedron.is_visible_in_tree(),
+                "controlled": figure.mesh_icosahedron == gameplay.controls.figure_controller.target,
+            }
+        )
     var anchor_scale := gameplay.figure_root.anchor.scale
     return {
         "game_state": GameStateManager.GameStateNames[gameplay.game_state_manager.game_state],
@@ -706,14 +914,17 @@ func _run_state(gameplay: LoopScene) -> Dictionary:
         "figures": figures,
     }
 
+
 func _quaternion(value: Quaternion) -> Array:
     return [value.x, value.y, value.z, value.w]
+
 
 func _frames(count: int) -> void:
     for i in range(count):
         # Resume after rendering, so input changes affect the next complete frame.
         await RenderingServer.frame_post_draw
         frame += 1
+
 
 func _click(button: Button) -> void:
     var position := button.get_global_rect().get_center()
@@ -735,6 +946,7 @@ func _click(button: Button) -> void:
     motion.position = Vector2(SIZE) - Vector2(2, 2)
     get_viewport().push_input(motion, true)
 
+
 func _capture(scenario: String, checkpoint: String, state: Dictionary) -> void:
     var image := get_viewport().get_texture().get_image()
     if image == null or image.is_empty():
@@ -743,23 +955,31 @@ func _capture(scenario: String, checkpoint: String, state: Dictionary) -> void:
     var filename := scenario + "_" + checkpoint + ".png"
     _check(image.get_size() == SIZE, "Capture resolution: " + filename)
     _check(image.save_png(output.path_join(filename)) == OK, "Save " + filename)
-    captures.append({"file": filename, "frame": frame, "state": state})
+    captures.append({ "file": filename, "frame": frame, "state": state })
     image.convert(Image.FORMAT_RGBA8)
     image.resize(SIZE.x / 2, SIZE.y / 2, Image.INTERPOLATE_LANCZOS)
     thumbnails.append(image)
+
 
 func _save_contact_sheet(scenario: String) -> void:
     # Six sparse checkpoints catch gross transitions, not single-frame glitches;
     # increase capture density or record video when investigating animation artifacts.
     var sheet := Image.create_empty(SIZE.x, SIZE.y / 2 * 3, false, Image.FORMAT_RGBA8)
     for i in range(thumbnails.size()):
-        sheet.blit_rect(thumbnails[i], Rect2i(Vector2i.ZERO, thumbnails[i].get_size()),
-            Vector2i((i % 2) * (SIZE.x / 2), (i / 2) * (SIZE.y / 2)))
-    _check(sheet.save_png(output.path_join(scenario + "_contact_sheet.png")) == OK, "Save " + scenario + " contact sheet")
+        sheet.blit_rect(
+            thumbnails[i],
+            Rect2i(Vector2i.ZERO, thumbnails[i].get_size()),
+            Vector2i((i % 2) * (SIZE.x / 2), (i / 2) * (SIZE.y / 2)),
+        )
+    _check(
+        sheet.save_png(output.path_join(scenario + "_contact_sheet.png")) == OK,
+        "Save " + scenario + " contact sheet",
+    )
     thumbnails.clear()
 
+
 func _check(condition: bool, description: String) -> void:
-    checks.append({"check": description, "passed": condition})
+    checks.append({ "check": description, "passed": condition })
     if not condition:
         failed = true
         push_error("Visual playtest check failed: " + description)

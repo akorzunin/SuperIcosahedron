@@ -8,6 +8,7 @@ class_name FigureData
 @export var sides: Array[SideData] = []
 var collected_sides: Array[SideData] = []
 
+
 func collect(side: SideData) -> void:
     if side.collected:
         return

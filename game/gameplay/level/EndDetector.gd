@@ -10,6 +10,7 @@ const WINDOW_RADIUS := 0.2
 const WINDOW_DEPTH := 0.02
 const WINDOW_SEGMENTS := 32
 
+
 func _ready() -> void:
     # Fixed gameplay camera, not the lab's temporary observer camera.
     var camera: Camera3D = $"../Environment/Camera3D"
@@ -23,6 +24,7 @@ func _ready() -> void:
     window.points = points
     window.margin = 0.001
     $CollisionShape3D.shape = window
+
 
 func get_passing_side(figure: Icosahedron) -> SideData:
     # Uniform radial growth leaves these edge planes unchanged. Moving cameras,
@@ -53,8 +55,12 @@ func get_passing_side(figure: Icosahedron) -> SideData:
             return side
     return _get_union_side(figure)
 
+
 func _get_union_side(figure: Icosahedron) -> SideData:
-    if figure.data.sides.filter(func(side): return side.is_empty()).size() < 2:
+    if figure.data.sides.filter(
+        func(side):
+            return side.is_empty(),
+    ).size() < 2:
         return null
     var mesh := figure.mesh_icosahedron
     var shape: CollisionShape3D = $CollisionShape3D
@@ -99,6 +105,7 @@ func _get_union_side(figure: Icosahedron) -> SideData:
     var id := FaceTopology.nearest(mesh.global_basis.inverse() * center)
     return figure.data.sides[id] if figure.data.sides[id].is_empty() else null
 
+
 func _clip_half_plane(polygon: PackedVector3Array, normal: Vector3) -> PackedVector3Array:
     var result := PackedVector3Array()
     if polygon.is_empty():
@@ -115,8 +122,9 @@ func _clip_half_plane(polygon: PackedVector3Array, normal: Vector3) -> PackedVec
         previous_d = current_d
     return result
 
+
 func _physics_process(_delta: float) -> void:
-    var contacts: Dictionary = {}
+    var contacts: Dictionary = { }
     for area in get_overlapping_areas():
         if not area is SideCollider:
             continue
@@ -138,14 +146,25 @@ func _physics_process(_delta: float) -> void:
                 # resolving; touching the empty trigger alone isn't a pass.
                 continue
             if debug_contacts and not figure.resolved and not figure.despawning \
-            and game_progress.game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE:
+                    and game_progress.game_state_manager.game_state == GameStateManager \
+                    .GameState \
+                    .GAME_ACTIVE:
                 var touching: Array[int] = []
                 for area in get_overlapping_areas():
                     if area is SideCollider and area.figure == figure:
                         touching.append(area.side.id)
                 touching.sort()
-                print("COLLISION tick=%s figure=%s stage=%s contacts=%s selected=%s empty=%s scale=%s visible=%s" % [
-                    Engine.get_physics_frames(), figure.get_instance_id(), figure.data.stage,
-                    touching, contacts[figure].id, contacts[figure].is_empty(),
-                    figure.scale, figure.mesh_icosahedron.is_visible_in_tree()])
+                print(
+                    "COLLISION tick=%s figure=%s stage=%s contacts=%s selected=%s empty=%s scale=%s visible=%s"
+                    % [
+                        Engine.get_physics_frames(),
+                        figure.get_instance_id(),
+                        figure.data.stage,
+                        touching,
+                        contacts[figure].id,
+                        contacts[figure].is_empty(),
+                        figure.scale,
+                        figure.mesh_icosahedron.is_visible_in_tree(),
+                    ]
+                )
             game_progress.resolve_side(figure, contacts[figure])

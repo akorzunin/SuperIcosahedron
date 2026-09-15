@@ -1,10 +1,13 @@
 extends GutTest
 
+
 class QuitActions extends MenuActions:
     var confirmed := false
 
+
     func menu_confirm_exit():
         confirmed = true
+
 
 const MAIN_SCENE := preload("res://game/app/Main.tscn")
 const SETTINGS_FILE := "user://settings.cfg"
@@ -18,6 +21,7 @@ var _previous_unlocked: int
 var _saved_progress: PackedByteArray
 var _had_progress := false
 
+
 func before_each() -> void:
     _release_all_actions()
     _previous_unlocked = G.unlocked_difficulty
@@ -27,12 +31,13 @@ func before_each() -> void:
         _saved_progress = FileAccess.get_file_as_bytes(G.PROGRESS_PATH)
     _previous_settings = G.settings
     _previous_data = G.data
-    G.settings = {}
-    G.data = {}
+    G.settings = { }
+    G.data = { }
     _had_settings_file = FileAccess.file_exists(SETTINGS_FILE)
     if _had_settings_file:
         _saved_settings_file = FileAccess.get_file_as_bytes(SETTINGS_FILE)
         DirAccess.remove_absolute(ProjectSettings.globalize_path(SETTINGS_FILE))
+
 
 func after_each() -> void:
     _release_all_actions()
@@ -56,6 +61,7 @@ func after_each() -> void:
     G.settings = _previous_settings
     G.data = _previous_data
 
+
 func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void:
     const WAIT_MOD := 1
     # const WAIT_MOD := 100
@@ -76,26 +82,39 @@ func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void
     await _tap_action(&"ui_accept")
     await wait_process_frames(10 * WAIT_MOD)
     assert_eq(main_scene.current_scene, loop_scene, "Second accept starts the selected level.")
-    assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"),
-        "Gameplay must not render through the close-up menu camera.")
-    assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_PAUSED,
-        "The first level pauses for tutorial instructions.")
+    assert_eq(
+        get_viewport().get_camera_3d(),
+        loop_scene.get_node("Environment/Camera3D"),
+        "Gameplay must not render through the close-up menu camera.",
+    )
+    assert_eq(
+        game_state_manager.game_state,
+        GameStateManager.GameState.GAME_PAUSED,
+        "The first level pauses for tutorial instructions.",
+    )
     assert_true(game_state_manager.tutorial_waiting)
     await _tap_action(&"ui_accept")
     await wait_process_frames(2 * WAIT_MOD)
     assert_false(game_state_manager.tutorial_waiting, "Accept dismisses tutorial instructions.")
     assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
 
-    assert_true(_resolve_first_solid_side(loop_scene), "A spawned figure has a solid side that can end the run.")
+    assert_true(
+        _resolve_first_solid_side(loop_scene),
+        "A spawned figure has a solid side that can end the run.",
+    )
     await wait_process_frames(2 * WAIT_MOD)
     assert_eq(game_state_manager.game_state, GameStateManager.GameState.GAME_END)
     assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"))
 
     main_scene.change_scene("MenuScene")
-    assert_eq(get_viewport().get_camera_3d(), menu_scene.get_node("Environment/Camera3D"),
-        "Returning to menu restores its close-up camera.")
+    assert_eq(
+        get_viewport().get_camera_3d(),
+        menu_scene.get_node("Environment/Camera3D"),
+        "Returning to menu restores its close-up camera.",
+    )
     main_scene.change_scene("LoopScene")
     assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"))
+
 
 func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     var main := await _load_main_scene()
@@ -137,8 +156,13 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     G.data.selected_difficulty = 4
     G.data.level = 4
     loop.restart()
-    assert_eq(loop.progress.run_state.difficulty, 1, "Unimplemented lessons stay locked even with legacy saves")
+    assert_eq(
+        loop.progress.run_state.difficulty,
+        1,
+        "Unimplemented lessons stay locked even with legacy saves",
+    )
     assert_eq(loop.get_node("PatternGen").level, 0)
+
 
 func test_tutorial_spawns_one_turn_exits_then_randomizes_and_resets() -> void:
     var main := await _load_main_scene()
@@ -153,9 +177,14 @@ func test_tutorial_spawns_one_turn_exits_then_randomizes_and_resets() -> void:
         var figure: Icosahedron = loop.figure_root.get_live_figures()[-1]
         var mesh := figure.mesh_icosahedron
         var detector: EndDetector = loop.get_node("EndDetector")
-        center = FaceTopology.nearest(mesh.global_basis.inverse() * (detector.global_position - mesh.global_position))
+        center = FaceTopology.nearest(
+            mesh.global_basis.inverse() * (detector.global_position - mesh.global_position)
+        )
         assert_eq(figure.data.easy_side, center)
-        var empty := figure.data.sides.filter(func(side): return side.is_empty())
+        var empty := figure.data.sides.filter(
+            func(side):
+                return side.is_empty(),
+        )
         assert_eq(empty.size(), 1)
         var distance := FaceTopology.distances(center)[empty[0].id]
         if step < 3:
@@ -170,6 +199,7 @@ func test_tutorial_spawns_one_turn_exits_then_randomizes_and_resets() -> void:
     var restarted: Icosahedron = loop.figure_root.get_live_figures()[0]
     assert_true(restarted.data.sides[first].is_empty())
     assert_eq(loop.spawner.tutorial_step, 1)
+
 
 func test_charging_completion_automatically_starts_fresh_level_using_config() -> void:
     var main := await _load_main_scene()
@@ -208,6 +238,7 @@ func test_charging_completion_automatically_starts_fresh_level_using_config() ->
     loop.progress._update_level()
     assert_eq(G.unlocked_difficulty, 2, "Crafting advancement remains locked")
 
+
 func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
     var main_scene := await _load_main_scene()
     var menu_scene: Node = main_scene.scenes.MenuScene
@@ -217,8 +248,11 @@ func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
 
     var selected: Variant = await _wait_for_selected_menu_item(menu_scene, "settings_not_invert_x")
     assert_not_null(selected, "The opened setting option has a selected menu item.")
-    assert_eq(selected.get("action"), "settings_not_invert_x",
-        "The current false value is selected when the option opens.")
+    assert_eq(
+        selected.get("action"),
+        "settings_not_invert_x",
+        "The current false value is selected when the option opens.",
+    )
     var current_item: MenuItem
     for item in menu_scene.get_tree().get_nodes_in_group("menu_item"):
         if item.items.get("is_current", false):
@@ -234,30 +268,41 @@ func test_main_menu_setting_input_is_saved_to_ini_file() -> void:
     await _tap_action(&"ui_accept")
     await wait_process_frames(2)
 
-    assert_true(G.settings.IS_CONTROL_INVERTED, "Accepting the menu option updates runtime settings.")
+    assert_true(
+        G.settings.IS_CONTROL_INVERTED,
+        "Accepting the menu option updates runtime settings.",
+    )
     var highlighted_action := ""
     for item in menu_scene.get_tree().get_nodes_in_group("menu_item"):
         if item.label_3d.modulate == MenuItem.CURRENT_OPTION_COLOR:
             highlighted_action = item.action
             break
-    assert_eq(highlighted_action, "settings_invert_x",
-        "The highlighted option follows the saved value.")
+    assert_eq(
+        highlighted_action,
+        "settings_invert_x",
+        "The highlighted option follows the saved value.",
+    )
 
     var cfg := ConfigFile.new()
-    assert_eq(cfg.load(SETTINGS_FILE), OK, "Settings ini file exists after the menu setting change.")
+    assert_eq(
+        cfg.load(SETTINGS_FILE),
+        OK,
+        "Settings ini file exists after the menu setting change.",
+    )
     assert_true(
         cfg.get_value("user_settings", "IS_CONTROL_INVERTED"),
-        "Accepting the menu option serializes IS_CONTROL_INVERTED to user://settings.cfg."
+        "Accepting the menu option serializes IS_CONTROL_INVERTED to user://settings.cfg.",
     )
+
 
 func test_video_render_scale_cycles_and_persists() -> void:
     var previous_scale := get_viewport().scaling_3d_scale
     var main_scene := await _load_main_scene()
     var menu_scene: Node = main_scene.scenes.MenuScene
     var actions: MenuActions = menu_scene.get_node("MenuActions")
-    var item: MenuItem = autofree(MenuItem.new().init({
-        pos = 3, val = MenuStruct.settings_items[3].items[3]
-    }))
+    var item: MenuItem = autofree(MenuItem.new().init(
+            { pos = 3, val = MenuStruct.settings_items[3].items[3] }
+        ))
     assert_eq(item.action, "settings_cycle_render_scale")
     assert_eq(G.settings.RENDER_SCALE_PERCENT, 100)
     for percent in range(90, 0, -10):
@@ -273,6 +318,7 @@ func test_video_render_scale_cycles_and_persists() -> void:
     assert_almost_eq(get_viewport().scaling_3d_scale, 1.0, 0.001)
     get_viewport().scaling_3d_scale = previous_scale
 
+
 func test_submenu_history_titles_and_escape_confirmation() -> void:
     var main := await _load_main_scene()
     var menu: Node = main.scenes.MenuScene
@@ -287,9 +333,13 @@ func test_submenu_history_titles_and_escape_confirmation() -> void:
     spawner.open_options_section(controls.controlledNode, MenuStruct.settings_items[1].items[2])
     assert_eq(menu.get_node("Gui/SectionTitle").text, "invert x-axis")
     assert_eq(state.history.size(), 3)
-    assert_false(spawner.anchor.get_children().any(func(item):
-        return item is MenuItem and not item.is_queued_for_deletion() and item.pos == 6
-    ), "Option titles no longer occupy a selectable face.")
+    assert_false(
+        spawner.anchor.get_children().any(
+            func(item):
+                return item is MenuItem and not item.is_queued_for_deletion() and item.pos == 6,
+        ),
+        "Option titles no longer occupy a selectable face.",
+    )
     spawner.go_back()
     assert_eq(state.state.name, "controls")
     spawner.go_back()
@@ -303,7 +353,11 @@ func test_submenu_history_titles_and_escape_confirmation() -> void:
     await _tap_action(&"ui_cancel")
     assert_eq(state.state.name, "Quit game?")
     await _wait_for_selected_menu_item(menu, "menu_confirm_exit")
-    assert_eq(state.state.items.size(), 1, "Quit is the only item besides the generated Back button.")
+    assert_eq(
+        state.state.items.size(),
+        1,
+        "Quit is the only item besides the generated Back button.",
+    )
     assert_eq(state.state.items[1].name, "quit")
     var real_actions := controls.actions
     var quit_actions: QuitActions = autofree(QuitActions.new())
@@ -314,6 +368,7 @@ func test_submenu_history_titles_and_escape_confirmation() -> void:
     real_actions.menu_back()
     assert_true(state.history.is_empty(), "Back still cancels quitting.")
 
+
 func test_menu_ignores_repeats_transition_input_and_touch_release() -> void:
     var main := await _load_main_scene()
     var menu: Node = main.scenes.MenuScene
@@ -323,7 +378,7 @@ func test_menu_ignores_repeats_transition_input_and_touch_release() -> void:
     repeat.keycode = KEY_ENTER
     repeat.pressed = true
     repeat.echo = true
-    controls._input(repeat)
+    controls.call("_input", repeat)
     assert_true(state.history.is_empty(), "Key repeat cannot open a submenu.")
     await _tap_action(&"ui_accept")
     assert_eq(state.history.size(), 1)
@@ -332,11 +387,12 @@ func test_menu_ignores_repeats_transition_input_and_touch_release() -> void:
     await _wait_for_selected_menu_item(menu, "menu_start_game")
     var release := InputEventScreenTouch.new()
     release.pressed = false
-    controls._unhandled_input(release)
+    controls.call("_unhandled_input", release)
     assert_eq(main.current_scene, menu, "Touch release cannot activate a selection.")
-    InputEmit.new().emit({action = "ui_cancel"})
+    InputEmit.new().emit({ action = "ui_cancel" })
     await wait_process_frames(2)
     assert_true(state.history.is_empty(), "Platform Back works without a scene argument.")
+
 
 func test_pause_menu_preserves_tutorial_and_resumes_gameplay() -> void:
     var main := await _load_main_scene()
@@ -361,11 +417,13 @@ func test_pause_menu_preserves_tutorial_and_resumes_gameplay() -> void:
     assert_eq(main.current_scene, main.scenes.MenuScene)
     assert_false(gui.pause_menu.visible)
 
+
 func _load_main_scene() -> Node:
     _main_scene = MAIN_SCENE.instantiate()
     get_tree().root.add_child(_main_scene)
     await wait_process_frames(5)
     return _main_scene
+
 
 func _tap_action(action: StringName) -> void:
     _send_action(action, true)
@@ -373,26 +431,34 @@ func _tap_action(action: StringName) -> void:
     _send_action(action, false)
     await wait_process_frames(1)
 
+
 func _send_action(action: StringName, pressed: bool) -> void:
     var event := InputEventAction.new()
     event.action = action
     event.pressed = pressed
     Input.parse_input_event(event)
 
-func _wait_for_selected_menu_item(menu_scene: Node, expected_action: String, max_frames := 60) -> Variant:
+
+func _wait_for_selected_menu_item(
+    menu_scene: Node,
+    expected_action: String,
+    max_frames := 60,
+) -> Variant:
     var menu_selector: MenuSelector = menu_scene.get_node("MenuSelector")
     for _i in max_frames:
         await get_tree().physics_frame
         await get_tree().process_frame
         var selected: Variant = menu_selector.get_selected_item()
         if selected != null and selected.get("action") == expected_action \
-        and menu_scene.get_node("MenuControls").target.progress >= 1:
+                and menu_scene.get_node("MenuControls").target.progress >= 1:
             return selected
     return menu_selector.get_selected_item()
+
 
 func _release_all_actions() -> void:
     for action in InputMap.get_actions():
         Input.action_release(action)
+
 
 func _open_invert_x_options(menu_scene: Node) -> void:
     var menu_controls: MenuControls = menu_scene.get_node("MenuControls")
@@ -401,8 +467,9 @@ func _open_invert_x_options(menu_scene: Node) -> void:
     menu_controls.check_controlled_node()
     menu_spawner.open_options_section(
         menu_controls.controlledNode,
-        MenuStruct.settings_items[1].items[2]
+        MenuStruct.settings_items[1].items[2],
     )
+
 
 func _resolve_first_solid_side(loop_scene: Node) -> bool:
     var game_progress: GameProgress = loop_scene.get_node("GameProgress")

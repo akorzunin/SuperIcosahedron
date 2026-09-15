@@ -2,19 +2,26 @@ extends GutTest
 
 const TEMP := "user://gut_gameplay_settings.cfg"
 
+
 func after_each() -> void:
     if FileAccess.file_exists(TEMP):
         DirAccess.remove_absolute(TEMP)
 
+
 func test_json_is_the_runtime_source_of_gameplay_defaults() -> void:
-    var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(DafaultConfig.GAMEPLAY_PATH))
-    var runtime := SettingsConfig.config_to_dict(SettingsConfig.set_default_config_values(ConfigFile.new()))
+    var source: Dictionary = JSON.parse_string(
+        FileAccess.get_file_as_string(DafaultConfig.GAMEPLAY_PATH)
+    )
+    var runtime := SettingsConfig.config_to_dict(
+        SettingsConfig.set_default_config_values(ConfigFile.new())
+    )
     assert_true(DafaultConfig.valid_gameplay_data(source))
     for key in source.game_settings:
         assert_eq(float(runtime[key]), float(source.game_settings[key]), key)
         assert_eq(runtime[key], runtime.game_settings[key])
     assert_typeof(runtime.SPAWN_MODE, TYPE_INT)
     assert_typeof(runtime.MAX_LEVEL, TYPE_INT)
+
 
 func test_legacy_gameplay_overrides_are_removed_but_preferences_survive() -> void:
     var old := ConfigFile.new()
@@ -36,6 +43,7 @@ func test_legacy_gameplay_overrides_are_removed_but_preferences_survive() -> voi
     assert_true(saved.has_section_key("user_settings", "SFX_ENABLED"))
     assert_eq(SettingsConfig.load_gs(TEMP), runtime, "Loading migrated preferences is idempotent")
 
+
 func test_new_and_exported_user_configs_do_not_persist_gameplay() -> void:
     var runtime := SettingsConfig.load_gs(TEMP)
     assert_true(runtime.has("GAME_SPEED"))
@@ -47,8 +55,11 @@ func test_new_and_exported_user_configs_do_not_persist_gameplay() -> void:
     assert_false(exported.has_section("game_settings"))
     assert_eq(exported.get_value("user_settings", "CONTROL_TYPE"), runtime.CONTROL_TYPE)
 
+
 func test_invalid_gameplay_values_are_rejected() -> void:
-    var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(DafaultConfig.GAMEPLAY_PATH))
+    var source: Dictionary = JSON.parse_string(
+        FileAccess.get_file_as_string(DafaultConfig.GAMEPLAY_PATH)
+    )
     for key in source.game_settings:
         var invalid := source.duplicate(true)
         invalid.game_settings.erase(key)

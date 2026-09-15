@@ -3,18 +3,21 @@ class_name Utils
 
 static var main_scene_name: String = ProjectSettings.get_setting("application/run/main_scene")
 
+
 ## Only works in scene level script
 static func is_main_scene(_self) -> bool:
     if _self.get_parent() == _self.get_tree().root \
-        and main_scene_name == _self.scene_file_path:
+            and main_scene_name == _self.scene_file_path:
         return true
     return false
+
 
 static func get_main_scene(_self: Node) -> Node:
     for i in _self.get_tree().root.get_children():
         if i.scene_file_path == main_scene_name:
             return i
     return
+
 
 ## Returns current main scene name
 static func main_scene(_self) -> String:
@@ -23,8 +26,10 @@ static func main_scene(_self) -> String:
         return ''
     return node.name
 
+
 static func set_scene(_self: Node, scene_name: String):
     get_main_scene(_self).change_scene(scene_name)
+
 
 static func set_shader_param(node: MeshInstance3D, _name: String, value: Variant, idx: int = 0):
     var m = node.get_active_material(0) as ShaderMaterial
@@ -38,27 +43,53 @@ static func set_shader_param(node: MeshInstance3D, _name: String, value: Variant
         (m.next_pass.next_pass.next_pass as ShaderMaterial).set_shader_parameter(_name, value)
     return
 
-enum RenderMethods {GL_COMPATIBILITY, MOBILE, FORWARD_PLUS}
+
+enum RenderMethods {
+    GL_COMPATIBILITY,
+    MOBILE,
+    FORWARD_PLUS,
+}
+
 
 static func get_render_method() -> RenderMethods:
     return RenderMethods.get(get_render_method_name())
 
+
 static func get_render_method_name() -> String:
     return ProjectSettings.get_setting("rendering/renderer/rendering_method").to_upper()
 
-enum Platform { WEB, MOBILE, PC}
+
+enum Platform {
+    WEB,
+    MOBILE,
+    PC,
+}
+
 
 static func get_platform() -> Platform:
-    if [ OS.has_feature("mobile"), OS.has_feature("web_android"), OS.has_feature("web_ios"), ].any(func(x): return x):
+    if [OS.has_feature("mobile"), OS.has_feature("web_android"), OS.has_feature("web_ios")].any(
+        func(x):
+            return x,
+    ):
         return Platform.MOBILE
-    if [ OS.has_feature("web"), ].any(func(x): return x):
+    if [OS.has_feature("web")].any(
+        func(x):
+            return x,
+    ):
         return Platform.WEB
-    if [ OS.has_feature("windows"), OS.has_feature("linux")].any(func(x): return x):
+    if [OS.has_feature("windows"), OS.has_feature("linux")].any(
+        func(x):
+            return x,
+    ):
         return Platform.PC
     return Platform.WEB
 
+
 ## swap win_mode with one that better fit
-static func change_window_mode(win_mode: DisplayServer.WindowMode, prev_wm := DisplayServer.window_get_mode()):
+static func change_window_mode(
+    win_mode: DisplayServer.WindowMode,
+    prev_wm := DisplayServer.window_get_mode(),
+):
     if Utils.get_platform() != Utils.Platform.PC:
         return
     var ds := DisplayServer
@@ -72,6 +103,7 @@ static func change_window_mode(win_mode: DisplayServer.WindowMode, prev_wm := Di
                 DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
             else:
                 DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+
 
 static func set_vsync(vm: DisplayServer.VSyncMode):
     # TODO: check on different platforms
