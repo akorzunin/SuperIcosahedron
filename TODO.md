@@ -1,7 +1,5 @@
 - more different mods
 - level 3 mechanics, condition to get to level 3
-- better implememntation for modifiers library
 - add modifiers lab where devs can clearly see what effect creates mods interactions
 - edit hexagonal font so it can be used everywhere and be readable
 - music system?
-- proper formatter hook for json, mb other file types

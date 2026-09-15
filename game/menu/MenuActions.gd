@@ -138,10 +138,7 @@ func _change_modifier_library_page(delta: int) -> void:
 
 func menu_show_modifier():
     var item_data: Dictionary = selected_menu_item.get("items", { })
-    var id: String = item_data.get("modifier_id", "")
-    if id.is_empty():
-        return
-    menu_spawner.open_menu_section(menu_controls.controlledNode, MenuStruct.modifier_detail(id))
+    menu_spawner.gui.show_modifier_description(item_data.get("modifier_description", ""))
 
 
 func menu_show_achivemets():

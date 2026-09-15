@@ -61,14 +61,14 @@ func show_section(node: Node3D, section: Dictionary):
         else ""
     )
     gui.show_modifier_description(section.get("modifier_description", ""))
-    show_modifier_preview(section.get("preview_modifier_id", ""))
+    show_modifier_faces(section)
 
 
-func show_modifier_preview(id: String) -> void:
+func show_modifier_faces(section: Dictionary) -> void:
     var figure := anchor.get_node_or_null("Icosahedron") as Icosahedron
     if not figure:
         return
-    if id.is_empty():
+    if not section.has("modifier_page"):
         var normal_data := StageGenerator.create_figure(0)
         figure.init(normal_data)
         figure.mesh_icosahedron.apply_side_data(normal_data.sides)
@@ -76,8 +76,7 @@ func show_modifier_preview(id: String) -> void:
         figure.mesh_icosahedron.set_controlled(false)
         return
     var preview := FigureData.new()
-    var side_id := _front_preview_side(figure)
-    preview.easy_side = side_id
+    preview.easy_side = 0
     for variant_id in IcosahedronVarints.figure_variants_v2.keys():
         var variant: Vector4 = IcosahedronVarints.figure_variants_v2[variant_id]
         preview.sides.append(SideData.new().init(
@@ -85,21 +84,25 @@ func show_modifier_preview(id: String) -> void:
                 Vector3(variant.x, variant.y, variant.z),
                 SideData.Kind.SOLID,
             ))
-    var side: SideData = preview.sides[side_id]
-    side.kind = SideData.Kind.POSITIVE
-    side.modifier = UpgradeCatalog.pickup(id, 2)
-    side.score_delta = side.modifier.score_value
+    for item in anchor.get_children():
+        if not item is MenuItem or item.is_queued_for_deletion():
+            continue
+        var id: String = item.items.get("modifier_id", "")
+        if id.is_empty():
+            continue
+        var side_id := _menu_item_side(figure, item)
+        var side: SideData = preview.sides[side_id]
+        side.kind = SideData.Kind.POSITIVE
+        side.modifier = UpgradeCatalog.pickup(id, 2)
+        side.score_delta = side.modifier.score_value
     figure.init(preview)
     figure.mesh_icosahedron.apply_side_data(preview.sides)
     figure.mesh_icosahedron.set_default_type()
     figure.mesh_icosahedron.set_controlled(true)
 
 
-func _front_preview_side(figure: Icosahedron) -> int:
-    var camera := get_viewport().get_camera_3d()
-    if not camera:
-        return 0
-    var toward_camera := (camera.global_position - figure.global_position).normalized()
+func _menu_item_side(figure: Icosahedron, item: MenuItem) -> int:
+    var toward_label := (item.label_3d.global_position - figure.global_position).normalized()
     var best_id := 0
     var best_dot := -INF
     for variant_id in IcosahedronVarints.figure_variants_v2.keys():
@@ -107,7 +110,7 @@ func _front_preview_side(figure: Icosahedron) -> int:
         var normal := (
             figure.global_transform.basis * Vector3(variant.x, variant.y, variant.z)
         ).normalized()
-        var candidate := normal.dot(toward_camera)
+        var candidate := normal.dot(toward_label)
         if candidate > best_dot:
             best_dot = candidate
             best_id = variant_id

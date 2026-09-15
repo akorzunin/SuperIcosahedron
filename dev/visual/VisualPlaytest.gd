@@ -89,7 +89,7 @@ func _library_sequence(main: Node) -> void:
     spawner.show_section(spawner.anchor, first_page)
     await _frames(3)
     await _capture("library", "first_page", { })
-    spawner.show_section(spawner.anchor, MenuStruct.modifier_detail("forge"))
+    spawner.gui.show_modifier_description(first_page.items[1].modifier_description)
     await _frames(3)
     var preview: Icosahedron = spawner.anchor.get_node("Icosahedron")
     _check(
