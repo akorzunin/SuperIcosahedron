@@ -18,5 +18,5 @@ repos:
           - "prettier@^3.7.4"
           - "prettier-plugin-tailwindcss@^0.6.5"
           - "tailwindcss-animate@^1.0.7"
-        types_or: [javascript, ts, tsx, css, yaml]
+        types_or: [javascript, ts, tsx, css, yaml, json]
         exclude: ^*.lock.*$
