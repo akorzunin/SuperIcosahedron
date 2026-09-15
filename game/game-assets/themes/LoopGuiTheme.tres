@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://bqb5wheue6nip"]
 
-[ext_resource type="FontFile" uid="uid://bcxdkhpes1cn0" path="res://game/game-assets/fonts/barlow/Barlow-SemiBold.ttf" id="1_0kl3p"]
+[ext_resource type="FontVariation" path="res://game/game-assets/fonts/plastic-bag/PlasticBagReadable.tres" id="1_0kl3p"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7pdq7"]
 expand_margin_left = 5.0
@@ -10,7 +10,7 @@ expand_margin_bottom = 10.0
 default_font = ExtResource("1_0kl3p")
 default_font_size = 24
 Label/colors/font_outline_color = Color(0.04, 0.08, 0.12, 0.9)
-Label/constants/outline_size = 4
+Label/constants/outline_size = 1
 PanelContainer/colors/base_col = Color(0, 0, 0, 1)
 PanelContainer/font_sizes/DefaultFontSize = 24
 PanelContainer/fonts/DefaultFont = ExtResource("1_0kl3p")

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Live font preview</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 24px; background: #111827; color: #f9fafb; font: 16px system-ui, sans-serif; }
+      h1 { font-size: 24px; }
+      .controls { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin: 20px 0; }
+      input[type="number"] { width: 80px; }
+      textarea { display: block; width: 100%; min-height: 150px; padding: 12px; margin: 8px 0 20px; font: 16px monospace; }
+      #preview { min-height: 240px; padding: 24px; border: 1px solid #64748b; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 32px; line-height: 1.4; }
+      #status { color: #cbd5e1; }
+      input, select { font: inherit; }
+    </style>
+  </head>
+  <body>
+    <h1>Live font preview</h1>
+    <p>Open an OTF, TTF, WOFF, or WOFF2 file. Everything stays in your browser.</p>
+    <div class="controls">
+      <label>Font <input id="font" type="file" accept=".otf,.ttf,.woff,.woff2" /></label>
+      <label>Size (px) <input id="size" type="number" min="8" max="200" value="32" /></label>
+      <label>Line height <input id="height" type="number" min="0.5" max="3" step="0.1" value="1.4" /></label>
+      <label>Background <select id="background"><option value="dark">Dark</option><option value="light">Light</option></select></label>
+    </div>
+    <p id="status" role="status">Choose a font to start. Until then, the preview uses the system font.</p>
+    <label for="text">Type or paste multiline text:</label>
+    <textarea id="text" spellcheck="false">Super Icosahedron
+Speed +25% / Mirror controls
+0123456789  O0 I1L B8 S5 Z2
+
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz</textarea>
+    <div id="preview" aria-label="Font preview"></div>
+    <script>
+      const preview = document.getElementById("preview");
+      const text = document.getElementById("text");
+      const status = document.getElementById("status");
+      let activeFont;
+      let request = 0;
+      text.addEventListener("input", () => { preview.textContent = text.value; });
+      preview.textContent = text.value;
+      for (const [id, property, suffix] of [["size", "fontSize", "px"], ["height", "lineHeight", ""]]) {
+        const input = document.getElementById(id);
+        input.addEventListener("input", () => {
+          if (input.value && input.validity.valid) preview.style[property] = input.value + suffix;
+        });
+      }
+      document.getElementById("background").addEventListener("change", (event) => {
+        const light = event.target.value === "light";
+        preview.style.background = light ? "#ffffff" : "#111827";
+        preview.style.color = light ? "#111827" : "#ffffff";
+      });
+      document.getElementById("font").addEventListener("change", async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const current = ++request;
+        status.textContent = "Loading " + file.name + "…";
+        try {
+          const font = new FontFace("PreviewFont" + current, await file.arrayBuffer());
+          await font.load();
+          if (current !== request) return;
+          document.fonts.add(font);
+          preview.style.fontFamily = '"' + font.family + '", sans-serif';
+          if (activeFont) document.fonts.delete(activeFont);
+          activeFont = font;
+          status.textContent = file.name + " — live preview ready. Missing characters use the browser fallback.";
+        } catch (error) {
+          if (current === request) status.textContent = "Could not load this font: " + error.message;
+        }
+        // Allow choosing the same file again after rebuilding it.
+        event.target.value = "";
+      });
+    </script>
+  </body>
+</html>

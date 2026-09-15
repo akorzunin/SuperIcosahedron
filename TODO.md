@@ -1,4 +1,3 @@
 - more different mods
 - level 3 mechanics, condition to get to level 3
-- edit hexagonal font so it can be used everywhere and be readable
 - music system?

@@ -49,6 +49,10 @@ enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg", "res://addon
 
 import/blender/enabled=false
 
+[gui]
+
+theme/custom="res://game/game-assets/themes/LoopGuiTheme.tres"
+
 [input]
 
 ui_left={

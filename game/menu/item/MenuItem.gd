@@ -3,7 +3,7 @@ class_name MenuItem
 
 @onready var label_3d: Label3D = $Label3D
 
-const HEX_FONT := preload("res://game/game-assets/fonts/plastic-bag/Plastic Bag.otf")
+const HEX_FONT := preload("res://game/game-assets/fonts/plastic-bag/PlasticBagReadable.tres")
 const EMOJI_FONT := preload(
     "res://game/game-assets/fonts/noto-color-emoji/NotoColorEmoji-Regular.ttf"
 )
