@@ -8,6 +8,8 @@ const C_SCORE := &"score_delta"
 
 var world := EcsWorld.new()
 var pending := false
+var tier_remaining := 0
+var accumulated_points := 0
 var tier := 1
 var sign_value := 1
 var last_activation := ""
@@ -22,9 +24,7 @@ var forge_value := 0
 
 
 func pending_points() -> int:
-    return sign_value * int(UpgradeCatalog.data.points_by_tier[tier - 1]) * points_multiplier * (
-        2 if all_in else 1
-    )
+    return sign_value * accumulated_points * (2 if all_in else 1)
 
 
 func collect(session: Object, pickup: ModifierData) -> void:
@@ -58,13 +58,21 @@ func collect(session: Object, pickup: ModifierData) -> void:
             pickup.pickup_value *= crafted_multiplier
         discard_forge()
     var message := ""
-    var previous_tier := tier
     var repeats := 2 if echo_pending and pickup.pickup_kind in ["sign", "tier"] else 1
     if pickup.pickup_kind in ["sign", "tier"]:
         echo_pending = false
     match pickup.pickup_kind:
         "points":
-            if pending:
+            tier = clampi(
+                pickup.pickup_value + (1 if tier_remaining > 0 else 0),
+                1,
+                UpgradeCatalog.data.points_by_tier.size(),
+            )
+            accumulated_points += int(UpgradeCatalog.data.points_by_tier[tier - 1]) * crafted_multiplier * points_multiplier
+            tier_remaining = maxi(0, tier_remaining - 1)
+            pending = tier_remaining > 0
+            message = "Points charged"
+            if not pending:
                 var delta := pending_points()
                 session.score += delta
                 if chain_has_tier:
@@ -74,27 +82,20 @@ func collect(session: Object, pickup: ModifierData) -> void:
                     )
                 last_activation = "Activated: %+d points" % delta
                 message = "%+d scored" % delta
-            discard_chain()
-            pending = true
-            tier = clampi(pickup.pickup_value, 1, UpgradeCatalog.data.points_by_tier.size())
-            sign_value = 1
-            points_multiplier = crafted_multiplier
-            if message.is_empty():
-                message = "Chain started"
+                discard_chain()
         "sign":
             if pending:
                 sign_value = pickup.pickup_value
-                message = "Sign → positive" if sign_value > 0 else "Sign → negative"
+                if sign_value < 0:
+                    points_multiplier = 2
+                message = "Sign → positive · Bonus kept" if sign_value > 0 else "Sign → negative · Next POINTS ×2 · Convert before banking"
         "tier":
-            if pending:
-                tier = mini(
-                    tier + pickup.pickup_value * repeats,
-                    UpgradeCatalog.data.points_by_tier.size(),
-                )
-                chain_has_tier = true
-                # Tier units remain build statistics, not level progress.
-                session.tiers_collected += pickup.pickup_value * repeats
-                message = "Tier +%d" % (tier - previous_tier) if tier > previous_tier else "Tier already at maximum"
+            tier_remaining = pickup.pickup_value * repeats
+            pending = true
+            chain_has_tier = true
+            # Tier units remain build statistics, not level progress.
+            session.tiers_collected += tier_remaining
+            message = "Tier armed · %d POINTS remaining" % tier_remaining
         "echo":
             if pending:
                 echo_pending = true
@@ -112,11 +113,9 @@ func collect(session: Object, pickup: ModifierData) -> void:
                 message = "Inverted → positive · Tier +1" if sign_value > 0 else "Inverted → negative"
     if pickup.pickup_kind.is_empty():
         return
-    if not pending:
-        message = "No effect · Collect %s first" % UpgradeCatalog \
-                .pickup(UpgradeCatalog.base_id()) \
-                .title
-    else:
+    if message.is_empty():
+        message = "No effect · Collect TIER first"
+    if pending:
         message += " · %+d pending" % pending_points()
     if crafted_multiplier > 1:
         message = "Forged %s ×%d · " % [pickup.pickup_kind.to_upper(), crafted_multiplier] + message
@@ -147,6 +146,8 @@ func forge_summary() -> String:
 
 func discard_chain() -> void:
     pending = false
+    tier_remaining = 0
+    accumulated_points = 0
     chain_has_tier = false
     echo_pending = false
     all_in = false
@@ -163,16 +164,16 @@ func summary() -> String:
 func chain_summary() -> String:
     var title := UpgradeCatalog.pickup(UpgradeCatalog.base_id()).title
     if not pending:
-        return "Pick %s to start a chain" % title
-    return "Pending: %s T%d (%+d) | Next %s activates%s%s" % [
+        return "%s score immediately · TIER upgrades next POINTS" % title
+    return "Pending: %s T%d (%+d) | %d POINTS to bank%s%s" % [
         title,
         tier,
         pending_points(),
-        title,
+        tier_remaining,
         " | Echo: next SIGN/TIER activation" if echo_pending else "",
         " | ALL-IN: POINTS next shell!" if all_in else "",
     ] \
-            + (" | Forged ×%d" % points_multiplier if points_multiplier > 1 else "")
+            + (" | POINTS ×%d" % points_multiplier if points_multiplier > 1 else "")
 
 
 func reset() -> void:

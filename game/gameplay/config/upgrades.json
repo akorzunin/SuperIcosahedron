@@ -45,7 +45,7 @@
     {
       "id": "points",
       "title": "POINTS",
-      "description": "Start a points chain. Collect POINTS again to score the pending chain and start a new one. More distant pickups start at a higher tier.",
+      "description": "Score immediately unless TIER is active. With TIER, accumulate upgraded points and bank when its strength runs out. More distant pickups give higher-tier points.",
       "kind": "points",
       "value": 1,
       "color": "ffd166",
@@ -57,7 +57,7 @@
     {
       "id": "green",
       "title": "+ SIGN",
-      "description": "Set the pending chain to positive points.",
+      "description": "Convert pending points to positive, keeping the negative-sign bonus. Does not bank early: finish charging TIER to score.",
       "kind": "sign",
       "value": 1,
       "color": "72ff99",
@@ -69,7 +69,7 @@
     {
       "id": "red",
       "title": "- SIGN",
-      "description": "Set the pending chain to negative points. Change its sign before scoring it!",
+      "description": "Make the active TIER chain negative and double subsequent POINTS values. The bonus does not stack and survives +SIGN. Convert before the final POINT or bank a negative total!",
       "kind": "sign",
       "value": -1,
       "color": "ff8585",
@@ -81,7 +81,7 @@
     {
       "id": "tier",
       "title": "TIER",
-      "description": "Increase the pending chain's tier, up to the maximum. More distant pickups grant more tiers.",
+      "description": "Upgrade the next POINTS pickups by one tier. Strength determines how many pickups charge before banking. A new TIER replaces remaining strength without changing accumulated points.",
       "kind": "tier",
       "value": 2,
       "color": "d5a6ff",
