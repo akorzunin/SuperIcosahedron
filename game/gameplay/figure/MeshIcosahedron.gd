@@ -357,6 +357,7 @@ func _side_triangle(source: Mesh, side_id: int) -> PackedVector3Array:
         var arrays := source.surface_get_arrays(surface)
         var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
         var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+        @warning_ignore("integer_division")
         var triangle_count := indices.size() / 3 if indices.size() > 0 else vertices.size() / 3
         for t in triangle_count:
             var tri := PackedVector3Array()

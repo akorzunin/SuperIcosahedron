@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://bqb5wheue6nip"]
 
-[ext_resource type="FontFile" path="res://game/game-assets/fonts/barlow/Barlow-SemiBold.ttf" id="1_0kl3p"]
+[ext_resource type="FontFile" uid="uid://bcxdkhpes1cn0" path="res://game/game-assets/fonts/barlow/Barlow-SemiBold.ttf" id="1_0kl3p"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7pdq7"]
 expand_margin_left = 5.0
