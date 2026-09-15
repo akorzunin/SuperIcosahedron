@@ -12,6 +12,21 @@ static func create_figure(stage: int = 0) -> FigureData:
         figure.sides.append(SideData.new().init(id, Vector3(v.x, v.y, v.z), kind, modifier))
     return figure
 
+static func create_tutorial_figure(step: int, rng: RandomNumberGenerator) -> FigureData:
+    var candidates := FaceTopology.neighbors(0)
+    var opening: int
+    if step < 3:
+        opening = candidates[step]
+    else:
+        var distances := FaceTopology.distances(0)
+        for id in 20:
+            if distances[id] == 2:
+                candidates.append(id)
+        opening = candidates[rng.randi_range(0, candidates.size() - 1)]
+    var figure := create_figure(opening)
+    figure.easy_side = 0
+    return figure
+
 static func create_modifier_figure(rng: RandomNumberGenerator, has_chain: bool,
         center: int = 0, tiers_collected: int = 0) -> FigureData:
     var figure := create_figure(0)

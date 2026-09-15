@@ -11,10 +11,12 @@ class_name LoopSpawner
 var game_over_tween: Tween
 var rng := RandomNumberGenerator.new()
 var easy_side := -1
+var tutorial_step := 0
 
 func reset(run_seed: int = -1) -> void:
     rng.seed = randi() if run_seed < 0 else run_seed
     easy_side = -1
+    tutorial_step = 0
     if game_over_tween:
         game_over_tween.kill()
         game_over_tween = null
@@ -81,8 +83,6 @@ enum SpawnMode {CENTER, SIDE, RANDOM, QUEUE}
 func get_spawn_type():
     var s = PatternGen.SpawnMode
     match G.settings.SPAWN_MODE:
-        s.TUTORIAL: # 0
-            return 3
         s.DEBUG: # 1
             return 1
         s.QUEUE: # 2
@@ -101,6 +101,10 @@ func spawn_figure(figure: Figure) -> void:
                 figure_data = StageGenerator.create_modifier_figure(rng,
                     game_progress.run_state.modifier_system.pending, maxi(easy_side, 0),
                     int(UpgradeCatalog.data.difficulty_levels[game_progress.run_state.difficulty].tiers_required))
+            elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
+                figure_data = StageGenerator.create_tutorial_figure(tutorial_step, rng)
+                spawn_type = figure_data.stage
+                tutorial_step += 1
             else:
                 spawn_type = get_spawn_type()
                 figure_data = StageGenerator.create_figure(spawn_type)
@@ -115,7 +119,14 @@ func spawn_figure(figure: Figure) -> void:
     new_figure.tree_exiting.connect(game_progress.run_state.unregister_figure.bind(
         new_figure.get_instance_id(), new_figure.data), CONNECT_ONE_SHOT)
     figureRoot.add_figure(new_figure)
-    if new_figure.data.easy_side >= 0:
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
+        # Tutorial turns start from each new figure's default orientation.
+        var mesh: MeshIcosahedron = new_figure.mesh_icosahedron
+        var detector: EndDetector = $"../EndDetector"
+        var center := FaceTopology.nearest(mesh.global_basis.inverse() * (detector.global_position - mesh.global_position))
+        FaceTopology.recenter(new_figure.data, center)
+        mesh.apply_side_data(new_figure.data.sides)
+    elif new_figure.data.easy_side >= 0:
         var controls := game_progress.loop_controls
         controls.sync_orientation()
         var mesh: MeshIcosahedron = new_figure.mesh_icosahedron

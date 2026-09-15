@@ -104,7 +104,7 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     main.change_scene("LoopScene")
     assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.TUTORIAL)
     loop.game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
-    loop.progress.run_state.controls_completed = 3
+    loop.progress.run_state.controls_completed = RunState.required_controls()
     loop.progress._update_level()
     await wait_process_frames(3)
     assert_eq(G.unlocked_difficulty, 1)
@@ -139,6 +139,37 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     loop.restart()
     assert_eq(loop.progress.run_state.difficulty, 1, "Unimplemented lessons stay locked even with legacy saves")
     assert_eq(loop.get_node("PatternGen").level, 0)
+
+func test_tutorial_spawns_one_turn_exits_then_randomizes_and_resets() -> void:
+    var main := await _load_main_scene()
+    G.data.selected_difficulty = 0
+    main.change_scene("LoopScene")
+    var loop: LoopScene = main.scenes.LoopScene
+    var openings: Array[int] = []
+    var center := -1
+    for step in 10:
+        if step > 0:
+            loop.spawner.spawn_icosahedron()
+        var figure: Icosahedron = loop.figure_root.get_live_figures()[-1]
+        var mesh := figure.mesh_icosahedron
+        var detector: EndDetector = loop.get_node("EndDetector")
+        center = FaceTopology.nearest(mesh.global_basis.inverse() * (detector.global_position - mesh.global_position))
+        assert_eq(figure.data.easy_side, center)
+        var empty := figure.data.sides.filter(func(side): return side.is_empty())
+        assert_eq(empty.size(), 1)
+        var distance := FaceTopology.distances(center)[empty[0].id]
+        if step < 3:
+            assert_eq(distance, 1)
+            openings.append(empty[0].id)
+        else:
+            assert_between(distance, 1, 2)
+    var first := openings[0]
+    openings.sort()
+    assert_eq(openings, FaceTopology.neighbors(center))
+    loop.restart()
+    var restarted: Icosahedron = loop.figure_root.get_live_figures()[0]
+    assert_true(restarted.data.sides[first].is_empty())
+    assert_eq(loop.spawner.tutorial_step, 1)
 
 func test_charging_completion_automatically_starts_fresh_level_using_config() -> void:
     var main := await _load_main_scene()
