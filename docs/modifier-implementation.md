@@ -62,7 +62,7 @@ orientation. Negative scores are allowed: points are not health.
 ## Automatic lesson transitions
 
 Level 1 advances automatically after `chains_required_for_level_2` completed
-Points → Tier → Points chains (default 3), configured in
+Tier → Points until banked chains (default 10), configured in
 `game/gameplay/config/upgrades.json`. The counter cap, HUD denominator, and
 completion check all use this positive integer CMS field. Merely passing nodes
 or collecting multiple Tier pickups in one chain does not satisfy extra chains.
@@ -70,8 +70,12 @@ or collecting multiple Tier pickups in one chain does not satisfy extra chains.
 After the final pickup resolves, the next level is unlocked and a deferred
 transition starts a fresh level 2: score, modifiers, counters, and old shells
 are cleared. There is no Enter-next-level button. The controls tutorial also
-advances automatically after its three completed control exercises. Level 2
-has no automatic transition to an unfinished level 3.
+advances automatically after its configured control exercises. Level 2 counts
+completed Forge recipes (not ingredients or merely collecting Forge). After
+`crafts_required_for_level_3` recipes (default 10), it unlocks and starts a fresh
+level 3 using the existing harder layout. The HUD shows completed crafts; both
+POINTS and TIER recipes count once, regardless of slot count. Level 3 is free play
+with no further automatic lesson transition.
 
 ## Forge (level 2+)
 
@@ -88,12 +92,19 @@ POINTS activation. Crafted TIER applies the first ingredient's tier increment
 Sign is binary, so Sign, Echo, All-in, Inversion, and Forge are not ingredients.
 A second Forge keeps the current recipe rather than replacing or nesting it.
 
-Echo is consumed only by a SIGN/TIER activation, not by storing ingredients;
-a nonmatching eligible activation may consume it before the craft finishes.
-POINTS activation still resets Echo as part of its normal chain reset. All-in
-retains its next-shell rule: Points ingredients preserve it, but neutral or
-non-Points pickups (including Forge) lose the chain. Losing a chain to All-in
-does not erase the independent recipe. Death and restart discard both.
+ECHO can arm without a chain and doubles the next POINTS reward (one charge)
+or TIER strength. It does not stack and SIGN preserves it. Storing ingredients
+does not consume ECHO; a nonmatching eligible activation may consume it first.
+ALL-IN doubles the pot, including the next POINTS reward, and that pickup banks
+immediately regardless of remaining TIER strength. It bypasses FORGE storage
+without consuming the recipe. Neutral or non-POINTS passages lose the chain,
+but leave the independent recipe intact. Death and restart discard both.
+
+INVERSION flips the chain's sign and doubles accumulated points, without changing
+future POINTS rewards or granting a tier. A negative pot can be rescued with
+INVERSION or +SIGN; banking before conversion scores a negative total.
+ECHO, ALL-IN, and INVERSION have catalog value 2 and distinct animated passage
+effects. ALL-IN uses accelerating inward triangular pulses.
 
 Forge is sampled only in difficulty profile 2 or higher, including without a
 pending chain. Profile 1 remains unchanged. There is no scripted introductory

@@ -63,8 +63,8 @@ func close_pause_menu() -> void:
 
 static func tutorial_instructions(mobile: bool) -> String:
     if mobile:
-        return "TUTORIAL — PAUSED\n\nUse the four direction buttons to rotate the figure.\nAlign the open gap, then tap the central buttons to pass through.\n\nTap a central button to start playing."
-    return "TUTORIAL — PAUSED\n\nUse W, A, S, D or the arrow keys to rotate the figure.\nAlign the open gap, then press Space or Enter to pass through.\n\nPress Space or Enter to start playing."
+        return "TUTORIAL — PAUSED\n\nUse the four direction buttons to rotate the figure.\nAlign the open gap and pass safely to make progress.\nThe central buttons optionally lock your alignment.\n\nTap a central button to start playing."
+    return "TUTORIAL — PAUSED\n\nUse W, A, S, D or the arrow keys to rotate the figure.\nAlign the open gap and pass safely to make progress.\nSpace or Enter optionally locks your alignment.\n\nPress Space or Enter to start playing."
 
 
 func _on_debug_stats_toggle(v: bool):

@@ -20,8 +20,12 @@ static func required_charges() -> int:
     return int(UpgradeCatalog.data.chains_required_for_level_2)
 
 
+static func required_crafts() -> int:
+    return int(UpgradeCatalog.data.crafts_required_for_level_3)
+
+
+var crafts_completed := 0
 var charges_completed := 0
-var tutorial_commits: Dictionary[int, bool] = { }
 var controls_completed := 0
 var difficulty := 0
 var score := 0
@@ -34,8 +38,8 @@ func reset() -> void:
     figures_passed = 0
     tiers_collected = 0
     charges_completed = 0
+    crafts_completed = 0
     controls_completed = 0
-    tutorial_commits.clear()
     difficulty = 0
     score = 0
     ended = false
@@ -46,6 +50,8 @@ func reset() -> void:
 func level_complete(tutorial: bool) -> bool:
     if tutorial:
         return controls_completed >= required_controls()
+    if difficulty == 1:
+        return crafts_completed >= required_crafts()
     return difficulty == 0 and charges_completed >= required_charges()
 
 
@@ -62,7 +68,7 @@ func unregister_figure(figure_id: int, figure: FigureData) -> void:
         side.modifier_entity = 0
 
 
-func resolve_side(figure_id: int, side: SideData) -> Outcome:
+func resolve_side(figure_id: int, side: SideData, tutorial := false) -> Outcome:
     if ended or not side or _resolved_figures.has(figure_id) or side.collected:
         return Outcome.IGNORED
     _resolved_figures[figure_id] = true
@@ -73,9 +79,8 @@ func resolve_side(figure_id: int, side: SideData) -> Outcome:
         return Outcome.GAME_OVER
     side.collected = true
     modifier_system.apply_to(self, side.modifier_entity)
-    # First lesson checks align/confirm/pass only; add distinct movement targets for broader control mastery.
-    if tutorial_commits.has(figure_id):
+    # Safe alignment is the lesson; confirming early is optional, just as in normal play.
+    if tutorial:
         controls_completed = mini(controls_completed + 1, required_controls())
-        tutorial_commits.erase(figure_id)
     figures_passed += 1
     return Outcome.PASSED

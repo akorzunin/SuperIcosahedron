@@ -82,7 +82,7 @@ func _modifiers_lab_replay() -> void:
     var preview_toggle := lab.find_child("PreviewToggle", true, false) as CheckButton
     _check(not lab.preview.visible, "Modifier preview starts hidden")
     preview_toggle.button_pressed = true
-    for index in [1, 5]:
+    for index in [1, 5, 6, 7]:
         lab.preview.modifier_selected.emit(index)
         lab.strength.select(lab.strength.item_count - 1)
         lab.strength.item_selected.emit(lab.strength.selected)
@@ -151,19 +151,10 @@ func _modifier_sequence() -> void:
     gameplay.get_node("ScaleTimer").stop()
     gameplay.figure_root.clean_all(true)
     await _frames(3)
-    var pickups := [
-        "points",
-        "tier",
-        "points",
-        "echo",
-        "inversion",
-        "inversion",
-        "all_in",
-        "points",
-    ]
+    var pickups := ["tier", "points", "tier", "echo", "inversion", "inversion", "all_in", "points"]
     for step in pickups.size():
         var wanted: String = pickups[step]
-        var wanted_value := 2 if wanted in ["echo", "inversion"] else 1
+        var wanted_value := 2 if wanted in ["echo", "all_in", "inversion"] else 1
         # Search deterministic fixture seeds; all layouts still use production generation.
         for fixture_seed in range(100):
             gameplay.spawner.rng.seed = fixture_seed
@@ -171,7 +162,12 @@ func _modifier_sequence() -> void:
                 gameplay.spawner.rng,
                 gameplay.progress.run_state.modifier_system.pending,
                 maxi(gameplay.spawner.easy_side, 0),
-                gameplay.progress.run_state.tiers_collected,
+                int(
+                    UpgradeCatalog
+                    .data
+                    .difficulty_levels[gameplay.progress.run_state.difficulty]
+                    .tiers_required
+                ),
             )
             if candidate.sides.any(
                 func(side):
@@ -200,7 +196,7 @@ func _modifier_sequence() -> void:
         await _frames(70)
         await _capture("modifiers", "%02d_collected" % (step * 2 + 2), _run_state(gameplay))
         _check(gameplay.progress.figures_passed == step + 1, "Modifier physical passage %d" % step)
-    _check(gameplay.progress.score == 750, "T2 commit plus inverted T2 all-in payout")
+    _check(gameplay.progress.score == 1250, "T2 commit plus echoed T2 all-in payout")
     _check(gameplay.progress.run_state.modifier_system.tier == 1, "Commit starts fresh T1 chain")
     _save_contact_sheet("modifiers")
     gameplay.progress.run_state.tiers_collected = 1 # Difficulty fixture starts one tier below its +2 pickup.
@@ -225,8 +221,8 @@ func _automatic_level_sequence(gameplay: LoopScene) -> void:
     var run := gameplay.progress.run_state
     run.reset()
     run.charges_completed = RunState.required_charges() - 1
-    run.modifier_system.collect(run, UpgradeCatalog.pickup("points"))
     run.modifier_system.collect(run, UpgradeCatalog.pickup("tier"))
+    run.modifier_system.collect(run, UpgradeCatalog.pickup("points"))
     gameplay.spawner.spawn_icosahedron()
     await _frames(2)
     var figure := gameplay.figure_root.get_live_figures()[0]
@@ -252,6 +248,47 @@ func _automatic_level_sequence(gameplay: LoopScene) -> void:
     )
     await _capture("transition", "02_level_two", _run_state(gameplay))
     _save_contact_sheet("transition")
+    await _crafting_transition_sequence(gameplay)
+
+
+func _crafting_transition_sequence(gameplay: LoopScene) -> void:
+    gameplay.figure_root.clean_all(true)
+    await _frames(3)
+    var run := gameplay.progress.run_state
+    run.crafts_completed = RunState.required_crafts() - 1
+    run.modifier_system.collect(run, UpgradeCatalog.pickup("forge"))
+    run.modifier_system.collect(run, UpgradeCatalog.pickup("points"))
+    gameplay.spawner.spawn_icosahedron()
+    await _frames(2)
+    var figure := gameplay.figure_root.get_live_figures()[0]
+    var side: SideData = figure.data.sides.filter(
+        func(item):
+            return item.modifier and item.modifier.pickup_kind == "points",
+    )[0]
+    _align_side(gameplay, figure, side)
+    figure.scale = Vector3.ONE * 5.0
+    await _frames(3)
+    await _capture("crafting_transition", "01_last_recipe", _run_state(gameplay))
+    _check(
+        ("%d/%d" % [RunState.required_crafts() - 1, RunState.required_crafts()])
+        in gameplay.progress.modifier_hud.text,
+        "Crafting HUD displays progress",
+    )
+    await _grow_to_contact(figure)
+    await _frames(3)
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    _check(
+        run.difficulty == 2 and run.score == 0 and run.crafts_completed == 0,
+        "Final craft automatically starts fresh level 3",
+    )
+    _check(G.unlocked_difficulty >= 3, "Crafting unlock is persisted")
+    _check(
+        gameplay.figure_root.get_live_figures().size() == 1,
+        "Crafting transition replaces old shells",
+    )
+    await _capture("crafting_transition", "02_level_three", _run_state(gameplay))
+    _save_contact_sheet("crafting_transition")
 
 
 func _forge_sequence(gameplay: LoopScene) -> void:
@@ -297,7 +334,10 @@ func _forge_sequence(gameplay: LoopScene) -> void:
         await _grow_to_contact(figure)
         await _frames(70)
         await _capture("forge", "%02d_collected" % (step * 2 + 1), _run_state(gameplay))
-    _check(run.score == before + 400, "Forged Points pays ×4 on the following Points")
+    _check(
+        run.score == before + 500,
+        "Forged Points pays ×4 immediately, then ordinary Points scores",
+    )
     _save_contact_sheet("forge")
 
 
@@ -515,6 +555,9 @@ func _restart_sequence() -> void:
 
 
 func _mounted_gameplay_sequence() -> void:
+    # Fixed menu fixture: saved unlocks must not change which face Accept selects.
+    var previous_unlocked := G.unlocked_difficulty
+    G.unlocked_difficulty = 1
     seed(SEED)
     var main := preload("res://game/app/Main.tscn").instantiate()
     # Keep the replay's render settings; Config uses the in-memory settings above.
@@ -578,6 +621,7 @@ func _mounted_gameplay_sequence() -> void:
     await _video_scale_sequence(main)
     await _menu_ui_sequence(main)
     await _library_sequence(main)
+    G.unlocked_difficulty = previous_unlocked
     main.queue_free()
     await _frames(3)
 
@@ -626,6 +670,7 @@ func _menu_ui_sequence(main: Node) -> void:
     await _click(gui.get_node("PauseMenu/Options/Resume"))
     _check(gameplay.game_state_manager.tutorial_waiting, "Resume preserves tutorial instructions")
     await _tap_accept()
+    await _tutorial_progress_sequence(gameplay)
     await _tap_accept(&"ui_cancel")
     _check(gui.pause_menu.visible, "Gameplay Esc opens pause menu")
     await _capture("menu_ui", "06_gameplay_pause", { })
@@ -634,6 +679,40 @@ func _menu_ui_sequence(main: Node) -> void:
     _save_contact_sheet("menu_ui")
     G.data = previous_data
     G.settings.SPAWN_MODE = previous_spawn_mode
+
+
+func _tutorial_progress_sequence(gameplay: LoopScene) -> void:
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    for step in RunState.required_controls():
+        if gameplay.figure_root.get_live_figures().is_empty():
+            gameplay.spawner.spawn_icosahedron()
+        await _frames(2)
+        var figure := gameplay.figure_root.get_live_figures()[0]
+        var side: SideData = figure.data.sides.filter(
+            func(item):
+                return item.is_empty(),
+        )[0]
+        _align_side(gameplay, figure, side)
+        _check(not figure.mesh_icosahedron.angle_good, "Tutorial passage needs no confirmation")
+        await _grow_to_contact(figure)
+        await _frames(70)
+        if step < RunState.required_controls() - 1:
+            _check(
+                gameplay.progress.run_state.controls_completed == step + 1,
+                "Safe tutorial passage increments progress",
+            )
+            if step == 0:
+                await _capture("tutorial_progress", "01_counted", _run_state(gameplay))
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    _check(
+        G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE
+        and gameplay.progress.run_state.controls_completed == 0 and G.unlocked_difficulty >= 1,
+        "Tutorial automatically unlocks and starts level 1",
+    )
+    await _capture("tutorial_progress", "02_level_one", _run_state(gameplay))
+    _save_contact_sheet("tutorial_progress")
 
 
 func _video_scale_sequence(main: Node) -> void:
@@ -741,6 +820,10 @@ func _transition_sequence(main: Node) -> void:
 
 
 func _collision_sequence() -> void:
+    var previous_data := G.data
+    var previous_mode: int = G.settings.SPAWN_MODE
+    G.data = { }
+    G.settings.SPAWN_MODE = PatternGen.SpawnMode.DEBUG
     seed(SEED)
     var lab := RUN_LAB.instantiate()
     add_child(lab)
@@ -839,6 +922,8 @@ func _collision_sequence() -> void:
     _save_contact_sheet("collision")
     lab.queue_free()
     await _frames(3)
+    G.data = previous_data
+    G.settings.SPAWN_MODE = previous_mode
 
 
 func _check_debug_steering(figure: Icosahedron, label: String) -> void:

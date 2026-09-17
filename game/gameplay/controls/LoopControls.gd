@@ -95,8 +95,6 @@ func advance_control() -> void:
     if detector.get_passing_side(controlledNode.icosahedron) == null:
         commit_rejected.emit(controlledNode.icosahedron)
         return
-    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
-        game_progress.run_state.tutorial_commits[controlledNode.icosahedron.get_instance_id()] = true
     sync_orientation()
     controlledNode.angle_good = true
     # Freeze only orientation/visuals; growth and passage validation continue.

@@ -69,6 +69,31 @@ func test_empty_dent_passes_and_hands_control_to_next_figure(
     assert_eq(gameplay.progress.figures_passed, 1, "Passage must be scored only once.")
 
 
+func test_tutorial_physical_passage_counts_with_or_without_confirm(
+    confirm = use_parameters([false, true])
+) -> void:
+    G.settings.SPAWN_MODE = PatternGen.SpawnMode.TUTORIAL
+    gameplay.restart()
+    gameplay.game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
+    gameplay.get_node("LoopTimer").stop()
+    gameplay.get_node("ScaleTimer").stop()
+    var figure := gameplay.figure_root.get_live_figures()[0]
+    var opening: SideData = figure.data.sides.filter(
+        func(side):
+            return side.is_empty(),
+    )[0]
+    _face_player(figure, opening.id)
+    gameplay.controls.update_controlled_node()
+    if confirm:
+        gameplay.controls.advance_control()
+    assert_eq(figure.mesh_icosahedron.angle_good, confirm)
+    assert_eq(gameplay.progress.run_state.controls_completed, 0)
+    await _grow_through_player(figure)
+    assert_eq(gameplay.progress.run_state.controls_completed, 1)
+    await wait_physics_frames(3)
+    assert_eq(gameplay.progress.run_state.controls_completed, 1)
+
+
 func test_touching_solid_edge_of_empty_dent_ends_game() -> void:
     # Explicit single opening: procedural choices can open both sides of an edge.
     var figure := _replace_figure(0)

@@ -4,13 +4,25 @@ render_mode unshaded, cull_disabled, depth_draw_never, shadows_disabled;
 uniform vec4 tint : source_color = vec4(0.65, 0.95, 1.0, 1.0);
 uniform bool vortex = false;
 uniform bool echo_waves = false;
+uniform bool all_in_pulses = false;
 uniform bool inversion_arrows = false;
 uniform sampler2D noise_texture : repeat_enable, filter_linear_mipmap;
 
 void fragment() {
     ALBEDO = tint.rgb;
     ALPHA = 0.22;
-    if (echo_waves) {
+    if (all_in_pulses) {
+        // Each triangular pulse accelerates from the face boundary toward its center.
+        float edge = min(min(UV2.x, UV2.y), 1.0 - UV2.x - UV2.y) * 3.0;
+        float phase = fract(TIME * 0.7);
+        float travel = phase * phase;
+        float pulse = (1.0 - smoothstep(0.025, 0.12, abs(edge - travel))) * (1.0 - smoothstep(0.8, 1.0, phase));
+        float second_phase = fract(phase + 0.5);
+        float second = (1.0 - smoothstep(0.025, 0.12, abs(edge - second_phase * second_phase))) * (1.0 - smoothstep(0.8, 1.0, second_phase));
+        pulse = max(pulse, second);
+        ALBEDO = tint.rgb * (0.65 + pulse * 0.75);
+        ALPHA = 0.22 + pulse * 0.45;
+    } else if (echo_waves) {
         // Barycentric distance follows all three actual face boundaries.
         float edge = min(min(UV2.x, UV2.y), 1.0 - UV2.x - UV2.y) * 3.0;
         float travel = 1.0 - abs(mod(TIME * 0.65, 2.0) - 1.0);

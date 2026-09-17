@@ -34,7 +34,7 @@ func _update_level():
         G.unlock_difficulty(1)
         (get_parent() as LoopScene).enter_next_level.call_deferred()
     elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE and run_state.level_complete(false):
-        G.unlock_difficulty(2)
+        G.unlock_difficulty(run_state.difficulty + 2)
         (get_parent() as LoopScene).enter_next_level.call_deferred()
 
 
@@ -125,12 +125,17 @@ func _physics_process(delta: float) -> void:
             game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
     pickup_message_time = maxf(0.0, pickup_message_time - delta)
     pickup_message.visible = modifier_hud.visible and pickup_message_time > 0.0
-    var objective := "Completed chains: %d/%d · Points → Tier → Points · Then level 2" % [
+    var objective := "Completed chains: %d/%d · Tier → Points until banked · Then level 2" % [
         run_state.charges_completed,
         RunState.required_charges(),
     ]
-    if run_state.difficulty > 0:
-        objective = "Forge: 2 matching → ×4 · 3 matching → ×8 · First ingredient sets strength"
+    if run_state.difficulty == 1:
+        objective = "Completed crafts: %d/%d · Forge → matching ingredients · Then level 3" % [
+            run_state.crafts_completed,
+            RunState.required_crafts(),
+        ]
+    elif run_state.difficulty > 1:
+        objective = "Mastered charging and crafting · Keep building your score"
     modifier_hud.text = "Score: %d | Level: %d\n%s\n%s" % [
         score,
         run_state.difficulty + 1,
@@ -138,7 +143,7 @@ func _physics_process(delta: float) -> void:
         run_state.modifier_system.summary(),
     ]
     if tutorial:
-        modifier_hud.text = "Controls: align an opening, confirm, then pass safely: %d/%d" % [
+        modifier_hud.text = "Controls: align an opening and pass safely: %d/%d" % [
             run_state.controls_completed,
             RunState.required_controls(),
         ]
@@ -163,7 +168,11 @@ func resolve_side(figure: Icosahedron, side: SideData) -> void:
         return
     if figure.get_parent() != loop_controls.figureRoot.anchor or not figure.data.sides.has(side):
         return
-    var outcome := run_state.resolve_side(figure.get_instance_id(), side)
+    var outcome := run_state.resolve_side(
+        figure.get_instance_id(),
+        side,
+        G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL,
+    )
     if outcome == RunState.Outcome.IGNORED:
         return
     if outcome == RunState.Outcome.PASSED and side.modifier:

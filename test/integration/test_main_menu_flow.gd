@@ -123,8 +123,23 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     main.change_scene("LoopScene")
     assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.TUTORIAL)
     loop.game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
-    loop.progress.run_state.controls_completed = RunState.required_controls()
-    loop.progress._update_level()
+    loop.get_node("LoopTimer").stop()
+    loop.get_node("ScaleTimer").stop()
+    for step in RunState.required_controls():
+        if loop.figure_root.get_live_figures().is_empty():
+            loop.spawner.spawn_icosahedron()
+        var tutorial_figure := loop.figure_root.get_live_figures()[0]
+        var opening: SideData = tutorial_figure.data.sides.filter(
+            func(side):
+                return side.is_empty(),
+        )[0]
+        assert_false(tutorial_figure.mesh_icosahedron.angle_good)
+        loop.progress.resolve_side(tutorial_figure, opening)
+        loop.progress.resolve_side(tutorial_figure, opening)
+        assert_eq(loop.progress.run_state.controls_completed, step + 1)
+        if step < RunState.required_controls() - 1:
+            await wait_process_frames(2)
+            assert_eq(G.unlocked_difficulty, 0)
     await wait_process_frames(3)
     assert_eq(G.unlocked_difficulty, 1)
     assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.QUEUE)
@@ -137,7 +152,8 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     assert_eq(saved.get_value("progress", "unlocked_difficulty"), 3)
     var entries: Dictionary = LevelPatterns.get_menu_levels(G.unlocked_difficulty)
     assert_eq(entries[1].level, 1)
-    assert_eq(entries.size(), 3)
+    assert_eq(entries.size(), 4)
+    assert_eq(entries[3].level, 3)
     assert_eq(entries[6].level, 0)
     G.data.selected_difficulty = 3
     loop.restart()
@@ -145,12 +161,12 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     assert_eq(loop.progress.score, 0)
     assert_false(loop.progress.run_state.modifier_system.pending)
     var figure: Icosahedron = loop.figure_root.get_live_figures()[0]
-    assert_eq(figure.data.stage, 1)
+    assert_eq(figure.data.stage, 2)
     var material: ShaderMaterial = figure.mesh_icosahedron._materials[0]
-    var rgb: Array = TwColors.tw.blue._500
+    var rgb: Array = MeshIcosahedron.DIFFICULTY_COLORS[2]
     assert_eq(material.get_shader_parameter("color"), Color(rgb[0], rgb[1], rgb[2]))
     loop.progress.run_state.tiers_collected = 16
-    assert_eq(figure.data.stage, 1, "Existing figure retains its generated difficulty")
+    assert_eq(figure.data.stage, 2, "Existing figure retains its generated difficulty")
     assert_eq(material.get_shader_parameter("color"), Color(rgb[0], rgb[1], rgb[2]))
     G.unlock_difficulty(4)
     G.data.selected_difficulty = 4
@@ -158,7 +174,7 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     loop.restart()
     assert_eq(
         loop.progress.run_state.difficulty,
-        1,
+        2,
         "Unimplemented lessons stay locked even with legacy saves",
     )
     assert_eq(loop.get_node("PatternGen").level, 0)
@@ -236,7 +252,64 @@ func test_charging_completion_automatically_starts_fresh_level_using_config() ->
     assert_eq(saved.get_value("progress", "unlocked_difficulty"), 2)
     run.charges_completed = RunState.required_charges()
     loop.progress._update_level()
-    assert_eq(G.unlocked_difficulty, 2, "Crafting advancement remains locked")
+    assert_eq(G.unlocked_difficulty, 2, "Charging alone does not complete the crafting lesson")
+
+
+func test_generated_crafts_unlock_and_start_level_three() -> void:
+    var main := await _load_main_scene()
+    var loop: LoopScene = main.scenes.LoopScene
+    G.unlock_difficulty(2)
+    G.data.selected_difficulty = 2
+    main.change_scene("LoopScene")
+    var run := loop.progress.run_state
+    var rng := RandomNumberGenerator.new()
+    rng.seed = 74
+    var figure_id := 0
+    for craft in RunState.required_crafts():
+        for wanted in ["forge", "points", "points"]:
+            var chosen: SideData
+            var data: FigureData
+            for attempt in 1000:
+                data = StageGenerator.create_modifier_figure(rng, run.modifier_system.pending, 0, 3)
+                for side in data.sides:
+                    if (
+                        side.modifier and side.modifier.id == wanted
+                        and side.modifier.pickup_value == 1
+                    ):
+                        chosen = side
+                        break
+                if chosen:
+                    break
+            assert_not_null(chosen, "Generated crafting level offers %s" % wanted)
+            if chosen == null:
+                return
+            run.register_figure(data)
+            figure_id += 1
+            assert_eq(run.resolve_side(figure_id, chosen), RunState.Outcome.PASSED)
+            assert_eq(run.resolve_side(figure_id, chosen), RunState.Outcome.IGNORED)
+            run.unregister_figure(figure_id, data)
+            loop.progress._update_level()
+        assert_eq(run.crafts_completed, craft + 1)
+        if craft < RunState.required_crafts() - 1:
+            await wait_process_frames(2)
+            assert_eq(run.difficulty, 1)
+            assert_eq(G.unlocked_difficulty, 2)
+    loop.progress._update_level()
+    await wait_process_frames(3)
+    assert_eq(G.unlocked_difficulty, 3)
+    assert_eq(run.difficulty, 2)
+    assert_eq(run.crafts_completed, 0)
+    assert_eq(run.score, 0)
+    assert_false(run.modifier_system.pending)
+    assert_eq(loop.figure_root.get_live_figures().size(), 1)
+    assert_eq(loop.figure_root.get_live_figures()[0].data.stage, 2)
+    var saved := ConfigFile.new()
+    assert_eq(saved.load(G.PROGRESS_PATH), OK)
+    assert_eq(saved.get_value("progress", "unlocked_difficulty"), 3)
+    assert_eq(LevelPatterns.get_menu_levels(3)[3].level, 3)
+    run.crafts_completed = RunState.required_crafts()
+    loop.progress._update_level()
+    assert_eq(G.unlocked_difficulty, 3, "Free play does not unlock unfinished lessons")
 
 
 func test_main_menu_setting_input_is_saved_to_ini_file() -> void:

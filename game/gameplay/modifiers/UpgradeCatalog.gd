@@ -19,6 +19,11 @@ static func _load_data() -> Dictionary:
         and parsed.chains_required_for_level_2 == floor(parsed.chains_required_for_level_2),
         "Level 2 requires a positive integer chain count",
     )
+    assert(
+        parsed.crafts_required_for_level_3 > 0
+        and parsed.crafts_required_for_level_3 == floor(parsed.crafts_required_for_level_3),
+        "Level 3 requires a positive integer craft count",
+    )
     assert(parsed.points_by_tier.size() > 0, "Upgrade tiers cannot be empty")
     var previous := -1
     for level in parsed.difficulty_levels:
@@ -129,7 +134,7 @@ static func eligible(steps: int, has_chain: bool, difficulty: int = 0) -> Array:
             return (
                 steps >= int(entry.min_steps) \
                         and steps <= int(entry.max_steps)
-                and (has_chain or entry.kind in ["points", "forge"])
+                and (has_chain or entry.kind in ["points", "tier", "forge"])
             ) \
                     and (entry.kind != "forge" or difficulty >= 1),
     )

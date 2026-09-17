@@ -1,3 +1,11 @@
 - more different mods
+- debug mods effects
 - level 3 mechanics, condition to get to level 3
 - music system?
+- fix sutuations where half of ico maybe completely colsed and player have no idea where to rotate
+
+---
+- better UI:
+    - points + pinding poinds top right lagre text
+    - big notification-like card w/ goal
+    - better pause menu, not hide hints text on pause

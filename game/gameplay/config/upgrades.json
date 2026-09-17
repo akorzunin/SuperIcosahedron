@@ -2,6 +2,7 @@
   "schema_version": 2,
   "controls_required_for_level_1": 10,
   "chains_required_for_level_2": 10,
+  "crafts_required_for_level_3": 10,
   "points_by_tier": [100, 250, 500, 1000, 2000, 4000, 8000],
   "difficulty_levels": [
     {
@@ -92,8 +93,8 @@
     },
     {
       "id": "echo",
-      "title": "ЭХО",
-      "description": "Repeat the next SIGN or TIER activation twice. Requires a pending chain.",
+      "title": "ECHO",
+      "description": "Double the next POINTS reward or TIER strength. Can be armed before a chain; does not stack. SIGN does not consume it.",
       "kind": "echo",
       "value": 2,
       "color": "70dcff",
@@ -104,20 +105,20 @@
     },
     {
       "id": "all_in",
-      "title": "ВА-БАНК",
-      "description": "Double pending points, but the next shell must provide POINTS or the chain is lost.",
+      "title": "ALL-IN",
+      "description": "Double the pot. The next shell must provide POINTS and banks immediately, bypassing FORGE storage; anything else loses the chain.",
       "kind": "all_in",
-      "value": 1,
+      "value": 2,
       "color": "ffad66",
       "min_steps": 2,
       "max_steps": 5,
       "weight": 1,
-      "value_by_steps": [1, 1, 1, 1, 1, 1]
+      "value_by_steps": [2, 2, 2, 2, 2, 2]
     },
     {
       "id": "inversion",
-      "title": "ИНВЕРСИЯ",
-      "description": "Flip the pending chain's sign. If it becomes positive, also gain one tier.",
+      "title": "INVERSION",
+      "description": "Flip the chain's sign and double its accumulated pot. Rescue a negative pot or risk turning positive points negative; convert before banking.",
       "kind": "inversion",
       "value": 2,
       "color": "ffa6df",

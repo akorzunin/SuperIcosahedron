@@ -260,6 +260,10 @@ func apply_side_data(sides: Array[SideData]) -> void:
                     material.set_shader_parameter("tint", side.modifier.pickup_color)
                     material.set_shader_parameter("echo_waves", side.modifier.pickup_kind == "echo")
                     material.set_shader_parameter(
+                        "all_in_pulses",
+                        side.modifier.pickup_kind == "all_in",
+                    )
+                    material.set_shader_parameter(
                         "inversion_arrows",
                         side.modifier.pickup_kind == "inversion",
                     )

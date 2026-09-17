@@ -54,7 +54,7 @@ func restart() -> void:
     %PatternGen.reset(0 if G.data.has("selected_difficulty") else int(G.data.get("level", 0)))
     progress.reset()
     if G.data.has("selected_difficulty"):
-        var selected := clampi(int(G.data.selected_difficulty), 0, mini(G.unlocked_difficulty, 2))
+        var selected := clampi(int(G.data.selected_difficulty), 0, mini(G.unlocked_difficulty, 3))
         G.settings.SPAWN_MODE = (
             PatternGen.SpawnMode.TUTORIAL
             if selected == 0
@@ -82,10 +82,7 @@ func enter_next_level() -> void:
         if progress.run_state.controls_completed < RunState.required_controls():
             return
     elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
-        if (
-            progress.run_state.difficulty != 0
-            or progress.run_state.charges_completed < RunState.required_charges()
-        ):
+        if not progress.run_state.level_complete(false):
             return
     else:
         return
@@ -97,7 +94,7 @@ func enter_next_level() -> void:
                 .difficulty
         + 2
     )
-    if next > mini(G.unlocked_difficulty, 2):
+    if next > mini(G.unlocked_difficulty, 3):
         return
     G.data.selected_difficulty = next
     G.data.level = next
