@@ -280,6 +280,10 @@ func apply_side_data(sides: Array[SideData]) -> void:
                 and icosahedron.data.easy_side >= 0
             ):
                 var label := Label3D.new()
+                # Web cannot use OS font fallback for these symbols.
+                label.font = preload(
+                    "res://game/game-assets/fonts/noto-sans-symbols/NotoSansSymbols2-Regular.ttf"
+                )
                 label.text = "◆"
                 if side.modifier.pickup_kind == "forge":
                     label.text = "\n" + "□".repeat(side.modifier.pickup_value + 1)

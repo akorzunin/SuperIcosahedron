@@ -3,6 +3,7 @@
 - level 3 mechanics, condition to get to level 3
 - music system?
 - fix sutuations where half of ico maybe completely colsed and player have no idea where to rotate
+- pad fps counter to the right a little
 
 ---
 - better UI:
