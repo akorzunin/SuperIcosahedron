@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from export import godot, prepare
+from export import godot, import_assets, prepare
 
 
 class ExportTests(unittest.TestCase):
@@ -86,6 +86,28 @@ class ExportTests(unittest.TestCase):
             ):
                 godot(self.source, self.root / "engine.log", "--import")
             self.assertEqual((self.root / "engine.log").read_text(), output)
+
+    def test_import_defers_theme_and_restores_project(self):
+        project = self.source / "project.godot"
+        original = project.read_text() + '\n[gui]\ntheme/custom="res://theme.tres"\n'
+        project.write_text(original)
+
+        def check_import(*args):
+            self.assertNotIn("theme/custom=", project.read_text())
+            self.assertEqual(
+                args, (self.source, self.root / "import.log", "--editor", "--import")
+            )
+
+        with patch("export.godot", side_effect=check_import):
+            import_assets(self.source, self.root / "import.log")
+        self.assertEqual(project.read_text(), original)
+
+        with (
+            patch("export.godot", side_effect=SystemExit("failed")),
+            self.assertRaises(SystemExit),
+        ):
+            import_assets(self.source, self.root / "import.log")
+        self.assertEqual(project.read_text(), original)
 
     def test_godot_success(self):
         with patch(

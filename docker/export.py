@@ -76,6 +76,17 @@ def godot(work, log, *args):
         raise SystemExit(f"Godot failed; see {log}")
 
 
+def import_assets(work, log):
+    project = work / "project.godot"
+    text = project.read_text()
+    # The project theme loads before a clean editor has imported its fonts.
+    project.write_text(re.sub(r"^theme/custom=.*\n", "", text, flags=re.MULTILINE))
+    try:
+        godot(work, log, "--editor", "--import")
+    finally:
+        project.write_text(text)
+
+
 def main():
     target = sys.argv[1] if len(sys.argv) == 2 else ""
     if target not in (*TARGETS, "all", "test"):
@@ -92,7 +103,7 @@ def main():
     for name in targets:
         work = Path("/work") / name
         prepare(Path("/source"), work, name, version, commit, int(app_id))
-        godot(work, logs / f"{name}-import.log", "--editor", "--import")
+        import_assets(work, logs / f"{name}-import.log")
         if name == "test":
             godot(
                 work,
