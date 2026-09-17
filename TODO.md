@@ -4,6 +4,7 @@
 - music system?
 - fix sutuations where half of ico maybe completely colsed and player have no idea where to rotate
 - pad fps counter to the right a little
+- fix discord prescence on docker build
 
 ---
 - better UI:
