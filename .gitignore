@@ -12,6 +12,7 @@ assets/*
 !assets/.gdignore
 env.*
 !env.gd.example
+!game/app/env.gd
 !env.d.ts
 
 .godot/*

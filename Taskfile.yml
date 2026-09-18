@@ -91,7 +91,7 @@ tasks:
       TARGET: '{{.TARGET | default "all"}}'
       GAME_VERSION: '{{.GAME_VERSION | default ""}}'
       GAME_COMMIT: '{{.GAME_COMMIT | default ""}}'
-      DISCORD_APP_ID: '{{.DISCORD_APP_ID | default "0"}}'
+      DISCORD_APP_ID: '{{.DISCORD_APP_ID | default ""}}'
     cmds:
       - bash scripts/build_game.sh
 

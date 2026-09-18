@@ -18,6 +18,6 @@ docker buildx build \
     --build-arg "TARGET=$TARGET" \
     --build-arg "GAME_VERSION=$GAME_VERSION" \
     --build-arg "GAME_COMMIT=$GAME_COMMIT" \
-    --build-arg "DISCORD_APP_ID=${DISCORD_APP_ID:-0}" \
+    --build-arg "DISCORD_APP_ID=${DISCORD_APP_ID:-}" \
     --output "type=local,dest=build/docker/$TARGET" \
     .

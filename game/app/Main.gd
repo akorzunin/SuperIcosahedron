@@ -13,7 +13,10 @@ var app_state := AppState.new()
 func _ready():
     app_state.name = "AppState"
     add_child(app_state)
-    if OS.has_feature('web') or OS.has_feature('mobile') or OS.has_feature('editor'):
+    if (
+        OS.has_feature('web') or OS.has_feature('mobile') or DisplayServer.get_name() == 'headless'
+        or not ClassDB.class_exists('DiscordRPC') or ENV.DISCORD_APP_ID == 0
+    ):
         discord_status = DummyDiscordStatus.new()
     else:
         discord_status = load('res://game/services/discord/DiscordStatus.gd').new()
@@ -85,6 +88,7 @@ func change_scene(scene_name: String):
         current_scene.restart()
     else:
         app_state.set_state(AppState.State.MENU)
+        discord_status.set_menu_state()
         var loop: Node = scenes.get('LoopScene')
         var gsm: GameStateManager = loop.get_node_or_null("GameStateManager") as GameStateManager if loop else null
         if gsm:

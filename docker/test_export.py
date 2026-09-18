@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from export import godot, import_assets, prepare
+from export import discord_app_id, godot, import_assets, prepare
 
 
 class ExportTests(unittest.TestCase):
@@ -69,6 +69,23 @@ class ExportTests(unittest.TestCase):
         self.assertEqual((self.source / "project.godot").read_text(), original)
         self.assertIn("__VERSION__", (self.source / "game/app/version.gd").read_text())
         self.assertFalse((self.source / "game/app/env.gd").exists())
+
+    def test_discord_app_id_defaults_and_overrides(self):
+        source = Path(__file__).resolve().parents[1]
+        for value in (None, "", "123", "0"):
+            env = {} if value is None else {"DISCORD_APP_ID": value}
+            with self.subTest(value=value), patch.dict("os.environ", env, clear=True):
+                self.assertEqual(
+                    discord_app_id(source),
+                    int(value) if value else 1273351971310534719,
+                )
+        for value in ("-1", "secret", str(2**63)):
+            with (
+                self.subTest(value=value),
+                patch.dict("os.environ", {"DISCORD_APP_ID": value}, clear=True),
+                self.assertRaises(SystemExit),
+            ):
+                discord_app_id(source)
 
     def test_godot_errors_fail_even_with_zero_exit(self):
         for output, code in (

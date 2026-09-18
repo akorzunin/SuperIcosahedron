@@ -34,7 +34,12 @@ The `dev` environment needs `ANSIBLE_PASS` and `ANSIBLE_KNOWN_HOSTS` (the verifi
 workstation SSH host key), and the repository/environment needs `ANSIBLE_HOSTS`
 containing `remote_workstation`. The inventory must be reachable
 from hosted runners and contain authentication settings usable with the vault.
-Variables: `VITE_HOST_URL`, `VITE_OG_DESCRIPTION`, optional `DISCORD_APP_ID`.
+Variables: `VITE_HOST_URL`, `VITE_OG_DESCRIPTION`, optional `DISCORD_APP_ID` override.
+The public Discord application ID is tracked in `game/app/env.gd` and used by
+local runs and Docker/CI builds by default. Set the override to `0` to disable
+presence. Presence requires a running desktop Discord client; web, mobile,
+headless runs, and platforms without the native extension use a no-op service.
+Never put bot tokens or client secrets in `game/app/env.gd`.
 The workflow requires contents/package write permissions. The host must be able to
 pull the frontend GHCR package (public package or preconfigured Docker login).
 

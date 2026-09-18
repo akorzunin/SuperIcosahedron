@@ -87,15 +87,23 @@ def import_assets(work, log):
         project.write_text(text)
 
 
+def discord_app_id(source):
+    value = os.environ.get("DISCORD_APP_ID")
+    if not value:
+        text = (source / "game/app/env.gd").read_text()
+        value = re.search(r"const DISCORD_APP_ID\s*:?=\s*(\d+)", text)[1]
+    if not value.isascii() or not value.isdecimal() or int(value) > 2**63 - 1:
+        raise SystemExit("DISCORD_APP_ID must be a nonnegative signed 64-bit integer")
+    return int(value)
+
+
 def main():
     target = sys.argv[1] if len(sys.argv) == 2 else ""
     if target not in (*TARGETS, "all", "test"):
         raise SystemExit("Target must be linux, windows, web, android, all, or test")
     version = os.environ.get("GAME_VERSION", "dev")
     commit = os.environ.get("GAME_COMMIT", "unknown")
-    app_id = os.environ.get("DISCORD_APP_ID", "0")
-    if not app_id.isascii() or not app_id.isdecimal() or int(app_id) > 2**63 - 1:
-        raise SystemExit("DISCORD_APP_ID must be a nonnegative signed 64-bit integer")
+    app_id = discord_app_id(Path("/source"))
     out = Path("/out")
     logs = out / "logs"
     logs.mkdir(parents=True)

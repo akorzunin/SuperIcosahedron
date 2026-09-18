@@ -52,7 +52,7 @@ FROM builder AS export
 ARG TARGET=all
 ARG GAME_VERSION=dev
 ARG GAME_COMMIT=unknown
-ARG DISCORD_APP_ID=0
+ARG DISCORD_APP_ID
 # Toolchain downloads happen above; tests and exports must work offline.
 RUN --network=none python3 /opt/export.py "$TARGET"
 
