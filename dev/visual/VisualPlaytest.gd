@@ -188,6 +188,23 @@ func _modifier_sequence() -> void:
                     and item.modifier.pickup_value == wanted_value
                 ),
         )[0]
+        if step == 0:
+            _align_side(gameplay, figure, side)
+            figure.scale = Vector3.ONE * 5.0
+            figure.mesh_icosahedron.global_rotate(Vector3.UP, PI)
+            await _frames(3)
+            _check(
+                figure.mesh_icosahedron._pickup_labels.any(
+                    func(label):
+                        return label.visible and label.modulate.a < 1.0,
+                ),
+                "Rear pickups show translucent navigation hints",
+            )
+            await _capture("rear_hints", "01_hidden_pickups", _run_state(gameplay))
+            _align_side(gameplay, figure, side)
+            await _frames(3)
+            await _capture("rear_hints", "02_rotated_to_pickup", _run_state(gameplay))
+            _save_contact_sheet("rear_hints")
         _align_side(gameplay, figure, side)
         figure.scale = Vector3.ONE * 5.0
         await _frames(3)

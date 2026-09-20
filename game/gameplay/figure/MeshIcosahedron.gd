@@ -74,12 +74,21 @@ func _process(_delta: float) -> void:
         label.scale = Vector3.ONE / global_basis.get_scale()
         var outward := label.global_position - global_position
         label.hide()
-        if _controlled and outward.dot(camera.global_position - label.global_position) > 0 \
-                and not camera.is_position_behind(label.global_position):
+        var front_facing := outward.dot(camera.global_position - label.global_position) > 0
+        var marker_alpha := 1.0 if front_facing else 0.25
+        label.modulate.a = marker_alpha
+        label.outline_modulate.a = marker_alpha
+        for child in label.get_children():
+            if child is Sprite3D:
+                child.modulate.a = marker_alpha
+        if _controlled and not camera.is_position_behind(label.global_position):
             candidates.append(label)
     var screen_center := get_viewport().get_visible_rect().size / 2.0
     candidates.sort_custom(
         func(a, b):
+            # Visible pickups take precedence over rear hints when markers overlap.
+            if a.modulate.a != b.modulate.a:
+                return a.modulate.a > b.modulate.a
             return camera.unproject_position(a.global_position).distance_squared_to(screen_center) \
                     < camera.unproject_position(b.global_position).distance_squared_to(
                 screen_center

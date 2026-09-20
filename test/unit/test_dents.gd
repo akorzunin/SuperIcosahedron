@@ -85,6 +85,33 @@ func test_figure_is_built_from_twenty_dents_with_one_hole() -> void:
     assert_eq(hidden_dents[0].side_id, 4)
 
 
+func test_rear_pickup_marker_is_translucent_and_restores_on_rotation() -> void:
+    var data := StageGenerator.create_figure(4)
+    data.easy_side = 4
+    data.sides[4].modifier = UpgradeCatalog.pickup("forge")
+    var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(data)
+    add_child_autofree(figure)
+    var camera := Camera3D.new()
+    add_child_autofree(camera)
+    camera.make_current()
+    var shell := figure.mesh_icosahedron
+    shell.set_controlled(true)
+    var label: Label3D = shell._pickup_labels[0]
+    var outward := label.global_position.normalized()
+    for front in [false, true]:
+        camera.position = outward * (10.0 if front else -10.0)
+        camera.look_at(Vector3.ZERO)
+        await wait_process_frames(2)
+        assert_true(label.visible, "Rear pickups remain visible through the closed shell.")
+        var expected := 1.0 if front else 0.25
+        assert_almost_eq(label.modulate.a, expected, 0.001)
+        assert_almost_eq(label.outline_modulate.a, expected, 0.001)
+        assert_almost_eq(label.get_child(0).modulate.a, expected, 0.001)
+    shell.set_controlled(false)
+    await wait_process_frames(2)
+    assert_false(label.visible, "Hints clear on control handoff.")
+
+
 func test_control_cues_follow_open_dent_and_clear_on_handoff() -> void:
     var figure: Icosahedron = FIGURE_SCENE.instantiate().with_data(StageGenerator.create_figure(4))
     add_child_autofree(figure)
