@@ -92,6 +92,9 @@ func advance_control() -> void:
     if not controlledNode or not is_instance_valid(controlledNode) or controlledNode.angle_good:
         return
     var detector: EndDetector = $"../EndDetector"
+    if not detector.is_near_passage(controlledNode.icosahedron):
+        commit_rejected.emit(controlledNode.icosahedron)
+        return
     if detector.get_passing_side(controlledNode.icosahedron) == null:
         commit_rejected.emit(controlledNode.icosahedron)
         return

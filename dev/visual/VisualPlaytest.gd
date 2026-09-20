@@ -406,6 +406,7 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     await _frames(3)
     await _capture("difficulty", "03_hard_pickup", _run_state(gameplay))
     var previous_charges := gameplay.progress.run_state.charges_completed
+    _approach_for_commit(gameplay, figure)
     gameplay.controls.advance_control()
     var frozen := figure.mesh_icosahedron.basis
     gameplay.controls.figure_controller.rotate_continuous(Vector2.LEFT, 0.15)
@@ -782,7 +783,7 @@ func _transition_sequence(main: Node) -> void:
             return side.is_empty(),
     )[0] as SideData
     _align_side(gameplay, figure, empty)
-    figure.scale = Vector3.ONE * 7.0
+    _approach_for_commit(gameplay, figure)
     gameplay.spawner.spawn_icosahedron()
     await _frames(3)
     await _capture("fade", "01_before_commit", _run_state(gameplay))
@@ -891,6 +892,7 @@ func _collision_sequence() -> void:
     await _check_debug_steering(figure, "Observer")
     await _capture("collision", "02_observer", _run_state(gameplay))
     _align_side(gameplay, figure, empty)
+    _approach_for_commit(gameplay, figure)
     gameplay.spawner.spawn_icosahedron()
     await _tap_accept()
     await _frames(25)
@@ -957,6 +959,13 @@ func _check_debug_steering(figure: Icosahedron, label: String) -> void:
     await _frames(15)
     _check(figure.mesh_icosahedron.quaternion.is_equal_approx(turned), label
         + ": release stops steering")
+
+
+func _approach_for_commit(gameplay: LoopScene, figure: Icosahedron) -> void:
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    var mesh := figure.mesh_icosahedron
+    var radius := (mesh.global_basis * mesh.get_side_points(0)[1]).length()
+    figure.scale *= mesh.global_position.distance_to(detector.global_position) * 0.81 / radius
 
 
 func _tap_accept(action: StringName = &"ui_accept") -> void:

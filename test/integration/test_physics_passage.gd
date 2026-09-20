@@ -58,6 +58,7 @@ func test_empty_dent_passes_and_hands_control_to_next_figure(
     var next := gameplay.figure_root.get_live_figures()[1].mesh_icosahedron
     assert_eq(gameplay.get_node("EndDetector").get_passing_side(figure), data.sides[side_id])
     if side_id % 2 == 0:
+        _approach_passage(figure)
         gameplay.controls.advance_control()
         assert_true(figure.mesh_icosahedron.angle_good)
     await _grow_through_player(figure)
@@ -85,6 +86,7 @@ func test_tutorial_physical_passage_counts_with_or_without_confirm(
     _face_player(figure, opening.id)
     gameplay.controls.update_controlled_node()
     if confirm:
+        _approach_passage(figure)
         gameplay.controls.advance_control()
     assert_eq(figure.mesh_icosahedron.angle_good, confirm)
     assert_eq(gameplay.progress.run_state.controls_completed, 0)
@@ -127,6 +129,7 @@ func test_adjacent_openings_allow_centered_border_commit_and_pass() -> void:
         "No invisible wall between adjacent openings",
     )
     gameplay.controls.update_controlled_node()
+    _approach_passage(figure)
     gameplay.controls.advance_control()
     assert_true(figure.mesh_icosahedron.angle_good)
     await _grow_through_player(figure)
@@ -243,6 +246,7 @@ func test_off_center_hole_clearance(
     var predicted: bool = gameplay.get_node("EndDetector").get_passing_side(figure) != null
     assert_eq(predicted, sample[2], "Commit prediction matches full-window clearance.")
     if predicted:
+        _approach_passage(figure)
         gameplay.controls.advance_control()
         assert_true(figure.mesh_icosahedron.angle_good)
     # Fine growth steps exercise grazing contacts, not just integer-scale jumps.
@@ -288,6 +292,7 @@ func test_natural_growth_resolves_committed_hidden_hole_once() -> void:
     )[0] as SideData
     _face_player(figure, empty.id)
     gameplay.spawner.spawn_icosahedron()
+    _approach_passage(figure)
     gameplay.controls.advance_control()
     await wait_seconds(MeshIcosahedron.FADE_TIME + 0.1)
     assert_false(figure.mesh_icosahedron.visible)
@@ -301,6 +306,30 @@ func test_natural_growth_resolves_committed_hidden_hole_once() -> void:
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
     await wait_physics_frames(5)
     assert_eq(gameplay.progress.figures_passed, 1)
+
+
+func test_early_lock_spam_does_not_advance_control() -> void:
+    var figure := _replace_figure(0)
+    _face_player(figure, 0)
+    gameplay.spawner.spawn_icosahedron()
+    for attempt in range(20):
+        gameplay.controls.advance_control()
+    assert_false(figure.mesh_icosahedron.angle_good)
+    assert_eq(gameplay.controls.controlledNode, figure.mesh_icosahedron)
+    _approach_passage(figure)
+    gameplay.controls.advance_control()
+    assert_true(figure.mesh_icosahedron.angle_good)
+    var next := gameplay.controls.controlledNode
+    gameplay.controls.advance_control()
+    assert_eq(gameplay.controls.controlledNode, next)
+    assert_false(next.angle_good)
+
+
+func _approach_passage(figure: Icosahedron) -> void:
+    var detector: EndDetector = gameplay.get_node("EndDetector")
+    var mesh := figure.mesh_icosahedron
+    var radius := (mesh.global_basis * mesh.get_side_points(0)[1]).length()
+    figure.scale *= mesh.global_position.distance_to(detector.global_position) * 0.81 / radius
 
 
 func _replace_figure(stage: int) -> Icosahedron:

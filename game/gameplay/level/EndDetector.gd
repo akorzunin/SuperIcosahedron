@@ -9,6 +9,7 @@ var debug_contacts := OS.is_debug_build() and "--collision-debug" in OS.get_cmdl
 const WINDOW_RADIUS := 0.2
 const WINDOW_DEPTH := 0.02
 const WINDOW_SEGMENTS := 32
+const LOCK_MIN_APPROACH := 0.30
 
 
 func _ready() -> void:
@@ -24,6 +25,15 @@ func _ready() -> void:
     window.points = points
     window.margin = 0.001
     $CollisionShape3D.shape = window
+
+
+func is_near_passage(figure: Icosahedron) -> bool:
+    var mesh := figure.mesh_icosahedron
+    # Regular, uniformly scaled shells: outer radius approximates arrival.
+    # Use face-plane distance if shells become nonuniform or deformable.
+    var radius := (mesh.global_basis * mesh.get_side_points(0)[1]).length()
+    var distance := mesh.global_position.distance_to($CollisionShape3D.global_position)
+    return radius >= distance * LOCK_MIN_APPROACH
 
 
 func get_passing_side(figure: Icosahedron) -> SideData:

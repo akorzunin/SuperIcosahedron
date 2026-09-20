@@ -177,7 +177,10 @@ func _align_for_commit(gameplay: LoopScene, figure: Icosahedron, empty := true) 
             var points := figure.mesh_icosahedron.get_side_points(side.id)
             var normal := (points[1] + points[2] + points[3]).normalized()
             var direction := (detector.global_position - figure.global_position).normalized()
+            figure.scale = Vector3.ONE
             figure.mesh_icosahedron.global_basis = Basis(Quaternion(normal, direction))
+            var radius := (figure.mesh_icosahedron.global_basis * points[1]).length()
+            figure.scale *= figure.global_position.distance_to(detector.global_position) * 0.81 / radius
             return
 
 
