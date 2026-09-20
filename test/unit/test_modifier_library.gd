@@ -1,15 +1,49 @@
 extends GutTest
 
 var discoveries: Array
+var pickups: Array
 
 
 func before_each() -> void:
     discoveries = G.discovered_modifiers.duplicate()
     G.discovered_modifiers = []
+    pickups = UpgradeCatalog.data.pickups.duplicate(true)
+    for entry in UpgradeCatalog.data.pickups:
+        entry.enabled = true
 
 
 func after_each() -> void:
     G.discovered_modifiers = discoveries
+    UpgradeCatalog.data.pickups = pickups
+
+
+func test_disabled_pickups_are_hidden_and_not_generated() -> void:
+    UpgradeCatalog.data.pickups = pickups.duplicate(true)
+    assert_eq(
+        UpgradeCatalog.enabled_pickups().map(
+            func(entry):
+                return entry.id,
+        ),
+        ["forge", "points", "tier"],
+    )
+    G.discovered_modifiers = ["echo", "inversion"]
+    var section := MenuStruct.modifier_library_page(0)
+    assert_eq(section.modifier_page_count, 1)
+    assert_false(section.items.has(4))
+    assert_false(section.items.has(7))
+    for steps in 6:
+        for difficulty in 4:
+            for has_chain in [false, true]:
+                for entry in UpgradeCatalog.eligible(steps, has_chain, difficulty):
+                    assert_true(entry.kind in ["points", "tier", "forge"])
+    for entry in UpgradeCatalog.data.pickups:
+        entry.enabled = true
+    assert_true(
+        UpgradeCatalog.eligible(3, true, 2).any(
+            func(entry):
+                return entry.id == "echo",
+        )
+    )
 
 
 func test_empty_library_uses_menu_items() -> void:

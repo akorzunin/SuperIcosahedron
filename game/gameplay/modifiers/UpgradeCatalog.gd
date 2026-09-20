@@ -48,6 +48,11 @@ static func _load_data() -> Dictionary:
     var bases := 0
     var tiers := 0
     for entry in parsed.pickups:
+        assert(entry.get("enabled", true) is bool, "Pickup enabled must be a boolean")
+        assert(
+            entry.get("enabled", true) or entry.kind not in ["points", "tier", "forge"],
+            "Progression pickups must remain enabled",
+        )
         assert(not ids.has(entry.id), "Duplicate upgrade ID")
         ids[entry.id] = true
         assert(
@@ -128,8 +133,15 @@ static func difficulty_index(tiers_collected: int) -> int:
     return result
 
 
-static func eligible(steps: int, has_chain: bool, difficulty: int = 0) -> Array:
+static func enabled_pickups() -> Array:
     return data.pickups.filter(
+        func(entry):
+            return entry.get("enabled", true),
+    )
+
+
+static func eligible(steps: int, has_chain: bool, difficulty: int = 0) -> Array:
+    return enabled_pickups().filter(
         func(entry):
             return (
                 steps >= int(entry.min_steps) \

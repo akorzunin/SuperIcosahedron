@@ -22,6 +22,15 @@ After physical passage, the passed face ID becomes the easy point for future
 shells. Already spawned layouts never change, including uncommitted shells.
 Difficulty changes likewise affect only newly generated layouts.
 
+## Enabled mechanics
+
+Each pickup in `game/gameplay/config/upgrades.json` accepts `enabled` (boolean,
+default `true`). Disabled pickups are excluded from procedural generation and the
+modifier library, even when previously discovered. Points, Tier, and Forge must
+remain enabled because lesson progression requires them. Sign (both colors),
+Echo, All-in, and Inversion are disabled by default; set `enabled: true` to restore
+them. Their implementations and developer lab previews remain available for testing.
+
 ## Safe routes and rewards
 
 - When open, the center is a neutral `PASS` route: no score or chain change.

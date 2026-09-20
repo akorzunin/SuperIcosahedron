@@ -139,7 +139,7 @@ const MODIFIER_PAGE_SIZE := 4
 
 
 static func modifier_library_page(page: int) -> Dictionary:
-    var entries: Array = UpgradeCatalog.data.pickups
+    var entries: Array = UpgradeCatalog.enabled_pickups()
     var page_count := maxi(1, ceili(float(entries.size()) / MODIFIER_PAGE_SIZE))
     page = clampi(page, 0, page_count - 1)
     var section := {

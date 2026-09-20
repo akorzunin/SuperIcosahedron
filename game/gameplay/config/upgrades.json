@@ -57,6 +57,7 @@
     },
     {
       "id": "green",
+      "enabled": false,
       "title": "+ SIGN",
       "description": "Convert pending points to positive, keeping the negative-sign bonus. Does not bank early: finish charging TIER to score.",
       "kind": "sign",
@@ -69,6 +70,7 @@
     },
     {
       "id": "red",
+      "enabled": false,
       "title": "- SIGN",
       "description": "Make the active TIER chain negative and double subsequent POINTS values. The bonus does not stack and survives +SIGN. Convert before the final POINT or bank a negative total!",
       "kind": "sign",
@@ -93,6 +95,7 @@
     },
     {
       "id": "echo",
+      "enabled": false,
       "title": "ECHO",
       "description": "Double the next POINTS reward or TIER strength. Can be armed before a chain; does not stack. SIGN does not consume it.",
       "kind": "echo",
@@ -105,6 +108,7 @@
     },
     {
       "id": "all_in",
+      "enabled": false,
       "title": "ALL-IN",
       "description": "Double the pot. The next shell must provide POINTS and banks immediately, bypassing FORGE storage; anything else loses the chain.",
       "kind": "all_in",
@@ -117,6 +121,7 @@
     },
     {
       "id": "inversion",
+      "enabled": false,
       "title": "INVERSION",
       "description": "Flip the chain's sign and double its accumulated pot. Rescue a negative pot or risk turning positive points negative; convert before banking.",
       "kind": "inversion",

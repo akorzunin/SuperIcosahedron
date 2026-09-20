@@ -138,6 +138,10 @@ func _library_sequence(main: Node) -> void:
 
 
 func _modifier_sequence() -> void:
+    # Exercise opt-in mechanics too, without changing the shipped pickup pool.
+    var old_pickups: Array = UpgradeCatalog.data.pickups.duplicate(true)
+    for entry in UpgradeCatalog.data.pickups:
+        entry.enabled = true
     var old_data := G.data
     G.data = { } # Direct lab starts must not inherit a previously selected menu difficulty.
     var old_mode: int = G.settings.SPAWN_MODE
@@ -230,6 +234,7 @@ func _modifier_sequence() -> void:
     await _frames(3)
     G.settings.SPAWN_MODE = old_mode
     G.data = old_data
+    UpgradeCatalog.data.pickups = old_pickups
 
 
 func _automatic_level_sequence(gameplay: LoopScene) -> void:
