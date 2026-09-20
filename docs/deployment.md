@@ -43,6 +43,46 @@ Never put bot tokens or client secrets in `game/app/env.gd`.
 The workflow requires contents/package write permissions. The host must be able to
 pull the frontend GHCR package (public package or preconfigured Docker login).
 
+## Shared Android debug signing
+
+All Android builds are test builds. Keep one persistent debug keystore outside the
+repository and back it up; do not regenerate it between builds. The standard alias
+is `androiddebugkey`, with store/key password `android`. Never use this testing key
+for production signing.
+
+Local Docker exports default to
+`~/.local/share/godot/keystores/debug.keystore` (respecting `XDG_DATA_HOME`). Override
+with `ANDROID_DEBUG_KEYSTORE=/absolute/path/to/debug.keystore` if needed. In Godot's
+Editor Settings → Export → Android, set Debug Keystore to the same file, Debug
+Keystore User to `androiddebugkey`, and Debug Keystore Pass to `android`.
+
+If no key exists, generate it once (do not overwrite an existing key):
+
+```sh
+mkdir -p ~/.local/share/godot/keystores
+keytool -genkeypair -keystore ~/.local/share/godot/keystores/debug.keystore \
+  -storepass android -keypass android -alias androiddebugkey \
+  -dname 'CN=Android Debug,O=Android,C=US' -keyalg RSA -keysize 2048 -validity 10000
+chmod 600 ~/.local/share/godot/keystores/debug.keystore
+```
+
+Configure GitHub's `ANDROID_DEBUG_KEYSTORE_BASE64` repository or `dev` environment
+secret using the same file, for example with authenticated GitHub CLI:
+
+```sh
+base64 -w0 ~/.local/share/godot/keystores/debug.keystore | \
+  gh secret set ANDROID_DEBUG_KEYSTORE_BASE64 --env dev
+```
+
+`TARGET=android ./scripts/build_game.sh` passes the key as a BuildKit secret, not an
+image layer or build artifact. A key fingerprint invalidates cached exports when
+it changes. Android/all exports require the key; other targets and pull-request
+tests do not. CI decodes the secret into a temporary file and removes it afterward.
+
+Old APKs signed with another key cannot be updated with this key. A one-time
+uninstall (deleting local saves) or separate package ID is required. Subsequent
+Docker, CI and editor builds signed with the shared key can update one another.
+
 ## One-time migration
 
 From the game repository, with access to the adjacent infrastructure checkout:

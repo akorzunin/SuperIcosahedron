@@ -34,9 +34,6 @@ RUN curl -fL --retry 3 -O https://dl.google.com/android/repository/build-tools_r
     unzip -q platform-tools_r36.0.2-linux.zip -d "$ANDROID_HOME" && \
     rm *.zip && \
     mkdir -p /root/.config/godot && \
-    keytool -genkeypair -keystore /root/.config/godot/debug.keystore \
-      -storepass android -alias androiddebugkey -keypass android \
-      -dname 'CN=Android Debug,O=Android,C=US' -keyalg RSA -keysize 2048 -validity 10000 && \
     printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/java_sdk_path = "%s"\nexport/android/android_sdk_path = "%s"\nexport/android/debug_keystore = "/root/.config/godot/debug.keystore"\nexport/android/debug_keystore_user = "androiddebugkey"\nexport/android/debug_keystore_pass = "android"\n' \
       "$JAVA_HOME" "$ANDROID_HOME" > /root/.config/godot/editor_settings-4.7.tres
 
@@ -53,8 +50,16 @@ ARG TARGET=all
 ARG GAME_VERSION=dev
 ARG GAME_COMMIT=unknown
 ARG DISCORD_APP_ID
+# Secret contents alone do not invalidate the export cache.
+ARG ANDROID_DEBUG_KEYSTORE_SHA256
 # Toolchain downloads happen above; tests and exports must work offline.
-RUN --network=none python3 /opt/export.py "$TARGET"
+RUN --network=none \
+    --mount=type=secret,id=android_debug_keystore,target=/root/.config/godot/debug.keystore \
+    if [ "$TARGET" = android ] || [ "$TARGET" = all ]; then \
+      test -s /root/.config/godot/debug.keystore || \
+        { echo 'Missing android_debug_keystore BuildKit secret' >&2; exit 1; }; \
+    fi; \
+    python3 /opt/export.py "$TARGET"
 
 FROM scratch AS artifacts
 COPY --from=export /out/ /

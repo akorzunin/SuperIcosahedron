@@ -56,7 +56,14 @@ jobs:
       - name: Export games
         env:
           DISCORD_APP_ID: ${{ vars.DISCORD_APP_ID }}
-        run: ./scripts/build_game.sh
+          ANDROID_DEBUG_KEYSTORE_BASE64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          export ANDROID_DEBUG_KEYSTORE="$RUNNER_TEMP/android-debug.keystore"
+          trap 'rm -f "$ANDROID_DEBUG_KEYSTORE"' EXIT
+          umask 077
+          test -n "$ANDROID_DEBUG_KEYSTORE_BASE64" || { echo 'Missing ANDROID_DEBUG_KEYSTORE_BASE64 secret' >&2; exit 1; }
+          printf '%s' "$ANDROID_DEBUG_KEYSTORE_BASE64" | base64 --decode > "$ANDROID_DEBUG_KEYSTORE"
+          ./scripts/build_game.sh
       - name: Package exports
         run: python3 scripts/package_build.py build/docker/all build/release
       - uses: docker/login-action@v4
