@@ -20,5 +20,5 @@
 **/.env*
 **/*.keystore
 **/*.jks
-game/app/env.gd
+# game/app/env.gd contains the tracked public Discord app ID required by export.py.
 game/app/env.gd.uid
