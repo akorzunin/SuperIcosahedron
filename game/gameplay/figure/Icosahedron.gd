@@ -47,8 +47,6 @@ func _ready() -> void:
     transform.basis = Basis(inital_transform).orthonormalized()
     if not DEBUG_VISUAL and cut_plane:
         cut_plane.hide()
-    if scale_timer:
-        scale_timer.timeout.connect(_on_scale_tick)
     spwan_time = Time.get_unix_time_from_system()
     if not data:
         data = StageGenerator.create_figure(shader_type if shader_type >= 0 else 0)
@@ -58,11 +56,17 @@ func _ready() -> void:
     _build_side_colliders()
 
 
-func _on_scale_tick() -> void:
+func _process(delta: float) -> void:
+    if scale_timer and not scale_timer.is_stopped() and not scale_timer.paused:
+        _grow(delta)
+
+
+func _grow(delta: float) -> void:
     if scaling_enabled:
         var sf: float = 1. + (G.settings.SCALE_FACTOR / 1000.) \
                 * (0.5 + (G.settings.GAME_SPEED / (10. + G.settings.GAME_SPEED)))
-        scale_object_local(Vector3(sf, sf, sf))
+        var factor := pow(sf, delta / ScaleTimer.tick_dur)
+        scale_object_local(Vector3.ONE * factor)
 
 
 func _build_side_colliders() -> void:

@@ -301,7 +301,7 @@ script = ExtResource("10_v8l0a")
 unique_name_in_owner = true
 script = ExtResource("10_5cngg")
 
-[node name="ScaleTimer" type="Timer" parent="."]
+[node name="ScaleTimer" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("14_3258y")
 

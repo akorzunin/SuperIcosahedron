@@ -13,7 +13,7 @@ Defaults are unchanged by this migration.
 | --- | --- | --- |
 | `GAME_SPEED` | 10 | Positive pacing value. Affects spawn interval and shell growth. |
 | `SPAWN_SPEED` | 10 | Positive spawn-rate factor. Interval in seconds is `100 / (SPAWN_SPEED * GAME_SPEED)`. |
-| `SCALE_FACTOR` | 10 | Positive growth factor. Every 10 ms, shell scale multiplies by `1 + SCALE_FACTOR / 1000 * (0.5 + GAME_SPEED / (10 + GAME_SPEED))`. |
+| `SCALE_FACTOR` | 10 | Positive growth factor. Shell scale multiplies each frame by `pow(1 + SCALE_FACTOR / 1000 * (0.5 + GAME_SPEED / (10 + GAME_SPEED)), delta / 0.01)`, preserving the nominal 10 ms growth rate independently of FPS. |
 | `ROTATION_SPEED` | 12 | Nonnegative steering speed; also used for menu rotation. |
 | `SPAWN_MODE` | 2 | Integer: 0 tutorial, 1 debug, 2 normal modifier gameplay. |
 | `DESPAWNER_MODE` | 16633 | Nonnegative cleanup-plane X position in thousandths of world units. |

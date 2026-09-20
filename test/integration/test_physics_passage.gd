@@ -300,7 +300,7 @@ func test_natural_growth_resolves_committed_hidden_hole_once() -> void:
     for tick in range(2000):
         if not is_instance_valid(figure) or figure.resolved:
             break
-        figure.call("_on_scale_tick")
+        figure.call("_grow", 0.01)
         await wait_physics_frames(1)
     assert_eq(gameplay.progress.figures_passed, 1)
     assert_eq(gameplay.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
