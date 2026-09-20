@@ -64,6 +64,10 @@ func call_menu_action():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
+    if menu_state.state.has("modifier_page"):
+        var selected = menu_selector.get_selected_item()
+        if selected:
+            menuSpawner.gui.show_modifier_description(selected.items.get("modifier_description", ""))
     if controlledNode and target.get("progress", 1) < 1:
         target.progress += 0.05
         var t = target.prev_pos.slerp(target.quat, ease(target.progress, -5))

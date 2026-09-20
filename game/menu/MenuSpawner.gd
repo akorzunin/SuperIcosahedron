@@ -97,6 +97,12 @@ func show_modifier_faces(section: Dictionary) -> void:
         side.score_delta = side.modifier.score_value
     figure.init(preview)
     figure.mesh_icosahedron.apply_side_data(preview.sides)
+    for label in figure.mesh_icosahedron._pickup_labels:
+        label.offset.y = 150
+        # Sprite children do not inherit Label3D's drawing offset.
+        for icon in label.get_children():
+            if icon is Sprite3D:
+                icon.offset.y = label.offset.y * label.pixel_size / icon.pixel_size
     figure.mesh_icosahedron.set_default_type()
     figure.mesh_icosahedron.set_controlled(true)
 

@@ -102,16 +102,7 @@ func _ready() -> void:
     goal_card.offset_top = -240
     goal_card.offset_bottom = -24
     goal_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    var style := StyleBoxFlat.new()
-    style.bg_color = Color(0.035, 0.055, 0.09, 0.94)
-    style.border_color = Color("7de6cf")
-    style.border_width_left = 4
-    style.set_corner_radius_all(16)
-    style.content_margin_left = 24
-    style.content_margin_right = 24
-    style.content_margin_top = 20
-    style.content_margin_bottom = 20
-    goal_card.add_theme_stylebox_override("panel", style)
+    goal_card.add_theme_stylebox_override("panel", preload("res://game/ui/goal_card_style.tres"))
     modifier_hud = Label.new()
     modifier_hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     modifier_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
