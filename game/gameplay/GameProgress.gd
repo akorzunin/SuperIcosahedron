@@ -15,6 +15,12 @@ signal sound_requested(event: StringName)
 var run_state := RunState.new()
 var modifier_hud: Label
 var pickup_message: Label
+var score_background: Panel
+var score_label: Label
+var pending_label: Label
+var goal_card: PanelContainer
+var bank_tween: Tween
+var displayed_score := 0
 var pickup_message_time := 0.0
 var figures_passed: int:
     get:
@@ -45,30 +51,86 @@ func reset():
         pickup_message.hide()
         pickup_message.text = ""
     time_passed = 0
+    displayed_score = 0
+    if bank_tween:
+        bank_tween.kill()
+    if is_instance_valid(pending_label):
+        pending_label.position.y = 88
+        pending_label.modulate.a = 1.0
 
 
 func _ready() -> void:
     var layer := CanvasLayer.new()
     add_child(layer)
+    score_background = Panel.new()
+    layer.add_child(score_background)
+    score_background.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+    score_background.offset_left = -384
+    score_background.offset_right = -12
+    score_background.offset_top = 12
+    score_background.offset_bottom = 136
+    score_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    var score_style := StyleBoxFlat.new()
+    score_style.bg_color = Color(0.035, 0.055, 0.09, 0.94)
+    score_style.set_corner_radius_all(16)
+    score_background.add_theme_stylebox_override("panel", score_style)
+    score_label = Label.new()
+    layer.add_child(score_label)
+    score_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+    score_label.offset_left = -360
+    score_label.offset_right = -24
+    score_label.offset_top = 20
+    score_label.add_theme_font_size_override("font_size", 48)
+    score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    score_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    pending_label = Label.new()
+    layer.add_child(pending_label)
+    pending_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+    pending_label.offset_left = -360
+    pending_label.offset_right = -24
+    pending_label.offset_top = 88
+    pending_label.add_theme_font_size_override("font_size", 24)
+    pending_label.add_theme_color_override("font_color", Color("7de6cf"))
+    pending_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+    pending_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    goal_card = PanelContainer.new()
+    layer.add_child(goal_card)
+    goal_card.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+    goal_card.grow_vertical = Control.GROW_DIRECTION_BEGIN
+    goal_card.offset_left = -440
+    goal_card.offset_right = -24
+    goal_card.offset_top = -240
+    goal_card.offset_bottom = -24
+    goal_card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color(0.035, 0.055, 0.09, 0.94)
+    style.border_color = Color("7de6cf")
+    style.border_width_left = 4
+    style.set_corner_radius_all(16)
+    style.content_margin_left = 24
+    style.content_margin_right = 24
+    style.content_margin_top = 20
+    style.content_margin_bottom = 20
+    goal_card.add_theme_stylebox_override("panel", style)
     modifier_hud = Label.new()
-    modifier_hud.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-    modifier_hud.offset_top = -160
     modifier_hud.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    modifier_hud.offset_bottom = -12
-    modifier_hud.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     modifier_hud.mouse_filter = Control.MOUSE_FILTER_IGNORE
     modifier_hud.add_theme_color_override("font_color", Color.WHITE)
     modifier_hud.add_theme_color_override("font_shadow_color", Color.BLACK)
     modifier_hud.add_theme_constant_override("shadow_offset_x", 2)
     modifier_hud.add_theme_constant_override("shadow_offset_y", 2)
     modifier_hud.add_theme_font_size_override("font_size", 20)
-    layer.add_child(modifier_hud)
+    goal_card.add_child(modifier_hud)
     pickup_message = modifier_hud.duplicate() as Label
-    pickup_message.offset_top = -228
-    pickup_message.offset_bottom = -164
+    layer.add_child(pickup_message)
+    pickup_message.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+    pickup_message.offset_left = 24
+    pickup_message.offset_right = -24
+    pickup_message.offset_top = -320
+    pickup_message.offset_bottom = -256
+    pickup_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     pickup_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     pickup_message.hide()
-    layer.add_child(pickup_message)
     run_state.modifier_system.pickup_collected.connect(_on_pickup_collected)
     game_state_manager.game_state_changed.connect(_on_game_state)
     G.level_changed.connect(_on_level_changed)
@@ -122,7 +184,15 @@ func _physics_process(delta: float) -> void:
     gui.game_state_label.set_text(str(figures_passed))
     var tutorial: bool = G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL
     modifier_hud.visible = (tutorial or G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE) and \
-            game_state_manager.game_state == GameStateManager.GameState.GAME_ACTIVE
+            game_state_manager.game_state in [
+                GameStateManager.GameState.GAME_ACTIVE,
+                GameStateManager.GameState.GAME_PAUSED,
+            ]
+    goal_card.visible = modifier_hud.visible
+    score_background.visible = modifier_hud.visible
+    score_label.visible = modifier_hud.visible
+    pending_label.visible = modifier_hud.visible
+    _update_score_hud()
     pickup_message_time = maxf(0.0, pickup_message_time - delta)
     pickup_message.visible = modifier_hud.visible and pickup_message_time > 0.0
     var objective := "Completed chains: %d/%d · Tier → Points until banked · Then level 2" % [
@@ -136,8 +206,7 @@ func _physics_process(delta: float) -> void:
         ]
     elif run_state.difficulty > 1:
         objective = "Mastered charging and crafting · Keep building your score"
-    modifier_hud.text = "Score: %d | Level: %d\n%s\n%s" % [
-        score,
+    modifier_hud.text = "GOAL  ·  LEVEL %d\n\n%s\n\n%s" % [
         run_state.difficulty + 1,
         objective,
         run_state.modifier_system.summary(),
@@ -147,6 +216,38 @@ func _physics_process(delta: float) -> void:
             run_state.controls_completed,
             RunState.required_controls(),
         ]
+
+
+func _update_score_hud() -> void:
+    if score != displayed_score:
+        var banked := score - displayed_score
+        displayed_score = score
+        if bank_tween:
+            bank_tween.kill()
+        pending_label.position.y = 88
+        pending_label.modulate.a = 1.0
+        pending_label.text = "%+d" % banked
+        bank_tween = create_tween().set_parallel(true)
+        bank_tween \
+                .tween_property(pending_label, "position:y", 32.0, 0.45) \
+                .set_trans(Tween.TRANS_CUBIC) \
+                .set_ease(Tween.EASE_IN)
+        bank_tween.tween_property(pending_label, "modulate:a", 0.0, 0.45)
+        bank_tween.chain().tween_callback(
+            func():
+                score_label.text = "%d" % displayed_score,
+        )
+    if not bank_tween or not bank_tween.is_running():
+        score_label.text = "%d" % score
+        pending_label.position.y = 88
+        pending_label.modulate.a = 1.0
+        pending_label.text = (
+            "%+d pending" % run_state.modifier_system.pending_points()
+            if run_state \
+                    .modifier_system \
+                    .pending
+            else ""
+        )
 
 
 func get_score():
