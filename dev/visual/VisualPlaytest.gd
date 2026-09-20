@@ -683,6 +683,7 @@ func _menu_ui_sequence(main: Node) -> void:
     await _frames(30)
     await _tap_accept()
     await _frames(30)
+    G.unlocked_difficulty = 0
     G.data.selected_difficulty = 0
     main.change_scene("LoopScene")
     var gameplay: LoopScene = main.scenes.LoopScene

@@ -317,6 +317,7 @@ func test_shared_rotation_spawn_commit_preserves_existing_layouts() -> void:
 func test_end_game_rotates_before_activating_option(
     inverted = use_parameters([false, true])
 ) -> void:
+    G.unlock_difficulty(1)
     lab = RUN_LAB.instantiate()
     add_child(lab)
     await wait_process_frames(2)

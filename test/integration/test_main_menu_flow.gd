@@ -116,8 +116,12 @@ func test_main_menu_accept_starts_active_game_and_solid_side_ends_game() -> void
     assert_eq(get_viewport().get_camera_3d(), loop_scene.get_node("Environment/Camera3D"))
 
 
-func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
+func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh(
+    completed = use_parameters([false, true])
+) -> void:
     var main := await _load_main_scene()
+    if completed:
+        G.unlock_difficulty(1)
     var loop: LoopScene = main.scenes.LoopScene
     G.data.selected_difficulty = 0
     main.change_scene("LoopScene")
@@ -137,13 +141,14 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
         loop.progress.resolve_side(tutorial_figure, opening)
         loop.progress.resolve_side(tutorial_figure, opening)
         assert_eq(loop.progress.run_state.controls_completed, step + 1)
+        assert_eq(loop.progress.score, (step + 1) * 100)
         if step < RunState.required_controls() - 1:
             await wait_process_frames(2)
-            assert_eq(G.unlocked_difficulty, 0)
+            assert_eq(G.unlocked_difficulty, 1 if completed else 0)
     await wait_process_frames(3)
     assert_eq(G.unlocked_difficulty, 1)
     assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.QUEUE)
-    assert_eq(loop.progress.score, 0)
+    assert_eq(loop.progress.score, RunState.required_controls() * 100)
     assert_eq(loop.progress.run_state.difficulty, 0)
     G.unlock_difficulty(3)
     G.unlock_difficulty(1)
@@ -155,6 +160,7 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
     assert_eq(entries.size(), 4)
     assert_eq(entries[3].level, 3)
     assert_eq(entries[6].level, 0)
+    assert_eq(entries[6].name, "level 0")
     G.data.selected_difficulty = 3
     loop.restart()
     assert_eq(loop.progress.run_state.tiers_collected, 0)
@@ -178,6 +184,26 @@ func test_tutorial_unlocks_difficulty_and_selected_level_starts_fresh() -> void:
         "Unimplemented lessons stay locked even with legacy saves",
     )
     assert_eq(loop.get_node("PatternGen").level, 0)
+
+
+func test_game_over_restarts_at_level_zero_without_completed_tutorial_hints() -> void:
+    var main := await _load_main_scene()
+    var loop: LoopScene = main.scenes.LoopScene
+    G.unlock_difficulty(3)
+    G.data.selected_difficulty = 3
+    main.change_scene("LoopScene")
+    loop.game_state_manager.change_state(GameStateManager.GameState.GAME_END)
+    loop.controls.restart_run()
+    assert_eq(G.data.selected_difficulty, 0)
+    assert_eq(G.data.level, 0)
+    assert_eq(G.settings.SPAWN_MODE, PatternGen.SpawnMode.TUTORIAL)
+    assert_eq(loop.progress.run_state.controls_completed, 0)
+    assert_eq(loop.game_state_manager.game_state, GameStateManager.GameState.GAME_ACTIVE)
+    assert_false(loop.game_state_manager.tutorial_waiting)
+    assert_false(loop.get_node("Gui").tutorial_hint.visible)
+    G.data.selected_difficulty = 0
+    loop.restart()
+    assert_false(loop.game_state_manager.tutorial_waiting, "Selecting Level 0 also skips hints")
 
 
 func test_tutorial_spawns_one_turn_exits_then_randomizes_and_resets() -> void:

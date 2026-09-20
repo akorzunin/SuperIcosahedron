@@ -26,6 +26,10 @@ static func create_tutorial_figure(step: int, rng: RandomNumberGenerator) -> Fig
                 candidates.append(id)
         opening = candidates[rng.randi_range(0, candidates.size() - 1)]
     var figure := create_figure(opening)
+    for side in figure.sides:
+        if side.is_empty():
+            side.modifier.score_value = 100
+            side.score_delta = 100
     figure.easy_side = 0
     return figure
 

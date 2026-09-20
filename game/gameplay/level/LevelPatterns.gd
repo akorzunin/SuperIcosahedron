@@ -55,6 +55,6 @@ static func get_menu_levels(max_level: int):
     # Level 3 is free play after charging and crafting; later lessons remain locked.
     for i in range(1, mini(max_level, 3) + 1):
         menu_entries[i] = { name = "level %s" % i, action = "menu_start_game", level = i }
-    menu_entries[6] = tutorial_item
+    menu_entries[6] = { name = "level 0", action = "menu_start_game", level = 0 }
 
     return menu_entries

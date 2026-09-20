@@ -46,6 +46,9 @@ func _ready() -> void:
 
 
 func restart() -> void:
+    if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
+        G.data.selected_difficulty = 0
+        G.data.level = 0
     controls.controlledNode = null
     controls.figure_controller.target = null
     game_state_manager.change_state(GameStateManager.GameState.GAME_MENU)
@@ -66,7 +69,7 @@ func restart() -> void:
             progress.run_state.difficulty = selected - 1
     game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
     spawner.spawn_icosahedron()
-    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
+    if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and G.unlocked_difficulty == 0:
         game_state_manager.pause_for_tutorial()
 
 
@@ -96,9 +99,11 @@ func enter_next_level() -> void:
     )
     if next > mini(G.unlocked_difficulty, 3):
         return
+    var carried_score := progress.score if next == 1 else 0
     G.data.selected_difficulty = next
     G.data.level = next
     restart()
+    progress.run_state.score = carried_score
 
 
 func toggle_pause() -> void:
