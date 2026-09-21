@@ -19,6 +19,7 @@ const MOD_FIELDS := [
     "forge_count",
     "forge_kind",
     "forge_value",
+    "tier_streak_count",
 ]
 
 var run_state := RunState.new()
@@ -178,6 +179,8 @@ func _ready() -> void:
                 number.min_value = 1
             elif key in ["forge_slots", "forge_count"]:
                 number.max_value = 3
+            elif key == "tier_streak_count":
+                number.max_value = 100
             number.value = value
             row.add_child(number)
             inputs[key] = number
@@ -548,7 +551,7 @@ func replay() -> void:
 
 func _refresh() -> void:
     var state := snapshot()
-    state_view.text = "Banked: %d    Pending: %d\nTier: %d · Sign: %d · Multiplier: ×%d\nEcho: %s · All-in: %s · Chain has tier: %s\nForge: %d/%d %s (strength %d)\nTiers collected: %d (not completed charges)\nCharges: %d/%d · %s\nControls: %d/%d · %s\nLevel %d completion: %s (navigation intercepted)" % [
+    state_view.text = "Banked: %d    Pending: %d\nTier: %d · Sign: %d · Multiplier: ×%d\nEcho: %s · All-in: %s · Chain has tier: %s\nForge: %d/%d %s (level %d)\nTier streak: %d · next reward uses configured increment\nTiers collected: %d (not completed charges)\nCharges: %d/%d · %s\nControls: %d/%d · %s\nLevel %d completion: %s (navigation intercepted)" % [
         state.score,
         state.pending_points,
         state.tier,
@@ -561,6 +564,7 @@ func _refresh() -> void:
         state.forge_slots,
         state.forge_kind,
         state.forge_value,
+        state.tier_streak_count,
         state.tiers_collected,
         state.charges_completed,
         RunState.required_charges(),

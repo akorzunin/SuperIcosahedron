@@ -122,7 +122,9 @@ func test_orphans_repeated_signs_cap_death_and_restart() -> void:
     var wall := SideData.new().init(0, Vector3.RIGHT, SideData.Kind.SOLID)
     assert_eq(run.resolve_side(17, wall), RunState.Outcome.GAME_OVER)
     assert_false(run.modifier_system.pending)
-    assert_eq(run.score, 100)
+    var expected_streak_score := int(UpgradeCatalog.data.streak_points) * 9 \
+            + int(UpgradeCatalog.data.streak_increment) * 36
+    assert_eq(run.score, 100 + expected_streak_score)
     run.reset()
     assert_eq(run.modifier_system.last_activation, "")
     assert_eq(run.modifier_system.tier, 1)

@@ -89,17 +89,31 @@ with no further automatic lesson transition.
 ## Forge (level 2+)
 
 Forge uses an anvil icon with two or three slots (internal values 1/2).
-Two matching ingredients produce ×4; three produce ×8. The first POINTS or
-TIER ingredient chooses the recipe and its base strength. Later ingredients
-match by kind, even if their strengths differ. The HUD shows filled slots,
-remaining ingredients, and the result multiplier; stored pickups do not activate.
+The first POINTS or TIER ingredient chooses the recipe and its base strength.
+Later ingredients match by kind, even if their strengths differ. The HUD shows
+filled slots and remaining ingredients; stored pickups do not activate until the
+recipe completes.
 
-Crafted POINTS commits the old chain normally, then starts a new chain at the
-first ingredient's tier with a ×4/×8 score multiplier. It pays only on the next
-POINTS activation. Crafted TIER applies the first ingredient's tier increment
-×4/×8, subject to the existing tier cap. Nonmatching pickups activate normally.
-Sign is binary, so Sign, Echo, All-in, Inversion, and Forge are not ingredients.
-A second Forge keeps the current recipe rather than replacing or nesting it.
+POINTS recipes pay immediately when they complete. Every stored POINTS ingredient
+pays its ordinary value, using any already-active chain normally, and the recipe
+then cashes out that chain. Forge strength is not a points multiplier and does
+not add a tier, so POINTS + POINTS remains ordinary POINTS without silently
+throwing away the stored ingredients. This also means no extra POINTS pickup is
+needed after crafting.
+
+TIER + TIER activates a tier streak and awards `streak_points` (default 200)
+immediately. Each subsequent consecutive TIER pickup awards another
+`streak_increment` (default 50) on top of that base. A non-TIER pickup resets
+the streak. The ordinary tier chain remains available for later POINTS.
+Collecting TIER immediately before FORGE upgrades the Forge from two to three
+slots (capped at three), rather than losing the TIER pickup. Forge-first TIER
+pickups can still form a TIER recipe. Completed TIER recipes use the ordinary
+strength of their first ingredient and award the same streak payout.
+
+Nonmatching pickups activate normally. Sign is binary, so Sign, Echo, All-in,
+Inversion, and Forge are not ordinary recipe ingredients. A second Forge keeps
+the current recipe rather than replacing or nesting it. Death and restart
+still discard both the chain and any stored recipe.
 
 ECHO can arm without a chain and doubles the next POINTS reward (one charge)
 or TIER strength. It does not stack and SIGN preserves it. Storing ingredients
@@ -128,6 +142,8 @@ profile, distance-based probabilities, and required pickups.
 
 | Field | Meaning |
 | --- | --- |
+| `streak_points` | Positive integer payout for the first completed/consecutive TIER combination |
+| `streak_increment` | Positive integer added by each subsequent consecutive TIER pickup |
 | `points_by_tier` | Positive integer score magnitudes, indexed from tier 1 |
 | `difficulty_levels[].tiers_required` | Increasing cumulative tier-unit threshold; first must be 0 |
 | `difficulty_levels[].easy_open_faces` | Inclusive `[min, max]` total openings among steps 0–1, each 2–3 |

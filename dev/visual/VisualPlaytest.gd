@@ -357,8 +357,8 @@ func _forge_sequence(gameplay: LoopScene) -> void:
         await _frames(70)
         await _capture("forge", "%02d_collected" % (step * 2 + 1), _run_state(gameplay))
     _check(
-        run.score == before + 500,
-        "Forged Points pays ×4 immediately, then ordinary Points scores",
+        run.score == before + 300,
+        "Forged Points pays each ordinary ingredient immediately, then ordinary Points scores",
     )
     _save_contact_sheet("forge")
 

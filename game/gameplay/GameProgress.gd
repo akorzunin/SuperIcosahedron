@@ -191,7 +191,7 @@ func _physics_process(delta: float) -> void:
         RunState.required_charges(),
     ]
     if run_state.difficulty == 1:
-        objective = "Completed crafts: %d/%d · Forge → matching ingredients · Then level 3" % [
+        objective = "Completed crafts: %d/%d · Forge → immediate recipe payouts · Then level 3" % [
             run_state.crafts_completed,
             RunState.required_crafts(),
         ]

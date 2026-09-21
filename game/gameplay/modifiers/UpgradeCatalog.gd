@@ -25,6 +25,11 @@ static func _load_data() -> Dictionary:
         "Level 3 requires a positive integer craft count",
     )
     assert(parsed.points_by_tier.size() > 0, "Upgrade tiers cannot be empty")
+    for field in ["streak_points", "streak_increment"]:
+        assert(
+            parsed.get(field) > 0 and parsed.get(field) == floor(parsed.get(field)),
+            "%s must be a positive integer" % field,
+        )
     var previous := -1
     for level in parsed.difficulty_levels:
         assert(level.tiers_required == floor(level.tiers_required))

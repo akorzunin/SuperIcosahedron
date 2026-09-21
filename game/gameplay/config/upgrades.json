@@ -3,6 +3,8 @@
   "controls_required_for_level_1": 10,
   "chains_required_for_level_2": 10,
   "crafts_required_for_level_3": 10,
+  "streak_points": 200,
+  "streak_increment": 50,
   "points_by_tier": [100, 250, 500, 1000, 2000, 4000, 8000],
   "difficulty_levels": [
     {
@@ -34,7 +36,7 @@
     {
       "id": "forge",
       "title": "FORGE",
-      "description": "Store 2 or 3 matching POINTS or TIER ingredients to activate at ×4 or ×8 strength. The first ingredient sets the strength.",
+      "description": "Store 2 or 3 matching POINTS or TIER ingredients. POINTS pay their ordinary value immediately; TIER recipes start a streak.",
       "kind": "forge",
       "value": 1,
       "color": "ffbe85",
@@ -84,7 +86,7 @@
     {
       "id": "tier",
       "title": "TIER",
-      "description": "Upgrade the next POINTS pickups by one tier. Strength determines how many pickups charge before banking. A new TIER replaces remaining strength without changing accumulated points.",
+      "description": "Upgrade the next POINTS pickups by one tier. Consecutive TIER pickups also build a direct streak payout. Strength determines how many pickups charge before banking.",
       "kind": "tier",
       "value": 2,
       "color": "d5a6ff",

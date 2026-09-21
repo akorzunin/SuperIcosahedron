@@ -1,8 +1,8 @@
 # Gameplay configuration / CMS handoff
 
 - `gameplay.json`: gameplay tuning, under `game_settings`.
-- `upgrades.json`: modifier pickups, colors, tier strengths, and choice count.
-  See [modifier rules](../../../docs/modifier-implementation.md).
+- `upgrades.json`: modifier pickups, colors, tier strengths, and combination
+  payouts. See [modifier rules](../../../docs/modifier-implementation.md).
 
 Both files use `schema_version: 1` and are included by every export preset.
 Defaults are unchanged by this migration.

@@ -49,6 +49,7 @@ func _process(_delta: float) -> void:
             if shape.get_parent() is EndDetector:
                 # Draw the actual prism perimeter without cap-triangulation spokes.
                 var points: PackedVector3Array = shape.shape.points
+                @warning_ignore("integer_division")
                 var count := points.size() / 2
                 for i in count:
                     for cap in 2:
