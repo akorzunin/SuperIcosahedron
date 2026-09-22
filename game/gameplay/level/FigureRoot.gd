@@ -31,6 +31,8 @@ func retire_figures() -> void:
     for figure in get_live_figures():
         # Keep outgoing visuals outside the reset anchor and active-figure queries.
         figure.reparent(self)
+        # Split old shells outward so they immediately reveal the newly controlled figure.
+        figure.mesh_icosahedron.burst_dents()
         figure.despawn(0.8)
 
 
