@@ -299,8 +299,9 @@ func test_shared_rotation_spawn_commit_preserves_existing_layouts() -> void:
             ),
             layouts[i][1],
         )
+    var planned_origin: int = gameplay.spawner.stage_generator.route
     gameplay.spawner.spawn_icosahedron()
-    assert_eq(gameplay.figure_root.get_live_figures()[-1].data.easy_side, passed.id)
+    assert_eq(gameplay.figure_root.get_live_figures()[-1].data.easy_side, planned_origin)
     await wait_process_frames(2)
     for area in second.get_node("MeshIcosahedron/SideColliders").get_children():
         var wire: MeshInstance3D = lab.collision_debug.shapes[area.get_child(0)]

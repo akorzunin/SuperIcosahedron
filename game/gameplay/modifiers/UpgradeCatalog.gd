@@ -36,7 +36,7 @@ static func _load_data() -> Dictionary:
         assert(int(level.tiers_required) > previous, "Tier thresholds must increase")
         previous = int(level.tiers_required)
         assert(level.easy_open_faces.size() == 2)
-        assert(int(level.easy_open_faces[0]) >= 2 and int(level.easy_open_faces[1]) <= 3)
+        assert(int(level.easy_open_faces[0]) >= 1 and int(level.easy_open_faces[1]) <= 3)
         assert(level.easy_open_faces[0] <= level.easy_open_faces[1])
         assert(
             level.easy_open_faces[0] == floor(level.easy_open_faces[0])

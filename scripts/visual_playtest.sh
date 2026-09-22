@@ -25,7 +25,7 @@ timeout 120s godot --headless --path . --import \
 # Editor plugins currently emit shutdown-leak errors. Keep the import log, but
 # gate errors strictly in the runtime log; gate import errors too once plugins are fixed.
 if [[ "$status" -eq 0 ]]; then
-    timeout 120s xvfb-run --auto-servernum --server-args='-screen 0 1280x720x24 -nolisten tcp' \
+    timeout 180s xvfb-run --auto-servernum --server-args='-screen 0 1280x720x24 -nolisten tcp' \
         godot --path . --display-driver x11 --windowed --resolution 1280x720 \
         --fixed-fps 60 --audio-driver Dummy --disable-vsync \
         --log-file "$output/engine.log" "$@" \

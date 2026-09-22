@@ -300,7 +300,7 @@ func test_generated_crafts_unlock_and_start_level_three() -> void:
                 for side in data.sides:
                     if (
                         side.modifier and side.modifier.id == wanted
-                        and side.modifier.pickup_value == 1
+                        and side.modifier.pickup_value == (2 if wanted == "points" else 1)
                     ):
                         chosen = side
                         break

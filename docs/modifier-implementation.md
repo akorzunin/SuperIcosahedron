@@ -140,14 +140,26 @@ Edit **`game/gameplay/config/upgrades.json`**, schema version **2**.
 `choices_per_figure` is removed. Open counts emerge from the selected difficulty
 profile, distance-based probabilities, and required pickups.
 
+Queue play generates seeded 3–5-shell movement phrases (move, hold, change,
+recover), independent of live player aim after initial alignment. A neutral route
+moves at most one adjacent face per shell; points and tier rewards start two
+steps away. No face stays open for three consecutive shells, including pickup
+openings. A reserved closed neighbor keeps the next survival step available.
+Recovery shells request three nearby openings, subject to streak exclusions.
+Normal profiles request two, one–two, then one nearby opening. Far openings are
+capped at eight so streak exclusions cannot exhaust required reward placement.
+The generator checks a one-edge turn budget with 25% margin against configured
+rotation speed and spawn spacing; this conservative heuristic is not a full
+controller replay. Already-visible layouts are never changed to counter aim.
+
 | Field | Meaning |
 | --- | --- |
 | `streak_points` | Positive integer payout for the first completed/consecutive TIER combination |
 | `streak_increment` | Positive integer added by each subsequent consecutive TIER pickup |
 | `points_by_tier` | Positive integer score magnitudes, indexed from tier 1 |
 | `difficulty_levels[].tiers_required` | Increasing cumulative tier-unit threshold; first must be 0 |
-| `difficulty_levels[].easy_open_faces` | Inclusive `[min, max]` total openings among steps 0–1, each 2–3 |
-| `difficulty_levels[].easy_pickup_chance` | Chance an unreserved open neighbor gets a pickup rather than staying neutral |
+| `difficulty_levels[].easy_open_faces` | Inclusive `[min, max]` requested openings among steps 0–1, each 1–3; streak exclusions may reduce these, recovery requests 3 |
+| `difficulty_levels[].easy_pickup_chance` | Chance an unreserved open neighbor gets a non-points pickup rather than staying neutral |
 | `difficulty_levels[].open_chance_by_steps` | Six probabilities indexed 0–5; indices 2–5 control optional far openings; 0–1 are ignored in favor of the easy-zone rule |
 | `pickups[].id` | Unique stable identifier |
 | `pickups[].title` | Short display name; generated labels append strength and distance |

@@ -158,11 +158,13 @@ func _modifier_sequence() -> void:
     var pickups := ["tier", "points", "tier", "echo", "inversion", "inversion", "all_in", "points"]
     for step in pickups.size():
         var wanted: String = pickups[step]
-        var wanted_value := 2 if wanted in ["echo", "all_in", "inversion"] else 1
+        var wanted_value := 2 if wanted in ["points", "echo", "all_in", "inversion"] else 1
+        # Each isolated pickup fixture starts a new production phrase.
+        gameplay.spawner.stage_generator = StageGenerator.new()
         # Search deterministic fixture seeds; all layouts still use production generation.
         for fixture_seed in range(100):
             gameplay.spawner.rng.seed = fixture_seed
-            var candidate := StageGenerator.create_modifier_figure(
+            var candidate := StageGenerator.new().next_figure(
                 gameplay.spawner.rng,
                 gameplay.progress.run_state.modifier_system.pending,
                 maxi(gameplay.spawner.easy_side, 0),
@@ -172,6 +174,7 @@ func _modifier_sequence() -> void:
                     .difficulty_levels[gameplay.progress.run_state.difficulty]
                     .tiers_required
                 ),
+                2.0,
             )
             if candidate.sides.any(
                 func(side):
@@ -217,7 +220,7 @@ func _modifier_sequence() -> void:
         await _frames(70)
         await _capture("modifiers", "%02d_collected" % (step * 2 + 2), _run_state(gameplay))
         _check(gameplay.progress.figures_passed == step + 1, "Modifier physical passage %d" % step)
-    _check(gameplay.progress.score == 1250, "T2 commit plus echoed T2 all-in payout")
+    _check(gameplay.progress.score == 2500, "T3 commit plus echoed T3 all-in payout")
     _check(gameplay.progress.run_state.modifier_system.tier == 1, "Commit starts fresh T1 chain")
     _save_contact_sheet("modifiers")
     gameplay.progress.run_state.tiers_collected = 1 # Difficulty fixture starts one tier below its +2 pickup.
@@ -323,19 +326,22 @@ func _forge_sequence(gameplay: LoopScene) -> void:
     var ids := ["forge", "points", "points", "points"]
     for step in ids.size():
         var wanted: String = ids[step]
+        var wanted_value := 2 if wanted == "points" else 1
+        gameplay.spawner.stage_generator = StageGenerator.new()
         for fixture_seed in range(1000):
             gameplay.spawner.rng.seed = fixture_seed
-            var candidate := StageGenerator.create_modifier_figure(
+            var candidate := StageGenerator.new().next_figure(
                 gameplay.spawner.rng,
                 run.modifier_system.pending,
                 maxi(gameplay.spawner.easy_side, 0),
                 int(UpgradeCatalog.data.difficulty_levels[1].tiers_required),
+                2.0,
             )
             if candidate.sides.any(
                 func(side):
                     return (
                         side.modifier and side.modifier.id == wanted
-                        and side.modifier.pickup_value == 1
+                        and side.modifier.pickup_value == wanted_value
                     ),
             ):
                 gameplay.spawner.rng.seed = fixture_seed
@@ -346,7 +352,8 @@ func _forge_sequence(gameplay: LoopScene) -> void:
         var side: SideData = figure.data.sides.filter(
             func(item):
                 return (
-                    item.modifier and item.modifier.id == wanted and item.modifier.pickup_value == 1
+                    item.modifier and item.modifier.id == wanted
+                    and item.modifier.pickup_value == wanted_value
                 ),
         )[0]
         _align_side(gameplay, figure, side)
@@ -357,7 +364,7 @@ func _forge_sequence(gameplay: LoopScene) -> void:
         await _frames(70)
         await _capture("forge", "%02d_collected" % (step * 2 + 1), _run_state(gameplay))
     _check(
-        run.score == before + 300,
+        run.score == before + 750,
         "Forged Points pays each ordinary ingredient immediately, then ordinary Points scores",
     )
     _save_contact_sheet("forge")
@@ -366,13 +373,20 @@ func _forge_sequence(gameplay: LoopScene) -> void:
 func _difficulty_sequence(gameplay: LoopScene) -> void:
     # Continue the actual base/tier/base replay: one tier unit collected so far.
     # Find a seeded hard TIER +2 layout, then collect it through physical passage.
+    gameplay.spawner.stage_generator = StageGenerator.new()
     for fixture_seed in range(100):
         gameplay.spawner.rng.seed = fixture_seed
-        var candidate := StageGenerator.create_modifier_figure(
+        var candidate := StageGenerator.new().next_figure(
             gameplay.spawner.rng,
             true,
             gameplay.spawner.easy_side,
-            gameplay.progress.run_state.tiers_collected,
+            int(
+                UpgradeCatalog
+                .data
+                .difficulty_levels[gameplay.progress.run_state.difficulty]
+                .tiers_required
+            ),
+            2.0,
         )
         if candidate.sides.any(
             func(side):
@@ -434,7 +448,10 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
         gameplay.progress.run_state.charges_completed == previous_charges,
         "Unfinished charge grants no mastery",
     )
-    _check(gameplay.spawner.easy_side == hard.id, "Future spawns use passed face as easy point")
+    _check(
+        gameplay.spawner.easy_side == hard.id,
+        "Spawner records the passed face without changing the planned route",
+    )
     _check(
         next.data.easy_side == next_center and next.data.sides.map(
             func(side):
@@ -446,19 +463,33 @@ func _difficulty_sequence(gameplay: LoopScene) -> void:
     next.despawn()
     await _frames(3)
     gameplay.progress.run_state.difficulty = 1 # Explicit level selection for the two-route fixture.
+    gameplay.spawner.stage_generator = StageGenerator.new()
     for fixture_seed in range(100):
         gameplay.spawner.rng.seed = fixture_seed
-        var candidate := StageGenerator.create_modifier_figure(
+        var candidate := StageGenerator.new().next_figure(
             gameplay.spawner.rng,
             true,
             gameplay.spawner.easy_side,
-            gameplay.progress.run_state.tiers_collected,
+            int(
+                UpgradeCatalog
+                .data
+                .difficulty_levels[gameplay.progress.run_state.difficulty]
+                .tiers_required
+            ),
+            2.0,
         )
         var steps := FaceTopology.distances(candidate.easy_side)
-        if candidate.sides.filter(
-            func(side):
-                return side.is_empty() and steps[side.id] <= 1,
-        ).size() == 2:
+        if (
+            candidate \
+                    .sides \
+                    .filter(
+                func(side):
+                    return side.is_empty() and steps[side.id] <= 1,
+            ) \
+                    .size()
+            == 2
+            and candidate.sides[candidate.easy_side].is_empty()
+        ):
             gameplay.spawner.rng.seed = fixture_seed
             break
     gameplay.spawner.spawn_icosahedron()

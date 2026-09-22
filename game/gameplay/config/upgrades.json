@@ -9,25 +9,25 @@
   "difficulty_levels": [
     {
       "tiers_required": 0,
-      "easy_open_faces": [3, 3],
+      "easy_open_faces": [2, 2],
       "easy_pickup_chance": 0.35,
       "open_chance_by_steps": [0, 0, 0.35, 0.25, 0.15, 0.1]
     },
     {
       "tiers_required": 3,
-      "easy_open_faces": [2, 3],
+      "easy_open_faces": [1, 2],
       "easy_pickup_chance": 0.3,
       "open_chance_by_steps": [0, 0, 0.28, 0.2, 0.12, 0.08]
     },
     {
       "tiers_required": 8,
-      "easy_open_faces": [2, 2],
+      "easy_open_faces": [1, 1],
       "easy_pickup_chance": 0.25,
       "open_chance_by_steps": [0, 0, 0.22, 0.15, 0.1, 0.06]
     },
     {
       "tiers_required": 16,
-      "easy_open_faces": [2, 2],
+      "easy_open_faces": [1, 1],
       "easy_pickup_chance": 0.2,
       "open_chance_by_steps": [0, 0, 0.16, 0.12, 0.08, 0.05]
     }

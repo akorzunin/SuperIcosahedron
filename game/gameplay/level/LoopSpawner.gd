@@ -12,12 +12,14 @@ var game_over_tween: Tween
 var rng := RandomNumberGenerator.new()
 var easy_side := -1
 var tutorial_step := 0
+var stage_generator := StageGenerator.new()
 
 
 func reset(run_seed: int = -1) -> void:
     rng.seed = randi() if run_seed < 0 else run_seed
     easy_side = -1
     tutorial_step = 0
+    stage_generator = StageGenerator.new()
     if game_over_tween:
         game_over_tween.kill()
         game_over_tween = null
@@ -119,7 +121,7 @@ func spawn_figure(figure: Figure) -> void:
             var spawn_type := 0
             var figure_data: FigureData
             if G.settings.SPAWN_MODE == PatternGen.SpawnMode.QUEUE:
-                figure_data = StageGenerator.create_modifier_figure(
+                figure_data = stage_generator.next_figure(
                     rng,
                     game_progress.run_state.modifier_system.pending,
                     maxi(easy_side, 0),
@@ -129,6 +131,8 @@ func spawn_figure(figure: Figure) -> void:
                         .difficulty_levels[game_progress.run_state.difficulty]
                         .tiers_required
                     ),
+                    G.settings.ROTATION_SPEED / 10.0 * 100.0
+                    / (G.settings.SPAWN_SPEED * G.settings.GAME_SPEED),
                 )
             elif G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL:
                 figure_data = StageGenerator.create_tutorial_figure(tutorial_step, rng)
@@ -174,6 +178,7 @@ func spawn_figure(figure: Figure) -> void:
             easy_side = FaceTopology.nearest(
                 mesh.global_basis.inverse() * (detector.global_position - mesh.global_position)
             )
+            stage_generator.recenter(new_figure.data.easy_side, easy_side)
             FaceTopology.recenter(new_figure.data, easy_side)
             mesh.apply_side_data(new_figure.data.sides)
 
