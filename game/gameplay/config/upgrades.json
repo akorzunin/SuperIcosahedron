@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "controls_required_for_level_1": 10,
+  "controls_required_for_level_1": 3,
   "chains_required_for_level_2": 10,
   "crafts_required_for_level_3": 10,
   "streak_points": 200,

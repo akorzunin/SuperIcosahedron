@@ -14,14 +14,12 @@ signal sound_requested(event: StringName)
 
 var run_state := RunState.new()
 var modifier_hud: Label
-var pickup_message: Label
 var score_background: Panel
 var score_label: Label
 var pending_label: Label
 var goal_card: PanelContainer
 var bank_tween: Tween
 var displayed_score := 0
-var pickup_message_time := 0.0
 var figures_passed: int:
     get:
         return run_state.figures_passed
@@ -46,10 +44,6 @@ func _update_level():
 
 func reset():
     run_state.reset()
-    pickup_message_time = 0.0
-    if is_instance_valid(pickup_message):
-        pickup_message.hide()
-        pickup_message.text = ""
     time_passed = 0
     displayed_score = 0
     if bank_tween:
@@ -112,26 +106,8 @@ func _ready() -> void:
     modifier_hud.add_theme_constant_override("shadow_offset_y", 2)
     modifier_hud.add_theme_font_size_override("font_size", 20)
     goal_card.add_child(modifier_hud)
-    pickup_message = modifier_hud.duplicate() as Label
-    layer.add_child(pickup_message)
-    pickup_message.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
-    pickup_message.offset_left = 24
-    pickup_message.offset_right = -24
-    pickup_message.offset_top = -320
-    pickup_message.offset_bottom = -256
-    pickup_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-    pickup_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-    pickup_message.hide()
-    run_state.modifier_system.pickup_collected.connect(_on_pickup_collected)
     game_state_manager.game_state_changed.connect(_on_game_state)
     G.level_changed.connect(_on_level_changed)
-
-
-func _on_pickup_collected(message: String, color: Color) -> void:
-    pickup_message.text = message
-    pickup_message.add_theme_color_override("font_color", color)
-    pickup_message_time = 2.0
-    pickup_message.visible = modifier_hud.visible
 
 
 func start():
@@ -141,8 +117,6 @@ func start():
 func end():
     time_passed = loop_timer.get_raw_elapsed_time()
     gui.show_stats_panel(false)
-    pickup_message_time = 0.0
-    pickup_message.hide()
 
 
 func _on_game_state(old_state: GameStateManager.GameState, new_state: GameStateManager.GameState):
@@ -161,7 +135,7 @@ func _on_level_changed(new_level: int):
     level_changed.emit(new_level)
 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
     debug_stats_container.nodes_passed.label_text = str(figures_passed)
     debug_stats_container.time_passed.label_text = loop_timer.get_elapsed_time()
     debug_stats_container.current_level.label_text = (
@@ -184,8 +158,6 @@ func _physics_process(delta: float) -> void:
     score_label.visible = modifier_hud.visible
     pending_label.visible = modifier_hud.visible
     _update_score_hud()
-    pickup_message_time = maxf(0.0, pickup_message_time - delta)
-    pickup_message.visible = modifier_hud.visible and pickup_message_time > 0.0
     var objective := "Completed chains: %d/%d · Tier → Points until banked · Then level 2" % [
         run_state.charges_completed,
         RunState.required_charges(),
@@ -232,11 +204,10 @@ func _update_score_hud() -> void:
         score_label.text = "%d" % score
         pending_label.position.y = 88
         pending_label.modulate.a = 1.0
+        var pending_points := run_state.modifier_system.pending_points()
         pending_label.text = (
-            "%+d pending" % run_state.modifier_system.pending_points()
-            if run_state \
-                    .modifier_system \
-                    .pending
+            "%+d pending" % pending_points
+            if run_state.modifier_system.pending and pending_points != 0
             else ""
         )
 
