@@ -80,6 +80,11 @@ tasks:
     cmds:
       - godot --path . res://dev/labs/modifiers/ModifiersLab.tscn
 
+  lab-music:
+    desc: audition synchronized Glitch Stairs stems and beat timing
+    cmds:
+      - godot --path . res://dev/labs/music/MusicLab.tscn
+
   lab-rotation:
     desc: test production rotation controls
     cmds:

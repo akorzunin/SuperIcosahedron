@@ -40,6 +40,7 @@ func _ready() -> void:
 
 
 func _run() -> void:
+    await _music_lab_replay()
     await _modifiers_lab_replay()
     await _rotation_replay()
     await _restart_sequence()
@@ -68,6 +69,26 @@ func _run() -> void:
     file.close()
     print("Visual playtest: %s. Inspect images in %s" % [report.automated_status, output])
     get_tree().quit(1 if failed else 0)
+
+
+func _music_lab_replay() -> void:
+    var lab := preload("res://dev/labs/music/MusicLab.tscn").instantiate()
+    add_child(lab)
+    await _frames(3)
+    _check(not lab.player.playing, "Music lab waits for explicit playback")
+    await _capture("music", "01_initial", { "stems": lab.mix.stream_count })
+    lab.set_arrangement([true, true, false, false])
+    await _frames(15)
+    _check(lab.applied[2] == 0.0, "Sparse mix fades out flute")
+    await _capture("music", "02_sparse", { "gains": lab.applied.duplicate() })
+    lab.set_arrangement([true, true, true, true])
+    lab.solos[2].button_pressed = true
+    await _frames(15)
+    await _capture("music", "03_solo", { "gains": lab.applied.duplicate() })
+    _save_contact_sheet("music")
+    lab.queue_free()
+    await get_tree().process_frame
+    _check(AudioServer.get_bus_index("MusicLab") == -1, "Music lab removes its temporary bus")
 
 
 func _modifiers_lab_replay() -> void:
