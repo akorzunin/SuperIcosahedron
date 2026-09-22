@@ -83,13 +83,18 @@ func _build_side_colliders() -> void:
         root.add_child(area)
 
 
-func despawn():
+func despawn(duration := 0.0):
     if despawning or is_queued_for_deletion():
         return
     despawning = true
     scaling_enabled = false
     _disable_collisions(self)
-    queue_free()
+    if duration > 0.0:
+        var tween := create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+        tween.tween_property(mesh_icosahedron, "scale", Vector3.ONE * 0.001, duration)
+        tween.tween_callback(queue_free)
+    else:
+        queue_free()
 
 
 func _disable_collisions(node: Node) -> void:

@@ -45,14 +45,17 @@ func _ready() -> void:
         restart()
 
 
-func restart() -> void:
+func restart(smooth := false) -> void:
     if game_state_manager.game_state == GameStateManager.GameState.GAME_END:
         G.data.selected_difficulty = 0
         G.data.level = 0
     controls.controlledNode = null
     controls.figure_controller.target = null
     game_state_manager.change_state(GameStateManager.GameState.GAME_MENU)
-    figure_root.clean_all(true)
+    if smooth:
+        figure_root.retire_figures()
+    else:
+        figure_root.clean_all(true)
     spawner.reset()
     %PatternGen.reset(0 if G.data.has("selected_difficulty") else int(G.data.get("level", 0)))
     progress.reset()
@@ -68,6 +71,7 @@ func restart() -> void:
         if selected > 0:
             progress.run_state.difficulty = selected - 1
     game_state_manager.change_state(GameStateManager.GameState.GAME_ACTIVE)
+    $Environment.apply_level(int(G.data.get("selected_difficulty", G.data.get("level", 0))))
     spawner.spawn_icosahedron()
     if G.settings.SPAWN_MODE == PatternGen.SpawnMode.TUTORIAL and G.unlocked_difficulty == 0:
         game_state_manager.pause_for_tutorial()
@@ -102,7 +106,7 @@ func enter_next_level() -> void:
     var carried_score := progress.score if next == 1 else 0
     G.data.selected_difficulty = next
     G.data.level = next
-    restart()
+    restart(true)
     progress.run_state.score = carried_score
 
 

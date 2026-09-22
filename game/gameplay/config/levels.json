@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "levels": [
+    { "environment": { "theme": "day", "accent": "sky", "shade": 200 } },
+    { "environment": { "theme": "night", "accent": "violet", "shade": 400 } },
+    { "environment": { "theme": "day", "accent": "teal", "shade": 300 } },
+    { "environment": { "theme": "night", "accent": "rose", "shade": 400 } }
+  ]
+}

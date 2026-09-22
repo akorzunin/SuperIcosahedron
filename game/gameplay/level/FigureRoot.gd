@@ -27,6 +27,13 @@ func clean_all(immediate := false):
     gui.debug_stats_container.figures_count.label_text = "0"
 
 
+func retire_figures() -> void:
+    for figure in get_live_figures():
+        # Keep outgoing visuals outside the reset anchor and active-figure queries.
+        figure.reparent(self)
+        figure.despawn(0.8)
+
+
 func get_live_figures() -> Array[Icosahedron]:
     var figures: Array[Icosahedron] = []
     for node in anchor.get_children():

@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://dhbnayqnukkof"]
+[gd_scene load_steps=38 format=3 uid="uid://dhbnayqnukkof"]
 
 [ext_resource type="Script" uid="uid://c8l7bdj6xnlwh" path="res://game/gameplay/Gameplay.gd" id="1_rcesrc"]
 [ext_resource type="Shader" uid="uid://m5sywmm0umxn" path="res://game/gameplay/level/shaders/LoopSceneSky.gdshader" id="1_xr744"]
@@ -29,6 +29,8 @@
 [ext_resource type="Script" path="res://game/gameplay/level/EndDetector.gd" id="28_end"]
 [ext_resource type="Script" path="res://game/gameplay/controls/FigureController.gd" id="29_controller"]
 [ext_resource type="Script" path="res://game/gameplay/controls/PlayerInput.gd" id="30_input"]
+
+[ext_resource type="Script" path="res://game/gameplay/level/LevelEnvironment.gd" id="31_environment"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kgifq"]
 shader = ExtResource("1_xr744")
@@ -62,6 +64,7 @@ expand_margin_bottom = 15.0
 script = ExtResource("1_rcesrc")
 
 [node name="Environment" type="Node3D" parent="."]
+script = ExtResource("31_environment")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
 transform = Transform3D(-0.0409792, 0.660641, -0.749583, -0.599842, 0.583709, 0.547242, 0.799069, 0.472056, 0.37236, 0.155482, 0.644891, 0.176892)

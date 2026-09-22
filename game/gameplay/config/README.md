@@ -4,8 +4,26 @@
 - `upgrades.json`: modifier pickups, colors, tier strengths, and combination
   payouts. See [modifier rules](../../../docs/modifier-implementation.md).
 
-Both files use `schema_version: 1` and are included by every export preset.
-Defaults are unchanged by this migration.
+`gameplay.json` and `levels.json` use `schema_version: 1`; `upgrades.json` uses
+`schema_version: 2`. JSON files are included by every export preset.
+
+## Level environments
+
+`levels.json` lists environments for menu levels 0 (tutorial) through 3.
+Each entry has an `environment`, for example:
+
+```json
+{ "environment": { "theme": "night", "accent": "violet", "shade": 400 } }
+```
+
+Choose `day` or `night`. Pick `accent` from the palette names in
+`game/game-assets/colors/TwColors.gd` (such as `sky`, `teal`, `rose`) and
+`shade` from that palette's numeric shades (50–950). Day uses the selected
+color for the sky; night blends it into a dark base with cool lighting.
+Level 0 defaults to the original day/sky-200 appearance. Pickup colors are
+unaffected. Environment changes blend over 1.2 seconds; outgoing level figures
+shrink away over 0.8 seconds without remaining interactive. Restart the game
+after editing the JSON.
 
 ## Gameplay fields
 
